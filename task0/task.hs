@@ -27,7 +27,7 @@ abs (-7)
   5 ist nicht ungleich 5
 0.9 == 3*(0.3) 
   False
-  Siehe IEEE Floating Point Standart
+  Siehe IEEE Floating Point Standard
 2^^8   
   256.0
   Wie 2^8 aber 2 wird vorher in einen Fractional (also einen nicht-Integer) umgewandelt. Daher ist auch das Ergebnis kein Integer.
@@ -40,24 +40,25 @@ abs (-7)
 mod 5 (-2)     
   -1
   mod (Modulo) von 5 und -2 ist der Rest der Division 5/-2.
+  mod soll die folgende Formel erfüllen: (div x y)*y + (mod x y) == x
 rem 5 2 
   1
   Rest der Division 5/2
 rem 5 (-2) 
   1
-  Wie eben, nutzt aber das Vorzeichen des Dividenten (hier 5)
+  Soll folgende Formel erfüllen: (quot x y)*y + (rem x y) == x
 -3 `mod` 5  
   -3
   `mod` hat eine höhere Priorität als (-). Der Rest der Division 3/5 ist 3. Dieser wird dann negiert. Daher -3.
 (-3) `mod` 5  
   2
-  ? // TODO
+  Das Vorzeichen des 2. Arguments wird übernommen.
 sqrt (-1) 
   NaN
   Die Quadratwurzel von -1 ist `i`, eine komplexe Zahl. Sie kann nicht wirklich dargestellt werden.
 exp 1
   2.718281828459045
-  ? // TODO
+  Steht für (e ** n) wobei n das Argument ist.
 
 3.
 (-) ((+) ((+) 1 2) 3) (-2) 
@@ -119,9 +120,9 @@ Testen Sie folgende Kommandos des GHCI-Compiler.
 :info max   
   Zeigt die Signatur der Funktion sowie den Ort wo sie definiert wurde.
 ::show modules 
-  Tut nichts? // TODO
+  Zeigt geladene Module (Dateien) an (per :load)
 :!ls 
-  Führt das System-Komando "ls" aus. Das geht auch mit anderen wie :!cat und auch Argumente entgegennehmeen: `´:!ping 8.8.8.8``
+  Führt das System-Komando "ls" aus. Das geht auch mit anderen wie :!cat und auch Argumente entgegennehmeen: ``:!ping 8.8.8.8``
 :type 0 
   0 :: Num p => p
   Zeigt den Namen und Typ der Variable an.
@@ -137,7 +138,7 @@ Testen Sie folgende Kommandos des GHCI-Compiler.
 :type (+) 
   (+) :: Num a => a -> a -> a
 :load <filename>   
-  Lädt eine Datei in den Interpreter. // TODO
+  Lädt eine Datei in den Interpreter.
 :reload 
   Lädt alle importierten Module neu.
 :quit
@@ -145,16 +146,18 @@ Testen Sie folgende Kommandos des GHCI-Compiler.
 -}
 
 -- 6
-body_mass_index :: Float -> Float -> Float
+body_mass_index :: Double -> Double -> Double
 body_mass_index kg me = kg / (me ^ 2)
 
 -- 7
-heron :: Float -> Float -> Float -> Float
-heron a b c = sqrt (s * (s - a) * (s - b) * (s - c))
-              where
-                s = (a + b + c) / 2
+heron :: Double -> Double -> Double -> Double
+heron a b c = let s = (a + b + c) / 2
+              in sqrt (s * (s - a) * (s - b) * (s - c))
+--               where
+--                 s = (a + b + c) / 2
 
---8
+-- 8
+wct :: Double -> Double -> Double
 wct t v = 13.12 + 0.6215 * t - 11.37 * (v ** 0.16) + 0.3965 * t * (v ** 0.16)
 
 
