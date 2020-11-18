@@ -1,5 +1,5 @@
 {-
-Funktioonale Programmierung übung 1
+Funktionale Programmierung übung 1
 Abgabe von Armin Kleinert und Anna Sophie Pipperr
 -}
 
@@ -38,28 +38,56 @@ ungerade4 n = mod n 2 == 1
 2.
 -}
 
+-- Datentypen vom Übungsblatt
+
 type Center = (Double, Double)
 type Radius = Double
 type Circle = (Center, Radius)
 
+-- Berechne Fläche eines Kreises
+-- Könnte r*r nutzen, aber online wird meistens r**2 genutzt.
+-- Beispiel:
+--   area ((0, 0), 5)
 area :: Circle -> Double
-area (_, r) = pi * (r ** 2)
+area (_, r) = pi * (r ** 2) 
 
+-- Berechne Perimeter des Kreises
+-- Beispiel:
+--   perimeter ((0, 0), 5)
 perimeter :: Circle -> Double
 perimeter (_, r) = pi * (2 * r)
 
+-- Kontrolliere, ob die Koordinaten und Radi von zwei Kreisen gleich sind.
+-- Beispiel:
+--   equal ((0, 0), 5) ((0, 0), 5) -- True
+--   equal ((0, 1), 5) ((0, 0), 5) -- False
 equal :: Circle -> Circle -> Bool
 equal ((cx0, cy0), r0) ((cx1, cy1), r1) = cx0 == cx1 && cy0 == cy1 && r0 == r1
 
+-- Kontrolliere, ob sich zwei Kreise überschneiden
+-- False, wenn dich die Kreise berühren aber keine Überschneidene Fläche haben.
+-- Beispiel:
+--   intersect ((0, 0), 5) ((0, 0), 5) -- True
+--   intersect ((0, 1), 5) ((0, 5), 1) -- True
+--   intersect ((0, 0), 5) ((0, 10), 5) -- False
+--   intersect ((0, 0), 5) ((0, 11), 5) -- False
 intersect :: Circle -> Circle -> Bool
 intersect ((cx0, cy0), r0) ((cx1, cy1), r1) =
-  let dist   = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2
+  let dist   = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2 -- Distance
       radSum = (r0 + r1) ** 2
   in dist < radSum
 
+-- Kontrolliere, ob sich zwei Kreise überschneiden oder berühren
+intersectOrTouch :: Circle -> Circle -> Bool
+intersectOrTouch ((cx0, cy0), r0) ((cx1, cy1), r1) =
+  let dist   = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2 -- Distance
+      radSum = (r0 + r1) ** 2
+  in dist <= radSum
+
+-- Kontrolliere, ob ein Kreis einen anderen komplett umfängt
 contain :: Circle -> Circle -> Bool
 contain ((cx0, cy0), r0) ((cx1, cy1), r1) =
-  let dist = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2
+  let dist = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2 -- Distance
   in dist <= (abs (r0 - r1))
 
 {-
@@ -109,51 +137,68 @@ diamon (x, y, size) =
         then diamonSubUpper x y halfsize
         else diamonSubLower x y halfsize
 
-flag :: (Int, Int, Int) -> Char
-flag (x, y, size) = 'a'
+--flag :: (Int, Int, Int) -> Char
+--flag (x, y, size) = 'a'
 
-circle :: (Int, Int, Int) -> Char
-circle (x, y, size) = 'a'
+--circle :: (Int, Int, Int) -> Char
+--circle (x, y, size) = 'a'
 
 {-
 4.
 -}
 
+-- Helper for num2GermanWord (n < 10 && n /= 0)
+-- Achtung! (1 => "ein", nicht "eins")
 singleDigits :: Int -> [Char]
 singleDigits i = words !! i
   where
     words = ["",  "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun"]
 
+-- Helper for num2GermanWord (n >= 10 && n < 20)
 twoDigits :: Int -> [Char]
 twoDigits i = words !! i
   where
     words = ["zehn", "elf", "zwölf", "dreizehn", "vierzehn", "fünfzehn", "sechszehn", "siebzehn", "achtzehn", "neunzehn"]
 
+-- Helper for num2GermanWord (multiples of 10)
 tensMultiple :: Int -> [Char]
 tensMultiple i = words !! i
   where
     words = ["", "zehn", "zwanzig", "dreizig", "vierzig", "fünfzig", "sechszig", "siebzig", "achtzig", "neunzig"]
 
+-- Capitalize first letter of string.
 capitalized :: [Char] -> [Char]
 capitalized (head:tail) = toUpper head : map toLower tail
 capitalized []          = []
 
+-- Helper for num2GermanWordSub
+-- Called if n>=20
+-- if n%10/=0 <singledigit>und<tensmultiple>
+-- if n%10/=0 <tensMultiple>
 num2GermanWordElseCase :: Int -> [Char]
 num2GermanWordElseCase n = (if (n `mod` 10) == 0
                             then ""
                             else ((num2GermanWordSub (n `mod` 10)) ++ "und"))
                            ++ (tensMultiple (n `div` 10))
 
+-- Helper for num2GermanWord
+-- Called if n>1
+-- n is an int. Overflows are not a concern, since numbers need to have max 2 digits
 num2GermanWordSub :: Int -> [Char]
-num2GermanWordSub n | n < 10 = capitalized (singleDigits n)
-                    | n < 20 = capitalized (twoDigits (n `mod` 10))
-                    | otherwise = capitalized (num2GermanWordElseCase n)
+num2GermanWordSub n | n < 10 = singleDigits n
+                    | n < 20 = twoDigits (n `mod` 10)
+                    | otherwise = num2GermanWordElseCase n
 
+-- Turn integer (2 digits + potential sign) into german words
+-- If n == 0 => "Null"
+-- If n == 1 => "Eins"
+-- If n <  0 => "minus <word>"
+-- Otherwise call num2GermanWordSub
 num2GermanWord :: Integer -> [Char]
 num2GermanWord n | n == 0 = "Null"
                  | n < 0  = "minus " ++ num2GermanWord (abs n)
-                 | n == 1 = "Eins"
-                 | otherwise = num2GermanWordSub (fromIntegral n)
+                 | n == 1 = "Eins" -- Special case because of the 's'
+                 | otherwise = capitalized (num2GermanWordSub (fromIntegral n))
 
 --------------------------------------------------------------------------------
 
