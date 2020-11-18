@@ -1,3 +1,4 @@
+import Data.Char (toUpper, toLower) -- In task 4 to adjust the casing
 
 {- 
 1.
@@ -24,7 +25,7 @@ ungerade2 n = abs (rem n 2) == 1
 ungerade3 :: Integer -> Bool
 ungerade3 n = rem n 2 /= 0
 
--- 4. Nutze mod statt remperimeter
+-- 4. Nutze mod statt rem
 ungerade4 :: Integer -> Bool
 ungerade4 n = mod n 2 == 1
 
@@ -37,46 +38,126 @@ type Radius = Double
 type Circle = (Center, Radius)
 
 area :: Circle -> Double
-area c = 0.0
+area (_, r) = pi * (r ** 2)
 
 perimeter :: Circle -> Double
-perimeter c = 0.0
+perimeter (_, r) = pi * (2 * r)
 
--- Original Signatur: equal :: Circle -> Circle 
 equal :: Circle -> Circle -> Bool
-equal c0 c1 = True
+equal ((cx0, cy0), r0) ((cx1, cy1), r1) = cx0 == cx1 && cy0 == cy1 && r0 == r1
 
 intersect :: Circle -> Circle -> Bool
-intersect c0 c1 = True
+intersect ((cx0, cy0), r0) ((cx1, cy1), r1) =
+  let dist   = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2
+      radSum = (r0 + r1) ** 2
+  in dist < radSum
 
 contain :: Circle -> Circle -> Bool
-intersect c0 c1 = True
+contain ((cx0, cy0), r0) ((cx1, cy1), r1) =
+  let dist = (cx0 - cx1) ** 2 + (cy0 - cy1) ** 2
+  in dist <= (abs (r0 - r1))
 
 {-
 3.
 -}
 
 rectangles :: (Int, Int, Int) -> Char
-rectangles r = 'a'
+rectangles (x, y, size) =
+  if ((x <= quartSize) || (x > (size - quartSize))) ||
+     (((y-1) `mod` quartSize) < (quartSize `div` 2))
+    then '.'
+    else ' '
+  where quartSize = size `div` 4
 
 diags :: (Int, Int, Int) -> Char
-diags r = 'a'
+diags (x, y, size) = 'a'
 
 diamon :: (Int, Int, Int) -> Char
-diamon r = 'a'
+diamon (x, y, size) = 'a'
 
 flag :: (Int, Int, Int) -> Char
-flag r = 'a'
+flag (x, y, size) = 'a'
 
 circle :: (Int, Int, Int) -> Char
-circle r = 'a'
+circle (x, y, size) = 'a'
 
 {-
 4.
 -}
 
+singleDigits :: Int -> [Char]
+singleDigits i = words !! i
+  where
+    words = ["",  "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun"]
+
+twoDigits :: Int -> [Char]
+twoDigits i = words !! i
+  where
+    words = ["zehn", "elf", "zwölf", "dreizehn", "vierzehn", "fünfzehn", "sechszehn", "siebzehn", "achtzehn", "neunzehn"]
+
+tensMultiple :: Int -> [Char]
+tensMultiple i = words !! i
+  where
+    words = ["", "zehn", "zwanzig", "dreizig", "vierzig", "fünfzig", "sechszig", "siebzig", "achtzig", "neunzig"]
+
+capitalized :: [Char] -> [Char]
+capitalized (head:tail) = toUpper head : map toLower tail
+capitalized []          = []
+
+num2GermanWordElseCase :: Int -> [Char]
+num2GermanWordElseCase n = (if (n `mod` 10) == 0
+                            then ""
+                            else ((num2GermanWord ((toInteger n) `mod` 10)) ++ "und"))
+                           ++ (tensMultiple (n `div` 10))
+
 num2GermanWord :: Integer -> [Char]
-num2GermanWord n = ""
+num2GermanWord n | i == 0 = "Null"
+                 | i == 1 = "Eins"
+                 | i < 10 = capitalized (singleDigits i)
+                 | i < 20 = capitalized (twoDigits (i `mod` 10))
+                 | otherwise = capitalized (num2GermanWordElseCase i)
+  where
+    i = fromIntegral n
+
+
+
+
+
+--------------------------------------------------------------------------------
+
+{-- Funktionale Programmierung, U1, 2020/2021 Author: M. Esponda --}
+
+paintChars f size = putStrLn (genChars f size)
+
+genChars :: ((Int, Int, Int) -> Char) -> Int -> [Char]
+genChars f size = paint size (map f [(x,y,size) | y <- [1..size], x <- [1..size]])
+                  where
+                  paint 0  []     = []
+                  paint 0 (c:cs)  = '\n' : (paint size (c:cs))
+                  paint n (c:cs)  = c: (paint (n-1) cs)
+
+{-- Funktionsbeispiele für die 3.Aufgabe des 1.Übungsblattes   --}
+
+diag (x,y,size) = if (x==y) then 'O' else '.'
+
+quad (x,y,size) = if (x>s && x<3*s && y>s && y<3*s) then ' ' else '+'
+                  where
+                  s = div size 4
+
+gitter (x,y,size) = if k || p  then ' ' else '0'
+                    where
+                    k = (mod x space)==0
+                    p = (mod y space)==0
+                    space = div size 4
+
+{- Testfunktionen -}
+
+test_diag = paintChars diag 40
+test_quad = paintChars quad 40
+test_gitter = paintChars gitter 40
+
+
+
 
 
 
