@@ -1,3 +1,8 @@
+{-
+Funktioonale Programmierung übung 1
+Abgabe von Armin Kleinert und Anna Sophie Pipperr
+-}
+
 import Data.Char (toUpper, toLower) -- In task 4 to adjust the casing
 
 {- 
@@ -67,13 +72,42 @@ rectangles (x, y, size) =
      (((y-1) `mod` quartSize) < (quartSize `div` 2))
     then '.'
     else ' '
-  where quartSize = size `div` 4
+  where
+    quartSize = size `div` 4
 
 diags :: (Int, Int, Int) -> Char
-diags (x, y, size) = 'a'
+diags (x, y, size) =
+  if ((x `mod` quartSize) == (y `mod` quartSize))
+    then ' '
+    else '0'
+  where
+    quartSize = size `div` 4
+    
+diamonSubUpper :: Int -> Int -> Int -> Char
+diamonSubUpper x y halfsize = 
+  if (y - x) >= halfsize ||
+     (y + x) <= halfsize ||
+     (x - y) >= halfsize
+    then ' '
+    else '0'
+
+diamonSubLower :: Int -> Int -> Int -> Char
+diamonSubLower x y0 halfsize =
+  let y = abs ((y0 `mod` halfsize) - halfsize)
+  in
+  if (y - x) >= halfsize ||
+     (y + x) <= halfsize ||
+     (x - y) >= halfsize ||
+     (y0 `div` 2) == halfsize
+    then ' '
+    else '0'
 
 diamon :: (Int, Int, Int) -> Char
-diamon (x, y, size) = 'a'
+diamon (x, y, size) =
+  let halfsize = size `div` 2
+  in if y <= halfsize
+        then diamonSubUpper x y halfsize
+        else diamonSubLower x y halfsize
 
 flag :: (Int, Int, Int) -> Char
 flag (x, y, size) = 'a'
@@ -107,21 +141,19 @@ capitalized []          = []
 num2GermanWordElseCase :: Int -> [Char]
 num2GermanWordElseCase n = (if (n `mod` 10) == 0
                             then ""
-                            else ((num2GermanWord ((toInteger n) `mod` 10)) ++ "und"))
+                            else ((num2GermanWordSub (n `mod` 10)) ++ "und"))
                            ++ (tensMultiple (n `div` 10))
 
+num2GermanWordSub :: Int -> [Char]
+num2GermanWordSub n | n < 10 = capitalized (singleDigits n)
+                    | n < 20 = capitalized (twoDigits (n `mod` 10))
+                    | otherwise = capitalized (num2GermanWordElseCase n)
+
 num2GermanWord :: Integer -> [Char]
-num2GermanWord n | i == 0 = "Null"
-                 | i == 1 = "Eins"
-                 | i < 10 = capitalized (singleDigits i)
-                 | i < 20 = capitalized (twoDigits (i `mod` 10))
-                 | otherwise = capitalized (num2GermanWordElseCase i)
-  where
-    i = fromIntegral n
-
-
-
-
+num2GermanWord n | n == 0 = "Null"
+                 | n < 0  = "minus " ++ num2GermanWord (abs n)
+                 | n == 1 = "Eins"
+                 | otherwise = num2GermanWordSub (fromIntegral n)
 
 --------------------------------------------------------------------------------
 
