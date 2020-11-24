@@ -70,6 +70,14 @@ averageInInterval n m lst =
   let nums = averageInIntervalSub (fromIntegral n) (fromIntegral m) lst []
   in if null nums then 0 else (sum nums) / fromIntegral (length nums)
 
+-- 6.
 
+toBin :: Integer -> [Integer]
+toBin 0 = [0]
+toBin n | n `mod` 2 == 1 = toBin (n `div` 2) ++ [1]
+        | n `mod` 2 == 0 = toBin (n `div` 2) ++ [0]
+
+binaryQSum :: Integer -> Integer
+binaryQSum n = sum (toBin n)
 
 
