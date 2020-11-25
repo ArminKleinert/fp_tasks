@@ -110,8 +110,8 @@ binaryQSum n = sum (toBin n)
 
 -- 7.
 
--- Generic helper for inserting padding on the left of a list.
-lpad :: Int -> a -> [a] -> [a]
+-- Helper for inserting padding on the left of a list.
+lpad :: Int -> Int -> [Int] -> [Int]
 lpad m v xs = replicate padlen v ++ xs
   where padlen = m - ((length xs) `mod` m) -- Calculate number length of padding
 
@@ -130,6 +130,7 @@ toBin2 n | n == 0 = []
 -- hexToBits 'F' => [1,1,1,1]
 -- hexToBits 'A' => [1,0,1,0]
 -- hexToBits '0' => [0] -- Special case
+-- hexToBits 'Z' => <Error>
 hexToBits :: Char -> [Int]
 hexToBits c | c == '0'             = [0]
             | '0' <= c && '9' >= c = toBin2 (digitToInt c)
