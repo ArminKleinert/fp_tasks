@@ -186,3 +186,9 @@ hex2oktTest :: Bool
 hex2oktTest = hex2okt "" == "0" &&
               hex2okt "F" == "17" &&
               hex2okt "1F81F8" == "07700770"
+
+testAll :: Bool
+testAll = roughlyPiTest && onlyParenthesis && hexagonalNums && averageInInterval && binaryQSum && hex2okt
+
+
+
