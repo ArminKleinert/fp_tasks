@@ -5,13 +5,6 @@
 -- Output 4 2 => Erwatet: 13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006084096
 --               Ist:     340282366920938463463374607431768211456
 --               (Ist 4°4 gemeint???)
-{-
-(°) :: Integer -> Integer -> Integer
-(°) k n = dsub k n k
-          where dsub _ 0 acc = acc
-                dsub k n acc = dsub k (n-1) (acc ^ k)
--}
---
 (°) :: Integer -> Integer -> Integer
 (°) k n = dsub k n k
           where dsub _ 0 acc = acc
@@ -38,8 +31,6 @@ toDecFrom' :: Int -> [Int] -> Int -> Int
 toDecFrom' ac [d] base = base * ac + d
 toDecFrom' ac (d:ds) base = toDecFrom' (base*ac + d) ds base
 
--- TODO
--- toDecFrom [1,3,2,1] 4  => Erwatet: 124 Ist: 121 (irb> "1321".to_i(4) gibt 121)
 toDecFrom :: [Int] -> Int -> Int
 toDecFrom digs base = if (0<base && base<=10)
                       then toDecFrom' 0 digs base
