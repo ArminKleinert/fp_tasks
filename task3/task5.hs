@@ -1,5 +1,5 @@
 {-
-Funktionale Programmierung Übung 2 
+Funktionale Programmierung Übung 3
 Abgabe von Armin Kleinert und Anna Sophie Pipperr
 -}
 
