@@ -1,3 +1,8 @@
+{-
+Funktionale Programmierung Übung 2 
+Abgabe von Armin Kleinert und Anna Sophie Pipperr
+-}
+
 -- A1
 
 -- Output 3 3 => Erwatet: 7625597484987 
@@ -76,7 +81,6 @@ groupEquals :: Eq a => [a] -> [[a]]
 groupEquals lst = groupEquals' lst [] []
 
 -- A8
-
 
 -- Helper for inserting padding on the left of a list.
 lpad :: Int -> Int -> [Int] -> [Int]
