@@ -39,6 +39,7 @@ toBin2 n | n == 0 = []
 hexToBits :: Char -> [Int]
 hexToBits c | c == '0'             = [0]
             | '0' <= c && '9' >= c = toBin2 (digitToInt c)
+            | 'a' <= c && 'f' >= c = toBin2 (digitToInt c)
             | 'A' <= c && 'F' >= c = toBin2 (digitToInt c)
             | otherwise            = error "No a valid hex digit."
 
@@ -60,3 +61,8 @@ test :: IO ()
 test = putStrLn("hex2okt \"\": " ++ (show (hex2okt "")) ++
                "\nhex2okt \"F\": " ++ (show (hex2okt "F")) ++
                "\nhex2okt \"1F81F8\": " ++ (show (hex2okt "1F81F8")))
+
+
+-- 1F => 01 1111
+-- 011111 => 011 => 3 => '3' => '3':
+--        => 111 => 7 => '7' => ('3'):('7'):""
