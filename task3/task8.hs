@@ -39,7 +39,7 @@ addBits xs ys =
 -- Helper for multBits.
 -- Imagine binary multiplication like this:
 -- 0010 * 1010 (Let's call 0010 "n" and 1010 "m")
---   +    0000 -- Rightmost bit of m is 0, so put 0 here, shifted left by 0
+--        0000 -- Rightmost bit of m is 0, so put 0 here, shifted left by 0
 --   +   0010  -- Rightmost bit of m is 1, so put n here, shifted left by 1
 --   +  0000   -- Same as in the first case but shifted by 2
 --   + 0010    -- Same as second case, but shifted by 3
@@ -65,6 +65,7 @@ addMany (x:y:zs) = addMany ((addBits x y) : zs)
 
 -- Multiplication for two lists of Ints, which are expected to be all 1s and 0s.
 -- See mbCollect and addBits for in-depth descriptions.
+-- The function does not remove 0s that might appear to the left of the output.
 multBits :: [Int] -> [Int] -> [Int]
 multBits bits0 bits1 = addMany (mbCollect (reverse bits0) bits1 [])
 
