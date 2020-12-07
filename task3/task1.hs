@@ -8,7 +8,7 @@ Abgabe von Armin Kleinert und Anna Sophie Pipperr
 -- Output 3 3 => Erwatet: 7625597484987 
 --               Ist:     7625597484987
 (°) :: Integer -> Integer -> Integer
-(°) k 0 = 1
+(°) _ 0 = 1
 (°) k n = k ^ ((°) k (n-1))
 
 --

@@ -5,40 +5,29 @@ Abgabe von Armin Kleinert, Anna Sophie Pipperr und Alexandra Wolfers
 
 -- A6
 
--- Checks whether or not a given Char is a divider (',', '.', '?' or ' ')
-isDivider :: Char -> Bool
-isDivider c = elem c ",.? "
+tokenizer :: String -> [String]
+tokenizer str | nextWord == filter withoutTrenn str = nextWord:[] --Rekursionsanker: wenn es nur noch ein Wort gibt
+              | otherwise = nextWord:(tokenizer (drop (index+1) string)) --hier muss der String mit einem Buchstabe vorne weitergegeben werden
+                where (string, nextWord, index) = word 0 0 str str
 
--- Helper for tokenizer. Uses the input string (the full text), another
--- string (for the current token) and a 2-dimensional list of strings 
--- (for the output).
--- If a divider is encountered, the current token is appended to the output.
--- The input is processed in reverse order, if this function jjjj. 
--- Example:
---   tokenizerSub ".ereht yeH" "" [] -- The divider '.' is encountered, so add the
---                                   -- current, empty accumulator to the output.
---   tokenizerSub "ereht yeH" "" [""] -- Start processing the word "ereht" ("there")
---   tokenizerSub "reht yeH" "e" [""] 
---   tokenizerSub "eht yeH" "re" [""]
---   tokenizerSub "ht yeH" "ere" [""]
---   tokenizerSub "t yeH" "here" [""]
---   tokenizerSub " yeH" "there" [""] -- ' ' found, put word into result and continue
---   tokenizerSub "yeH" "" ["there", ""]
---   tokenizerSub "eH" "y" ["there", ""]
---   tokenizerSub "H" "ey" ["there", ""]
---   tokenizerSub "" "Hey" ["there", ""] -- String empty, put current into result:
---   tokenizerSub "" "" ["Hey", "there", ""] -- return result
-tokenizerSub :: [Char] -> [Char] -> [[Char]] -> [[Char]]
-tokenizerSub ""    curr acc = curr : acc
-tokenizerSub (c:s) curr acc = if isDivider c
-                              then tokenizerSub s "" (curr:acc)
-                              else tokenizerSub s (c:curr) acc
+withoutTrenn :: Char -> Bool
+withoutTrenn c = not (elem c ".?, ")
 
--- Takes a string and splits it at the characters ',', '.', '?' and ' '.
---   tokenizer "tokenizer :: [Char] -> " => ["tokenizer","::","[Char]","->",""]
--- Basically just calls tokenizerSub with reversed input.
-tokenizer :: [Char] -> [[Char]]
-tokenizer s = tokenizerSub (reverse s) "" []
+inList :: Eq a => a -> [a] -> Bool
+inList _ [] = False
+inList z (x:xs) | z == x = True
+                | otherwise = inList z xs
+
+--word gibt den gesamten (String mit Buchstaben vorne!), das erste Wort des Strings und den Index im ganzen String als Tuple zurück
+--a: 0 -> Noch kein Buchstabe, 1 -> Bereits ein Buchstabe in String betrachtet
+word :: Int -> Int -> String -> String -> (String, String, Int)                
+word a i str [] = (str,str,i)
+word a i str (x:xs) | inList x trenn && a == 0 = word 0 i xs xs
+                    | inList x trenn = (str, take i str, i)
+                    | otherwise = word 1 (i+1) str xs
+                     where trenn = ".?, "
+
+
 
 --
 
