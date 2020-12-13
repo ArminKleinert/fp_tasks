@@ -20,7 +20,7 @@ flatten_l list = foldl (++) [] list
 -- Zum Beispiel: Der Befehl (flatten_l (map (\x -> [x]) [0..100000])) benötigt bei mir mehrere Minuten. Die Implementation mit foldr ist in wenigen Sekunden fertig.
 
 -- Der Vorteil der Implementation mit foldr ist, dass sie sehr schnell läuft.
--- Der Nachteil ist, dass sie bei sehr großen Inputs einen StackOverflow verursachen kann (Dieses Limit wurde im meinen Tests aber noch nicht erreicht).
+-- Der Nachteil ist, dass sie bei sehr großen Inputs augrund zu tiefer Rekursion einen StackOverflow verursachen kann (Dieses Limit wurde im meinen Tests aber noch nicht erreicht).
 
 test :: IO ()
 test = putStrLn ("flatten_l" ++
@@ -34,3 +34,4 @@ test = putStrLn ("flatten_l" ++
                  (show (flatten_r [[1,2,3,4],[5],[0,9,8],[7],[],[6,5,4,3,2,1],[]])) ++
                  "\n(map (\\x -> [x]) [0..100000]) == [0..100000] "++
                  (show ((flatten_r (map (\x -> [x]) [0..100000])) == [0..100000])))
+

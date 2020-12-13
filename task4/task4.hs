@@ -5,14 +5,15 @@ Abgabe von Armin Kleinert und Anna Sophie Pipperr
 
 -- A4
 
--- TODO Docs
+-- Helper for toDecFrom.
 toDecFrom' :: Int -> Int -> Int -> Int
 toDecFrom' ac d base
           | d >= base = error "Invalid digit for given base."
           | d <  0    = error "Invalid digit for given base."
           | otherwise = base * ac + d
 
--- TODO Docs
+-- Turns a list of digits from a given base into a decimal number.
+--   toDecFrom [1,1,1,1] 2 => 15
 toDecFrom :: [Int] -> Int -> Int
 toDecFrom digs base | base <= 0 || base > 10 = error "Invalid base."
                     | otherwise = foldl (\ac n -> toDecFrom' ac n base) 0 digs

@@ -52,6 +52,7 @@ addMatrices m0 m1
 -------------------
 -- Multiplication
 
+-- FIXME
 -- Validates the size of 2 matrices for multiplication. 
 -- The Number of columns in matrix 1 must be equal to the number of rows in 
 -- matrix 2.
@@ -75,6 +76,7 @@ checkMatrixSizes1 (x:xs) (y:ys) ccm0 ccm1 rcm0
         _ccm1 = if ccm1 == (-1) then length y else ccm1
 
 
+-- FIXME
 mulMatrices :: Num a => [[a]] -> [[a]] -> [[a]]
 mulMatrices m0 m1
     | null m0 || null m1 = error "Matrices must not be empty!"
@@ -86,5 +88,9 @@ mulMatrices m0 m1
     mult [] (zs:zss) (y:ys) = mult (map (y *) zs) zss ys
     mult xs (zs:zss) (y:ys) = mult (zipWith (\u v -> u + v * y) xs zs) zss ys
 
+
+
 test :: IO ()
-test = putStrLn ""
+test = putStrLn ("addMatrices" ++
+                 "\n[[0,1],[2,3],[9,1]] [[1,9],[1,1], [9,19]] => " ++ (show (addMatrices [[0,1],[2,3],[9,1]] [[1,9],[1,1], [9,19]])) ++
+                 "\n[[0,1],[2,3]] [[1,9],[1,1]] => " ++ (show (addMatrices [[0,1],[2,3]] [[1,9],[1,1]])))
