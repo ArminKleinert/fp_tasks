@@ -20,7 +20,7 @@ diffList (x:xs) ys | elem x ys = diffList xs ys
 --  firstNatNotIn [0,1,2,3,4,5] => 6
 --  firstNatNotIn [0 .. 100] => 101
 firstNatNotIn :: [Integer] -> Integer
-firstNatNotIn xs = head (diffList [0 .. (maximum xs) + 1] xs)
+firstNatNotIn xs = head (diffList [0 .. (length xs) + 1] xs)
 
 
 test :: IO ()
