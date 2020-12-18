@@ -54,6 +54,23 @@ Exponentiell: O(2^n), O(n!), O(n^k), ...
 
 Pattern (n+1) aktivieren: ghci <file?> -XNPlusKPatterns
   sub1 (n+1) = n
+
+Lazy-evaluation (lazyness ; lazy ; eval ; lazyevaluation)
+Ist eine optimierte Auswertungsvariante von call-by-name und wird in Haskell und anderen funktionalen Sprachen verwendet.
+  Vorteil:
+    - Wenn eine Normalform existiert, wird diese erreicht.
+  Beispiel:
+    g x = 2*x
+    f x = x*x
+    f (g 5) = (g 5) * (g 5)
+            = 10 * 10 <= Durch lazy-evaluation wird der Schritt (10 * (g 5)) übersprungen.
+            = 100
+
+Statisches Typsystem und Vorteile?
+Der Datentyp von Funktionen wird statisch während der Übersetzungszeit des Programms abgeleitet.
+- Datentyp-Fehler werden früher erkannt.
+- Durch die Reduzierung der Typ-Überprüfung wird das Programm schneller
+- Typ-Inferenz ist möglich
 -}
 
 f :: (Num t) => [[t]] -> t
@@ -293,11 +310,11 @@ twoTimes  f  x  =  f ( f  x )
 -- Map
 map2 :: (a -> b) -> [a] -> [b]
 map2 f [] = []
-map2 f (x:xs) = (f  x) : (map2 f xs)
+map2 f (x:xs) = (f x) : (map2 f xs)
 
 -- Map with list generator
 map3 :: (a -> b) -> [a] -> [b]
-map3  f  xs = [ f x |   x<-xs ]
+map3 f xs = [f x | x<-xs]
 
 -- Map until condition is met
 mapUntil :: (t -> a) -> (t -> Bool) -> [t] -> [a]
@@ -354,6 +371,14 @@ zip2 _  _          = []
 zipWith2 :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWith2 f (x:xs) (y:ys) = (f x y):(zipWith2 f xs ys)
 zipWith2 f _ _ = []
+
+-- Un-currifiziertes zipWith
+zipWith4 :: ((a -> b -> c), [a], [b]) -> [c]
+zipWith4 (f, (x:xs), (y:ys)) = (f x y):(zipWith4 (f, xs, ys))
+zipWith4 (_, _, _) = []
+
+-- zipWith mit Listengenerator
+zipWith6 f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((length xs)-1)]] 
 
 --
 -- contains ; include ; includes ; issublist ; is sublist ; subseq ; subsequence ; substring ; infix ; infixof ; isinfixof
