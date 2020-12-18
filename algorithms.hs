@@ -378,7 +378,12 @@ zipWith4 (f, (x:xs), (y:ys)) = (f x y):(zipWith4 (f, xs, ys))
 zipWith4 (_, _, _) = []
 
 -- zipWith mit Listengenerator
-zipWith6 f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((length xs)-1)]] 
+zipWith6 :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith6 f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((min (length xs) (length ys))-1)]]
+
+-- zipWith mit Listengenerator (V2)
+zipWith7 :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith7 f xs ys = [(f x y) | (x,y) <- zip xs ys] 
 
 --
 -- contains ; include ; includes ; issublist ; is sublist ; subseq ; subsequence ; substring ; infix ; infixof ; isinfixof
