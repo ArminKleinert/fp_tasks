@@ -1,15 +1,17 @@
 -- A1
 -- Funktion, die kontrolliert, ob ein Text einen anderen Text enthält
 
-contains' :: String -> String -> String -> String -> Bool
-contains' (c0:s0) (c1:s1) (c2:orig0) orig1
-  | c0 == c1 = if (null s1) then True else contains' s0 s1 orig0 orig1
-  | null s0 = False
-  | otherwise = contains' orig0 orig1 orig0 orig1
+substring :: String -> String -> Bool
+substring (_:_) [] = False
+substring xs ys
+    | prefix xs ys = True
+    | substring xs (tail ys) = True
+    | otherwise = False
 
--- Kontrolliert, ob s0 den String s1 enthält.
-contains :: String -> String -> Bool
-contains s0 s1 = contains' s0 s1 s0 s1
+prefix :: String -> String -> Bool
+prefix [] _ = True
+prefix (_:_) [] = False
+prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
 
 -- A2
 -- Definieren Sie eine Funktion catalanNum, die bei Eingabe einer natürlichen Zahl n die entsprechende Catalan-Zahl berechnet. Verwenden Sie folgende Formel für die Berechnung:
