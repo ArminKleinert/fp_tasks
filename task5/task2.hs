@@ -15,4 +15,3 @@ russMult :: Integer -> Integer -> Integer
 russMult n 0 = 0
 russMult n m | (mod m 2) == 0 = russMult (n+n) (div m 2)
              | otherwise      = russMult (n+n) (div m 2) + n
-

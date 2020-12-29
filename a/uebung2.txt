@@ -1,0 +1,2 @@
+
+Betrachten Sie folgende Funktionsdefinition: com :: (a -> a) -> (a -> a) -> a -> (a, a)            com f g x = ((f . g) x, (g . f) x) Reduzieren Sie folgenden Ausdruck schrittweise zur Normalform: com (* 10) (mod 10) 7 2. Testaufgabe für das Tutorium

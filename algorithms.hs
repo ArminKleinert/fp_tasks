@@ -67,10 +67,19 @@ Ist eine optimierte Auswertungsvariante von call-by-name und wird in Haskell und
             = 100
 
 Statisches Typsystem und Vorteile?
-Der Datentyp von Funktionen wird statisch während der Übersetzungszeit des Programms abgeleitet.
+Der Datentyp von Funktionen wird statisch während der Übersetzungszeit des Programms abgeleitet. Der Datentyp kann sich während der Laufzeit nicht ändern.
 - Datentyp-Fehler werden früher erkannt.
 - Durch die Reduzierung der Typ-Überprüfung wird das Programm schneller
 - Typ-Inferenz ist möglich
+
+Striktheit ; Pureness ; Purheit ; Reinheit ; Functional purity
+Eine Funktion kann lazy ausgeführt werden und terminiert nicht. Sie gibt für den selben Input den selben Output und nimmt immer die selbe Anzahl von Argumenten.
+  Definition: f ist strikt wenn (f ⊥ = ⊥)
+  "Eine Funktion f ist nach einem ihrer Argumente a strikt, wenn für die Auswertung der Funktion die Auswertung von a notwendig ist."
+
+foldl vs foldr
+foldl (:) [] [1,2,3,4,5] => Error (Versucht ((((([]:1):2):3):4):5) auszuführen)
+foldr (:) [] [1,2,3,4,5] => [1,2,3,4,5] (Wird zu (1:(2:(3:(4:(5:[]))))))
 -}
 
 f :: (Num t) => [[t]] -> t
@@ -524,6 +533,7 @@ pow1 n m = natFold (*n) 1 m
     natFold h c n = h (natFold h c (n-1))
 
 -- (++)
+-- concat ; append ; appendall ; prepend ; concatenate
 {-
 -- O(n) wobei n die Lnge der ersten Liste ist.
 (++) :: [a] -> [a] -> [a]
@@ -551,11 +561,12 @@ bubbleSort xs  | isSorted (<=) xs = xs
                           | otherwise  = y: moveBubble (x:rest)
 
 --
+-- ( composition ; functioncomposition .-operator ; dotoperator ; dot-operator )
 -- Funktions-Komposition:
 --
 {-
 (.) :: (b -> c) -> (a -> b) -> a -> c
-(.)  g   f   x  =  (g (f  x)) 
+(.) g f x = (g (f x))
 -}
 
 --
@@ -588,7 +599,7 @@ delete3 x ys = filter (/=x) ys
 -- O(n^2)
 unique :: Eq a => [a] -> [a]
 unique []     = []
-unique (x:xs) = x : remove (==x) xs
+unique (x:xs) = x : unique (filter (/=x) xs)
 
 -- Make list into set (sort and make unique)
 -- O(n^2)
@@ -694,6 +705,19 @@ selectSort c xs = selectionSort' c [] xs
 firstNatNotIn :: [Integer] -> Integer
 firstNatNotIn xs = head ([0..] \\ xs)
 
+--
+-- First element to satisfy predicate
+--
+
+first_by_pred :: (a -> Bool) -> [a] -> Maybe a
+first_by_pred p xs =
+    let ys = filter p xs
+    in if (null ys) then Just (head ys) else Nothing
+
+first_by_pred2 :: (a -> Bool) -> [a] -> Maybe a
+first_by_pred2 _ [] = Nothing
+first_by_pred2 p (x:xs) | p x = Just x
+                        | otherwise = first_by_pred2 xs
 
 --
 -- Stack
@@ -721,14 +745,14 @@ istLeer _  = False
 -- data und type
 -- 
 
-data Bit = One | Zero deriving Eq
+data Bit = One | Zero0 deriving Eq
 type Bits = [Bit]
 
 pack' :: Bits -> Integer -> [Integer] -> [Integer]
 pack' []         _ _   = [0]
 pack' [b]        n acc = acc ++ [n + 1]
 pack' (b0:b1:bs) n acc | b0 == b1 = pack' (b1:bs) (n+1) acc
-                      | otherwise = pack' (b1:bs) 0 (acc ++ [n + 1])
+                       | otherwise = pack' (b1:bs) 0 (acc ++ [n + 1])
 
 pack1 :: Bits -> [Integer]
 pack1 bs = pack' bs 0 []
@@ -742,20 +766,194 @@ hanoi  ::  Int -> Turm -> [Move]
 hanoi  0          _  =  []
 hanoi  n (a, b, c) = hanoi (n-1) (a, c, b) ++ [(n,a,c)] ++ hanoi (n-1) (b, a, c)
 
+-- More data
 
+data Nat = Zero | S Nat deriving Show
+data ZInt = Z Nat Nat deriving Show
+data B = T | F deriving Show
 
+add :: Nat-> Nat-> Nat
+add a Zero = a
+add a (S b) = add (S a) b
 
+mult :: Nat -> Nat -> Nat
+mult _ Zero = Zero
+mult a (S b) = add a (mult a b)
 
+foldn :: (Nat -> Nat) -> Nat -> Nat -> Nat
+foldn h c Zero  = c
+foldn h c (S n) = h (foldn  h  c  n)
 
+-- Check numbers for equality
+equal :: Nat -> Nat -> B
+equal Zero Zero = T
+equal Zero _    = F
+equal _    Zero = F
+equal (S n) (S m) = equal n m
 
+-- Check B for equality
+bitEql :: B -> B -> B
+bitEql T T = T
+bitEql F F = T
+bitEql _ _ = F
 
+natXor :: Nat -> Nat -> B
+natXor Zero Zero = F
+natXor Zero _    = T
+natXor _    Zero = T
+natXor _    _    = F
 
+xor ::  B -> B -> B
+xor T F = T
+xor F T = T
+xor _ _ = F
 
+smaller :: Nat -> Nat -> B
+smaller Zero Zero = F
+smaller _    Zero = F
+smaller Zero _    = T
+smaller (S n) (S m) = smaller n m
 
+power :: Nat -> Nat -> Nat
+power Zero Zero = error "undefined"
+power _ Zero  = S Zero
+power n (S m) = mult n (power n m)
 
+-- Power using foldn
+powerf :: Nat -> Nat -> Nat
+powerf Zero Zero = error "undefined"
+powerf m n = foldn (mult m) (S Zero) n
 
+-- Stuff with Maybe
 
+data Maybe1 a = Nothing1 | Just1 a 
+  deriving (Eq, Ord, Show)
 
+-- Tmajority(n)
+-- = Tlocal_maj(n) + Tfreq(n) + Thalf(n)
+-- = c1 * n + c2 * n + c3
+-- = (c1 + c2) * n + c3
+-- = O(n)
+majority :: (Eq a) => [a] -> Maybe1 a
+majority []   = Nothing1
+majority [x]  = Just1 x
+majority xs | (freq l_maj xs) > half = (Just1 l_maj)
+            | otherwise = Nothing1
+  where
+    (c, l_maj) = local_maj (1, head xs) (tail xs)
+    local_maj (n, m) [] = (n, m)
+    local_maj (n, m) (e:es)
+      | e==m = local_maj (n+1,m) es
+      | (e/=m && n==0) = local_maj (1, e) es
+      | otherwise = local_maj (n-1,m) es
+    half = div (length xs) 2
+
+freq :: Eq a => a -> [a] -> Int
+freq e xs = sum [ 1 | x<-xs, x == e ]
+
+--
+-- Tree stuff
+--
+data SimpleBT  =  L | N SimpleBT SimpleBT
+
+nodes :: SimpleBT -> Integer
+nodes L = 1
+nodes (N leftT rightT) = 1 + nodes leftT + nodes rightT
+
+pfad :: SimpleBT -> Integer
+pfad L = 0
+pfad (N lt rt) = (pfad rt) + (pfad lt) + (nodes (N lt rt)) - 1             
+
+height :: SimpleBT -> Integer
+height L = 0
+height (N lt rt) = (max (height lt) (height rt)) + 1
+
+balanced :: SimpleBT -> Bool
+balanced  L = True
+balanced  (N lt rt) = (balanced lt) && (balanced rt) && height lt == height rt
+
+balanced :: SimpleBT -> Bool
+balance1 tree = (size tree) == (2^((height tree)+1)-1)
+  where
+    size :: SimpleBT -> Integer
+    size L = 1
+    size (N lt rt) = size lt + size rt + 1
+
+{-
+Zur Erinnerung:
+(.) :: (b -> c) -> (a -> b) -> a -> c
+(.) g f x = (g (f x))
+
+Reduzierung zur Normalform:
+
+Ausdruck 1:
+
+com :: (a -> a) -> (a -> a) -> a -> (a, a) 
+com f g x = ((f . g) x, (g . f) x)
+
+com (*10) (mod 10) 7
+= ((((*10).(mod 10)) 7), (((mod 10).(*10)) 7))
+= (((*) (mod 10 7) 10), (((mod 10).(10 * 7)) 7))
+= (((*) 3 10), (mod 10 70))
+= (30, 10)
+
+Ausdruck 2:
+
+  foldl (\ys x -> x:ys) [] (take 4 [1..])
+= foldl (\ys x -> x:ys) [] [1,2,3,4]
+= foldl (\ys x -> x:ys) [1] [2,3,4]
+= foldl (\ys x -> x:ys) [2,1] [3,4]
+= foldl (\ys x -> x:ys) [3,2,1] [4]
+= foldl (\ys x -> x:ys) [4,3,2,1] []
+= [4,3,2,1]
+
+Ausdruck 3:
+
+foldl1 :: (a -> a -> a) -> [a] -> a
+foldl1 f (x:xs) = foldl f x xs
+
+  foldl1 ((+).(*2)) [1,0,1,0]
+= foldl ((+).(*2)) 1  [0,1,0]
+= foldl ((+).(*2)) (((+).(*2)) 1 0) [1,0]
+= foldl ((+).(*2))  2  [1,0]
+= foldl ((+).(*2)) (((+).(*2)) 2 1)  [0]
+= foldl ((+).(*2)) 5 [0]
+= foldl ((+).(*2)) (((+).(*2)) 5 0) [] 
+= foldl ((+).(*2)) 10 []
+= 10
+
+Ausdruck 4
+
+  [x | xs<-["zwei", "drei", "vier"], x<-xs, (x/='e'), (x/=‘i')]
+= ['z', 'w', 'e', 'i', 'd', 'r', 'e', 'i', 'v', 'i', 'e', 'r']
+= ['z', 'w', 'd', 'r', 'v', 'r']
+= "zwdrvr"
+
+Ausdruck 5
+  ((foldr (+) 1) . (map (div 4))) [1..5]
+= foldr (+) 1 (map (div 4) [1,2,3,4,5])
+= foldr (+) 1 ((div 4 1):(map (div 4) [2,3,4,5]))
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):(map (div 4) [4,5]))
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):(div 4 4):(map (div 4) [5]))
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):(div 4 4):(div 4 5):(map (div 4) []))
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):(div 4 4):(div 4 5):[])
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):(div 4 4):[0])
+= foldr (+) 1 ((div 4 1):(div 4 2):(div 4 3):[1,0])
+= foldr (+) 1 ((div 4 1):(div 4 2):[1,1,0])
+= foldr (+) 1 ((div 4 1):[2,1,1,0])
+= foldr (+) 1 [4,2,1,1,0]
+= foldr (+) ((+) 1 4) [2,1,1,0]
+= foldr (+) ((+) ((+) 1 4) 2) [1,1,0]
+= foldr (+) ((+) ((+) ((+) 1 4) 2) 1) [1,0]
+= foldr (+) ((+) ((+) ((+) ((+) 1 4) 2) 1) 1) [0]
+= foldr (+) ((+) ((+) ((+) ((+) ((+) 1 4) 2) 1) 1) 0) []
+= foldr (+) ((+) ((+) ((+) ((+) 5 2) 1) 1) 0) []
+= foldr (+) ((+) ((+) ((+) 7 1) 1) 0) []
+= foldr (+) ((+) ((+) 8 1) 0) []
+= foldr (+) ((+) 9 0) []
+= foldr (+) 9 []
+= 0
+-}
 
 
 

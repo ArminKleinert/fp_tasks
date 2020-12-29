@@ -32,8 +32,8 @@ splitWords (c:cs) curr | c == ' ' = curr : splitWords cs "" -- O(1) + ?
 -- O(3n)
 -- O(n)
 getLastThree :: [a] -> [a]
-getLastThree lst | len > 3 = reverse (take 3 (reverse lst)) -- O(n + 3 + n)
-                 | otherwise      = lst -- O(1)
+getLastThree lst | len > 3   = reverse (take 3 (reverse lst)) -- O(n + 3 + n)
+                 | otherwise = lst -- O(1)
   where len = length lst -- O(n)
 
 -- Kopiert von https://hackage.haskell.org/package/base-4.14.1.0/docs/src/Data.List.html
@@ -50,7 +50,8 @@ select :: (a -> Bool) -> a -> ([a], [a]) -> ([a], [a])
 select p x ~(ts,fs) | p x       = (x:ts,fs) -- O(O(p) + 1 + 1 + 1)
                     | otherwise = (ts, x:fs) -- O(1 + 1 + 1)
 
--- TODO: DOCS
+-- Takes a list of strings (words) and partitions them by their last 3 letters, 
+-- eventually making a list of lists of strings.
 -- O(n * (1+1 + (n * n + 3)))
 -- O(n * (2 + (n^2 + 3)))
 -- O(n * (n ^ 2 + 5)
@@ -59,11 +60,12 @@ select p x ~(ts,fs) | p x       = (x:ts,fs) -- O(O(p) + 1 + 1 + 1)
 partitionWordsBySuffix :: Eq a => [[a]] -> [[[a]]]
 partitionWordsBySuffix [] = [] -- O(1)
 partitionWordsBySuffix (x:xs) =
-  let xSuffix = getLastThree x
+  let xSuffix = getLastThree x -- Take last 3 letters of a word (O(n)
       p = partition (\y -> (getLastThree y) == xSuffix) xs -- O(n * (n + 3))
   in (x:(fst p)) : (partitionWordsBySuffix (snd p)) -- O(1+1 + (n * (n + 3))
 
--- TODO: DOCS
+-- Takes a string and partitions the words by their last 3 letters.
+-- Partitioning starts from the left.
 -- O((n * (n ^ 2)) + n)
 -- O(n * (n ^ 2))
 -- O(n(n^2))
@@ -73,4 +75,8 @@ classifyRymeWords s = partitionWordsBySuffix words -- O(n(n^2))
 
 
 
--- TODO: Tests
+
+test :: IO ()
+test = putStrLn ("\"Nikolaus baut ein Haus aus Holz und klaut dabei ein Bauhaus.\": " ++ 
+  (show (classifyRymeWords "Nikolaus baut ein Haus aus Holz und klaut dabei ein Bauhaus.")))
+
