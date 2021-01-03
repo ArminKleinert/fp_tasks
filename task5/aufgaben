@@ -55,8 +55,8 @@ Definieren Sie einen algebraischen Datentyp Color indem Sie Farben in verschiede
 Wenn RGB = (0,0,0), dann ist CMYK = (0,0,0,1), sonst werden die Werte nach folgenden Formeln berechnet:
   w=max(R/255,G/255,B/255)
   C=(w−(R/255))/w
-  M=(w−(G/255))/
-  wY=(w−(B/255))/w
+  M=(w−(G/255))/w
+  Y=(w−(B/255))/w
   K=1−w
 
 7. Aufgabe (5 Punkte)
