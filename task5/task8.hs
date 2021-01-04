@@ -6,12 +6,11 @@ Abgabe von Armin Kleinert und Anna Sophie Pipperr
 -- A8
 
 -- Find first element which fullfills a given predicatein a list.
--- O(n*p) -- p is the complexity of the given predicate
--- O(p)
+-- O(n)
 first_by_pred :: (a -> Bool) -> [a] -> Maybe a
 first_by_pred _ []     = Nothing
-first_by_pred p (x:xs) | p x = Just x -- O(p)
-                       | otherwise = first_by_pred p xs -- O(1)
+first_by_pred p (x:xs) | p x = Just x -- O(1)
+                       | otherwise = first_by_pred p xs -- O(1) -> O(n)
 
 -- Count occurences of an element in a list.
 -- O(n)
