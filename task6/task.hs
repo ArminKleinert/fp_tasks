@@ -80,23 +80,39 @@ zsimplify (Z (S a) (S b)) = zsimplify (Z a b)
 
 {- Helpers -}
 
+-- if with B predicate and output B
 ifB :: B -> B -> B -> B
 ifB T b0 _ = b0
 ifB F _ b1 = b1
 
 -- Helper. Funktion nutzt Standard-Haskell, da sie nur zum schnelleren
 -- Schreiben genutzt wird.
+-- Uses some standard-haskell. Hopefully, this is allowed as this
+-- function is only ever used as a helper in the tests.
 iToZ :: Int -> ZInt
-iToZ i | i < 0 = Z Zero (int2Nat (abs i))
+iToZ i | i < 0     = Z Zero (int2Nat (abs i))
        | otherwise = Z (int2Nat i) Zero
 
+-- Helper for conversion of ZInt to Int
+-- -(b-a) if a < b
+-- a-b    if a >= b
+-- Uses Haskell's if function. Hopefully, this is allowed as this
+-- function is only used as a helper for tests...
+zToI :: ZInt -> Int
+zToI (Z n0 n1) | (nat2Int n0) < (nat2Int n1) = (- (nat2Int (subN n1 n0)))
+               | otherwise       = nat2Int (subN n0 n1)
+
 -- Check if a number is <0
+-- An integer is made of 2 natural numbers a and b.
+-- It is negative if a<b
 isNegZ :: ZInt -> B
 isNegZ (Z n0 n1) = lt n0 n1
 
+-- 0 as ZInt
 zZero :: ZInt
 zZero = Z Zero Zero
 
+-- 1 as ZInt
 zOne :: ZInt
 zOne = Z (S Zero) Zero
 
@@ -106,37 +122,69 @@ ifZ F _  z1 = z1
 
 {- Aufgabe 1 -}
 
+-- Equality for type B
+-- A | B | Result
+-- F | F | T
+-- F | T | F
+-- T | F | F
+-- T | T | T
 eqB :: B -> B -> B
 eqB F F = T
 eqB T T = T
 eqB _ _ = F
 
+-- XOR
+-- A | B | Result
+-- F | F | F
+-- F | T | T
+-- T | F | T
+-- T | T | F
 xorB :: B -> B -> B
 xorB F T = T
 xorB T F = T
 xorB _ _ = F
 
+-- Implication
+-- A | B | Result
+-- F | F | T
+-- F | T | T
+-- T | F | F
+-- T | T | T
 (=>>) :: B -> B -> B
-(=>>) F _ = T
-(=>>) T b = b
+(=>>) F _ = T -- If a is F, b doesn't matter
+(=>>) T b = b -- If a is T, b must be T also. Otherwise the result is F
 
+-- Equality of natural numbers
+-- Rules:
+-- - Zero is equal to Zero
+-- - Zero is not equal to any non-zero
+-- - If non of the numbers are Zero, reduce both by 1 and retry.
 eqN :: Nat -> Nat -> B
-eqN Zero Zero = T
-eqN Zero _    = F
-eqN _    Zero = F
-eqN (S n) (S m) = eqN n m
+eqN Zero Zero = T -- 0==0
+eqN Zero _    = F -- 0 /= m
+eqN _    Zero = F -- n /= 0
+eqN (S n) (S m) = eqN n m -- Recursive call with n-1 and m-1
 
+-- Check whether or not a number is even:
+-- - Zero is even
+-- - One is not even
+-- - If the number is >1, recurse with the n-2
 evenN :: Nat -> B
-evenN Zero     = T
-evenN (S Zero) = F
-evenN (S (S n)) = evenN n
+evenN Zero     = T -- 0 is even
+evenN (S Zero) = F -- 1 is not even
+evenN (S (S n)) = evenN n -- Recursive call with n-2
 
-
-isDivisor :: Nat -> Nat -> B
-isDivisor n m = ifB (eqN n m) case0 case1
-  where case0 = T
-        case1 = (ifB (lt n m) F case2)
-        case2 = (isDivisor (subN n m) m)
+-- Check whether or not a number 'n' is divisible by a number 'm'
+-- isDivisorN 0 0 = F -- Usually undefined, default to F
+-- isDivisorN _ 0 = F
+-- n==m => T
+-- n<m  => F
+-- n>m  => Recursive call with (n-m) and m
+isDivisorN :: Nat -> Nat -> B
+isDivisorN _ Zero = F -- No number can be divided by 0 and 0/0 is undefined, so default to F
+isDivisorN n m = ifB (eqN n m) T case1 -- n==m => T
+  where case1 = (ifB (lt n m) F case2) -- n<m => F
+        case2 = (isDivisorN (subN n m) m) -- n>m => Recursive call as above
 
 -- Helper for halbN
 halbN' :: Nat -> Nat -> Nat
@@ -152,62 +200,97 @@ halbN n = iff nIsOneOrLower n (halbN' newN Zero)
   where nIsOneOrLower = (lt n (S (S Zero)))
         newN = iff (evenN n) n (nsucc n) -- Rounding up. To round down, use `iff (evenN n) n (predN n)`
 
--- Helper for ggtN
-ggtN' :: Nat -> Nat -> Nat -> Nat
-ggtN' n0 n1 Zero = (S Zero)
-ggtN' n0 n1 acc = iff (andB (isDivisor n0 acc) (isDivisor n1 acc))
-                      acc
-                      (ggtN' n0 n1 (predN acc))
-
+-- Great common divisor
+-- ggtN n Zero = n (Same for Zero and n; Implies ggtN(Zero,Zero) = Zero)
+-- ggtN n n = n
+-- ggtN n m = ggtN n-m m if n>m
+-- ggtN n m = ggtN n m-n if n<m
+-- https://en.wikipedia.org/wiki/Euclidean_algorithm
+-- https://mfleck.cs.illinois.edu/building-blocks/version-1.0/number-theory.pdf
 ggtN :: Nat -> Nat -> Nat
-ggtN n m = ggtN' n m (minN n m)
+ggtN n Zero = n
+ggtN Zero n = n
+ggtN n m = iff (eqN n m)
+            n
+            (iff (gt n m)
+              (ggtN (subN n m) m)
+              (ggtN n (subN m n)))
 
 {- Aufgabe 2 -}
 
+-- maxSurfaces for type Nat
+-- maxSurfaces 0 = 1
+-- maxSurfaces n-1 = (maxSurfaces n) + n + 1
 maxSurfaces :: Nat -> Nat
 maxSurfaces Zero  = (S Zero)
-maxSurfaces (S n) = nsucc (add (maxSurfaces n) n)
+maxSurfaces (S n) = nsucc (add (maxSurfaces n) n) -- ms n-1 = 1 + maxSurfaces n + n
 
 {- Aufgabe 3 -}
 
+-- Subtraction of integers
+-- https://en.wikipedia.org/wiki/Integer and MafI2 module
 subZ :: ZInt -> ZInt -> ZInt
 subZ (Z n0 n1) (Z n2 n3) = Z (add n0 n3) (add n1 n2) 
 
+-- https://en.wikipedia.org/wiki/Integer and MafI2 module
 eqZ :: ZInt -> ZInt -> B
 eqZ (Z n0 n1) (Z n2 n3) = eqN (add n0 n3) (add n1 n2)
 
+-- Check non-equality
+-- https://en.wikipedia.org/wiki/Integer and MafI2 module
 neqZ :: ZInt -> ZInt -> B
 neqZ z0 z1 = notB (eqZ z0 z1)
 
 -- Helper for (>>>)
+-- Operands are expected to be simplified
 gtZ' :: ZInt -> ZInt -> B
-gtZ' (Z n0 Zero) (Z n2 Zero) = gt n0 n2
-gtZ' (Z Zero n1) (Z Zero n3) = lt n1 n3
+gtZ' (Z n0 Zero) (Z n2 Zero) = gt n0 n2 -- Both are positive
+gtZ' (Z Zero n1) (Z Zero n3) = lt n1 n3 -- Both are negative
+gtZ' (Z n0 Zero) (Z Zero n3) = T -- 1st is positiv, 2nd negative
+gtZ' _           _           = F -- 1st is negative, 2nd positiv
 
+-- Check z0>z1
+-- Simplify numbers and forward to gtZ'
 (>>>) :: ZInt -> ZInt -> B
 (>>>) z0 z1 = gtZ' (zsimplify z0) (zsimplify z1)
 
+-- Check z0<z1
+ltZ :: ZInt -> ZInt -> B
+ltZ z0 z1 = notB (z0 >>> z1)
+
+-- Negate z0
 negZ :: ZInt -> ZInt
 negZ (Z n0 n1) = Z n1 n0
 
+-- Multiplication for ZInt
+-- https://en.wikipedia.org/wiki/Integer and MafI2 module
 multZ :: ZInt -> ZInt -> ZInt
 multZ (Z n0 n1) (Z n2 n3) = Z (add (mult n0 n2) (mult n1 n3))
                               (add (mult n0 n3) (mult n1 n2))
 
+-- Helper for absZ
 absZ' :: ZInt -> ZInt
 absZ' (Z Zero n0) = Z n0 Zero
 absZ' z0          = z0
 
+-- get absolute value of an integer
+-- Simplify and forward to absZ'
+-- absZ (Z Zero (S Zero)) => Z (S Zero) Zero) (abs (-1))
+-- absZ (Z (S Zero) Zero) => Z (S Zero) Zero) (abs 1)
+-- absZ (Z Zero Zero)     => Z Zero Zero      (abs 0)
 absZ :: ZInt -> ZInt
 absZ z0 = absZ' (zsimplify z0)
 
 -- Helper for powZ
 powZ' :: ZInt -> ZInt -> ZInt
-powZ' z0 z1 = ifZ (eqZ z1 zZero) zOne (multZ z0 (powZ' z0 (subZ z1 zOne)))
+powZ' z0 z1 = ifZ (eqZ z1 zZero)
+                zOne -- 1 if z1==0
+                (multZ z0 (powZ' z0 (subZ z1 zOne))) -- n*(n**(m-1)) with recursion
 
 -- Power function for integers.
 -- Gives fixed value (Z (S Zero) Zero) (1) if second argument is ==0
--- Error if second argument is <0
+-- Error if second argument is <0 because the result would be fractional...
+-- powZ (iToZ
 powZ :: ZInt -> ZInt -> ZInt
 powZ z0 z1 = ifZ (eqZ z1 zZero)
                zOne
@@ -215,12 +298,242 @@ powZ z0 z1 = ifZ (eqZ z1 zZero)
                  (error "second argument must not be negative!")
                  (powZ' z0 z1))
 
--- TODO!!!
-isDivisorZ :: ZInt -> ZInt -> B
-isDivisorZ z0 z1 = T
+-- Check whether or not an integer is divisble by another integer.
+-- It doesn't matter which numbers are positive and which are negative,
+-- so after getting the absolute value, the isDivisorN function can be used
+-- as for natural numbers.
+--   isDivisor2 6 3       => T (mod 6 3 => 0)
+--   isDivisor2 (-6) 3    => T (mod (-6) 3 => 0)
+--   isDivisor2 6 (-3)    => T (mod 6 (-3) => 0)
+--   isDivisor2 (-6) (-3) => T (mod (-6) (-3) => 0)
+isDivisor2 :: ZInt -> ZInt -> B
+isDivisor2 n m = isDivisorN (zToNat (zsimplify n)) (zToNat (zsimplify m))
+  where zToNat (Z n0 Zero) = n0
+        zToNat z0          = zToNat (absZ z0)
 
 
 {- Tests     -}
+
+
+-- Task 1
+
+testEqlB :: [Char]
+testEqlB = "eqB F F                              = " ++ (show (eqB F F)) ++
+           "\neqB F T                              = " ++ (show (eqB F T)) ++
+           "\neqB T F                              = " ++ (show (eqB T F)) ++
+           "\neqB T T                              = " ++ (show (eqB T T))
+
+testXorB :: [Char]
+testXorB = "xorB F F                             = " ++ (show (xorB F F)) ++
+           "\nxorB F T                             = " ++ (show (xorB F T)) ++
+           "\nxorB T F                             = " ++ (show (xorB T F)) ++
+           "\nxorB T T                             = " ++ (show (xorB T T))
+
+testImpB :: [Char]
+testImpB = "F =>> F                              = " ++ (show ((=>>) F F)) ++
+           "\nF =>> T                              = " ++ (show ((=>>) F T)) ++
+           "\nT =>> F                              = " ++ (show ((=>>) T F)) ++
+           "\nT =>> T                              = " ++ (show ((=>>) T T))
+
+testEqlN :: [Char]
+testEqlN = "eqN Zero Zero                        = " ++
+           (show (eqN Zero Zero)) ++
+           "\neqN (S Zero) Zero                    = " ++
+           (show (eqN (S Zero) Zero)) ++
+           "\neqN Zero (S Zero)                    = " ++
+           (show (eqN Zero (S Zero))) ++
+           "\neqN (int2Nat 55) (int2Nat 55)        = " ++
+           (show (eqN (int2Nat 55) (int2Nat 55))) ++
+           "\neqN (int2Nat 99) (int2Nat 99)        = " ++
+           (show (eqN (int2Nat 99) (int2Nat 99))) ++
+           "\neqN (int2Nat 99) (int2Nat 98)        = " ++
+           (show (eqN (int2Nat 99) (int2Nat 98)))
+
+testEvnN :: [Char]
+testEvnN = "evenN Zero                           = " ++
+            (show (evenN Zero)) ++
+            "\nevenN (S Zero)                       = " ++
+            (show (evenN (S Zero))) ++
+            "\nevenN (int2Nat 55)                   = " ++
+            (show (evenN (int2Nat 55))) ++
+            "\nevenN (int2Nat 99)                   = " ++
+            (show (evenN (int2Nat 99))) ++
+            "\nevenN (int2Nat 98)                   = " ++
+            (show (evenN (int2Nat 98)))
+
+testIsDN :: [Char]
+testIsDN = "isDivisorN Zero Zero                 = " ++
+           (show (isDivisorN Zero Zero)) ++
+           "\nisDivisorN (S Zero) Zero             = " ++
+           (show (isDivisorN (S Zero) Zero)) ++
+           "\nisDivisorN Zero (S Zero)             = " ++
+           (show (isDivisorN Zero (S Zero))) ++
+           "\nisDivisorN (int2Nat 55) (int2Nat 5)  = " ++
+           (show (isDivisorN (int2Nat 55) (int2Nat 5))) ++
+           "\nisDivisorN (int2Nat 99) (int2Nat 99) = " ++
+           (show (isDivisorN (int2Nat 99) (int2Nat 99))) ++
+           "\nisDivisorN (int2Nat 99) (int2Nat 5)  = " ++
+           (show (isDivisorN (int2Nat 99) (int2Nat 5)))
+
+testHlbN :: [Char]
+testHlbN = "halbN Zero                           = " ++
+            (show (nat2Int (halbN Zero))) ++
+            "\nhalbN (S Zero)                       = " ++
+            (show (nat2Int (halbN (S Zero)))) ++
+            "\nhalbN (int2Nat 55)                   = " ++
+            (show (nat2Int (halbN (int2Nat 55)))) ++
+            "\nhalbN (int2Nat 99)                   = " ++
+            (show (nat2Int (halbN (int2Nat 99)))) ++
+            "\nhalbN (int2Nat 98)                   = " ++
+            (show (nat2Int (halbN (int2Nat 98))))
+
+testGgtN :: [Char]
+testGgtN = "ggtN Zero Zero                        = " ++
+           (show (ggtN Zero Zero)) ++
+           "\nggtN (S Zero) Zero                    = " ++
+           (show (ggtN (S Zero) Zero)) ++
+           "\nggtN Zero (S Zero)                    = " ++
+           (show (ggtN Zero (S Zero))) ++
+           "\nggtN (int2Nat 55) (int2Nat 5)         = " ++
+           (show (nat2Int (ggtN (int2Nat 55) (int2Nat 5)))) ++
+           "\nggtN (int2Nat 99) (int2Nat 99)        = " ++
+           (show (nat2Int (ggtN (int2Nat 99) (int2Nat 99)))) ++
+           "\nggtN (int2Nat 99) (int2Nat 5)         = " ++
+           (show (nat2Int (ggtN (int2Nat 99) (int2Nat 5))))
+
+-- Task 2
+
+testMxSN :: [Char]
+testMxSN = "maxSurfaces Zero                      = " ++
+           (show (maxSurfaces Zero)) ++
+           "\nmaxSurfaces (S Zero)                  = " ++
+           (show (maxSurfaces (S Zero))) ++
+           "\nmaxSurfaces (int2Nat 55)              = " ++
+           (show (nat2Int (maxSurfaces (int2Nat 55)))) ++
+           "\nmaxSurfaces (int2Nat 99)              = " ++
+           (show (nat2Int (maxSurfaces (int2Nat 99)))) ++
+           "\nmaxSurfaces (int2Nat 98)              = " ++
+           (show (nat2Int (maxSurfaces (int2Nat 98))))
+
+-- Task 3
+
+testIToZ :: [Char]
+testIToZ = "iToZ 5                                = " ++
+           (show (iToZ 5)) ++
+           "\niToZ (-5)                             = " ++
+           (show (iToZ (-5))) ++
+           "\niToZ 0                                = " ++
+           (show (iToZ 0))
+
+testZToI :: [Char]
+testZToI = "zToI (Z (S(S(S(S(S Zero))))) Zero)    = " ++
+           (show (zToI (Z (S(S(S(S(S Zero))))) Zero))) ++
+           "\nzToI (Z Zero (S(S(S(S(S Zero))))))    = " ++
+           (show (zToI (Z Zero (S(S(S(S(S Zero)))))))) ++
+           "\nzToI (Z Zero Zero)                    = " ++
+           (show (zToI (Z Zero Zero)))
+
+testNeqZ :: [Char]
+testNeqZ = "neqZ 0 0                              = " ++
+           (show (neqZ (iToZ 0) (iToZ 0))) ++
+           "\nneqZ 5 0                              = " ++
+           (show (neqZ (iToZ 5) (iToZ 0))) ++
+           "\nneqZ 0 5                              = " ++
+           (show (neqZ (iToZ 0) (iToZ 5))) ++
+           "\nneqZ 5 5                              = " ++
+           (show (neqZ (iToZ 5) (iToZ 5))) ++
+           "\nneqZ (-5) 5                           = " ++
+           (show (neqZ (iToZ (-5)) (iToZ 5))) ++
+           "\nneqZ (-5) (-5)                        = " ++
+           (show (neqZ (iToZ (-5)) (iToZ (-5)))) ++
+           "\nneqZ 9999 9999                        = " ++
+           (show (neqZ (iToZ 9999) (iToZ 9999))) ++
+           "\nneqZ (-9999) (-9999)                  = " ++
+           (show (neqZ (iToZ (-9999)) (iToZ (-9999))) ++
+           "\nneqZ 9999 9998                        = " ++
+           (show (neqZ (iToZ 9999) (iToZ 9998))))
+
+testSymZ :: [Char]
+testSymZ = "0 >>> 0                               = " ++
+           (show ((>>>) (iToZ 0) (iToZ 0))) ++
+           "\n5 >>> 0                               = " ++
+           (show ((>>>) (iToZ 5) (iToZ 0))) ++
+           "\n0 >>> 5                               = " ++
+           (show ((>>>) (iToZ 0) (iToZ 5))) ++
+           "\n 5 >>> 5                              = " ++
+           (show ((>>>) (iToZ 5) (iToZ 5))) ++
+           "\n(-5) >>> 5                            = " ++
+           (show ((>>>) (iToZ (-5)) (iToZ 5))) ++
+           "\n(-5) >>> (-5)                         = " ++
+           (show ((>>>) (iToZ (-5)) (iToZ (-5)))) ++
+           "\n9999 >>> 9999                         = " ++
+           (show ((>>>) (iToZ 9999) (iToZ 9999))) ++
+           "\n(-9999) >>> (-9999)                   = " ++
+           (show ((>>>) (iToZ (-9999)) (iToZ (-9999)))) ++
+           "\n9999 >>> 9998                         = " ++
+           (show ((>>>) (iToZ 9999) (iToZ 9998)))
+
+testNegZ :: [Char]
+testNegZ = "negZ 0                                = " ++
+           (show (zToI (negZ (iToZ 0)))) ++
+           "\nnegZ 5                                = " ++
+           (show (zToI (negZ (iToZ 5)))) ++
+           "\nnegZ (-5)                             = " ++
+           (show (zToI (negZ (iToZ (-5))))) ++
+           "\nnegZ 9999                             = " ++
+           (show (zToI (negZ (iToZ 9999))))  ++
+           "\nnegZ (-9999)                          = " ++
+           (show (zToI (negZ (iToZ (-9999))))) ++
+           "\nnegZ 9999                             = " ++
+           (show (zToI (negZ (iToZ 9998))))
+
+
+
+
+
+
+
+
+test :: IO ()
+test = putStrLn ("Ergebnisse und Inputs über 2 werden in den Tests via. " ++
+                 "nat2Int und int2Nat abgekürzt!\n---\n--- Aufgabe 1\n---\n" ++
+                 testEqlB ++ "\n---\n" ++ 
+                 testXorB ++ "\n---\n" ++ 
+                 testImpB ++ "\n---\n" ++ 
+                 testEqlN ++ "\n---\n" ++ 
+                 testEvnN ++ "\n---\n" ++ 
+                 testIsDN ++ "\n---\n" ++
+                 testHlbN ++ "\n---\n" ++
+                 testGgtN ++ "\n" ++
+                 "\n---\n--- Aufgabe 2\n---\n" ++
+                 testMxSN ++ "\n\n---\n--- Aufgabe 3\n" ++
+                 "(Fast) Alle Zahlen werden ab jetzt via. iToZ und zToI abgekürzt!\n---\n" ++
+                 testIToZ ++ "\n---\n" ++
+                 testZToI ++ "\n---\n" ++
+                 testNeqZ ++ "\n---\n" ++
+                 testSymZ ++ "\n---\n" ++
+                 testNegZ)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
