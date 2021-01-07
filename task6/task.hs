@@ -78,7 +78,7 @@ zsimplify (Z Zero b) = Z Zero b
 zsimplify (Z a Zero) = Z a Zero
 zsimplify (Z (S a) (S b)) = zsimplify (Z a b)
 
-{- Helpers -}
+{- ### Helpers ### -}
 
 -- if with B predicate and output B
 ifB :: B -> B -> B -> B
@@ -198,7 +198,7 @@ halbN' n0 acc = iff (eqN (subN n0 acc) acc) acc (halbN' n0 (nsucc acc))
 halbN :: Nat -> Nat
 halbN n = iff nIsOneOrLower n (halbN' newN Zero)
   where nIsOneOrLower = (lt n (S (S Zero)))
-        newN = iff (evenN n) n (nsucc n) -- Rounding up. To round down, use `iff (evenN n) n (predN n)`
+        newN = iff (evenN n) n (predN n) -- Rounding down. To round up, use `iff (evenN n) n (nsucc n)`
 
 -- Great common divisor
 -- ggtN n Zero = n (Same for Zero and n; Implies ggtN(Zero,Zero) = Zero)
@@ -216,7 +216,7 @@ ggtN n m = iff (eqN n m)
               (ggtN (subN n m) m)
               (ggtN n (subN m n)))
 
-{- Aufgabe 2 -}
+{- ### Aufgabe 2 ### -}
 
 -- maxSurfaces for type Nat
 -- maxSurfaces 0 = 1
@@ -225,7 +225,7 @@ maxSurfaces :: Nat -> Nat
 maxSurfaces Zero  = (S Zero)
 maxSurfaces (S n) = nsucc (add (maxSurfaces n) n) -- ms n-1 = 1 + maxSurfaces n + n
 
-{- Aufgabe 3 -}
+{- ### Aufgabe 3 ### -}
 
 -- Subtraction of integers
 -- https://en.wikipedia.org/wiki/Integer and MafI2 module
@@ -302,17 +302,17 @@ powZ z0 z1 = ifZ (eqZ z1 zZero)
 -- It doesn't matter which numbers are positive and which are negative,
 -- so after getting the absolute value, the isDivisorN function can be used
 -- as for natural numbers.
---   isDivisor2 6 3       => T (mod 6 3 => 0)
---   isDivisor2 (-6) 3    => T (mod (-6) 3 => 0)
---   isDivisor2 6 (-3)    => T (mod 6 (-3) => 0)
---   isDivisor2 (-6) (-3) => T (mod (-6) (-3) => 0)
-isDivisor2 :: ZInt -> ZInt -> B
-isDivisor2 n m = isDivisorN (zToNat (zsimplify n)) (zToNat (zsimplify m))
+--   isDivisorZ 6 3       => T (mod 6 3 => 0)
+--   isDivisorZ (-6) 3    => T (mod (-6) 3 => 0)
+--   isDivisorZ 6 (-3)    => T (mod 6 (-3) => 0)
+--   isDivisorZ (-6) (-3) => T (mod (-6) (-3) => 0)
+isDivisorZ :: ZInt -> ZInt -> B
+isDivisorZ n m = isDivisorN (zToNat (zsimplify n)) (zToNat (zsimplify m))
   where zToNat (Z n0 Zero) = n0
         zToNat z0          = zToNat (absZ z0)
 
 
-{- Tests     -}
+{- ### Tests ### -}
 
 
 -- Task 1
@@ -460,7 +460,7 @@ testSymZ = "0 >>> 0                               = " ++
            (show ((>>>) (iToZ 5) (iToZ 0))) ++
            "\n0 >>> 5                               = " ++
            (show ((>>>) (iToZ 0) (iToZ 5))) ++
-           "\n 5 >>> 5                              = " ++
+           "\n5 >>> 5                               = " ++
            (show ((>>>) (iToZ 5) (iToZ 5))) ++
            "\n(-5) >>> 5                            = " ++
            (show ((>>>) (iToZ (-5)) (iToZ 5))) ++
@@ -484,8 +484,66 @@ testNegZ = "negZ 0                                = " ++
            (show (zToI (negZ (iToZ 9999))))  ++
            "\nnegZ (-9999)                          = " ++
            (show (zToI (negZ (iToZ (-9999))))) ++
-           "\nnegZ 9999                             = " ++
+           "\nnegZ 9998                             = " ++
            (show (zToI (negZ (iToZ 9998))))
+
+testMulZ :: [Char]
+testMulZ = "multZ 0 0                             = " ++
+           (show (zToI (multZ (iToZ 0) (iToZ 0)))) ++
+           "\nmultZ 5 0                             = " ++
+           (show (zToI (multZ (iToZ 5) (iToZ 0)))) ++
+           "\nmultZ 0 5                             = " ++
+           (show (zToI (multZ (iToZ 0) (iToZ 5)))) ++
+           "\nmultZ 5 5                             = " ++
+           (show (zToI (multZ (iToZ 5) (iToZ 5)))) ++
+           "\nmultZ (-5) 5                          = " ++
+           (show (zToI (multZ (iToZ (-5)) (iToZ 5)))) ++
+           "\nmultZ (-5) (-5)                       = " ++
+           (show (zToI (multZ (iToZ (-5)) (iToZ (-5))))) ++
+           "\nmultZ 99 12                           = " ++
+           (show (zToI (multZ (iToZ 99) (iToZ 12)))) ++
+           "\nmultZ (-99) (-12)                     = " ++
+           (show (zToI (multZ (iToZ (-99)) (iToZ (-12))))) ++
+           "\nmultZ 99 11                           = " ++
+           (show (zToI (multZ (iToZ 99) (iToZ 11))))
+
+testAbsZ :: [Char]
+testAbsZ = "absZ 0                                = " ++
+           (show (zToI (absZ (iToZ 0)))) ++
+           "\nabsZ 5                                = " ++
+           (show (zToI (absZ (iToZ 5)))) ++
+           "\nabsZ (-5)                             = " ++
+           (show (zToI (absZ (iToZ (-5))))) ++
+           "\nabsZ 9999                             = " ++
+           (show (zToI (absZ (iToZ 9999))))  ++
+           "\nabsZ (-9999)                          = " ++
+           (show (zToI (absZ (iToZ (-9999))))) ++
+           "\nabsZ (-9998)                          = " ++
+           (show (zToI (absZ (iToZ (-9998))))) ++
+           "\nabsZ 9998                             = " ++
+           (show (zToI (absZ (iToZ 9998))))
+
+testIsDZ :: [Char]
+testIsDZ = "isDivisorZ 0 0                        = " ++
+           (show (isDivisorZ (iToZ 0) (iToZ 0))) ++
+           "\nisDivisorZ 5 0                        = " ++
+           (show (isDivisorZ (iToZ 5) (iToZ 0))) ++
+           "\nisDivisorZ 0 5                        = " ++
+           (show (isDivisorZ (iToZ 0) (iToZ 5))) ++
+           "\nisDivisorZ 5 5                        = " ++
+           (show (isDivisorZ (iToZ 5) (iToZ 5))) ++
+           "\nisDivisorZ (-5) 5                     = " ++
+           (show (isDivisorZ (iToZ (-5)) (iToZ 5))) ++
+           "\nisDivisorZ (-5) (-5)                  = " ++
+           (show (isDivisorZ (iToZ (-5)) (iToZ (-5)))) ++
+           "\nisDivisorZ 9999 9999                  = " ++
+           (show (isDivisorZ (iToZ 9999) (iToZ 9999))) ++
+           "\nisDivisorZ (-9999) (-9999)            = " ++
+           (show (isDivisorZ (iToZ (-9999)) (iToZ (-9999)))) ++
+           "\nisDivisorZ 9999 3                     = " ++
+           (show (isDivisorZ (iToZ 9999) (iToZ 3))) ++
+           "\nisDivisorZ (-9999) (-1)               = " ++
+           (show (isDivisorZ (iToZ (-9999)) (iToZ (-1))))
 
 
 
@@ -512,7 +570,10 @@ test = putStrLn ("Ergebnisse und Inputs über 2 werden in den Tests via. " ++
                  testZToI ++ "\n---\n" ++
                  testNeqZ ++ "\n---\n" ++
                  testSymZ ++ "\n---\n" ++
-                 testNegZ)
+                 testNegZ ++ "\n---\n" ++
+                 testMulZ ++ "\n---\n" ++
+                 testAbsZ ++ "\n---\n" ++
+                 testIsDZ)
 
 
 
