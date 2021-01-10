@@ -120,7 +120,7 @@ ifZ :: B -> ZInt -> ZInt -> ZInt
 ifZ T z0 _  = z0
 ifZ F _  z1 = z1
 
-{- Aufgabe 1 -}
+{- Aufgabe 1 a -}
 
 -- Equality for type B
 -- A | B | Result
@@ -151,8 +151,8 @@ xorB _ _ = F
 -- T | F | F
 -- T | T | T
 (=>>) :: B -> B -> B
-(=>>) F _ = T -- If a is F, b doesn't matter
-(=>>) T b = b -- If a is T, b must be T also. Otherwise the result is F
+(=>>) T F = F
+(=>>) _ _ = T
 
 -- Equality of natural numbers
 -- Rules:
@@ -160,10 +160,9 @@ xorB _ _ = F
 -- - Zero is not equal to any non-zero
 -- - If non of the numbers are Zero, reduce both by 1 and retry.
 eqN :: Nat -> Nat -> B
-eqN Zero Zero = T -- 0==0
-eqN Zero _    = F -- 0 /= m
-eqN _    Zero = F -- n /= 0
-eqN (S n) (S m) = eqN n m -- Recursive call with n-1 and m-1
+eqN Zero Zero   = T
+eqN (S a) (S b) = eqN a b
+eqN _ _         = F
 
 -- Check whether or not a number is even:
 -- - Zero is even
@@ -216,7 +215,7 @@ ggtN n m = iff (eqN n m)
               (ggtN (subN n m) m)
               (ggtN n (subN m n)))
 
-{- ### Aufgabe 2 ### -}
+{- ### Aufgabe 1 b ### -}
 
 -- maxSurfaces for type Nat
 -- maxSurfaces 0 = 1
@@ -225,7 +224,7 @@ maxSurfaces :: Nat -> Nat
 maxSurfaces Zero  = (S Zero)
 maxSurfaces (S n) = nsucc (add (maxSurfaces n) n) -- ms n-1 = 1 + maxSurfaces n + n
 
-{- ### Aufgabe 3 ### -}
+{- ### Aufgabe 1 c ### -}
 
 -- Subtraction of integers
 -- https://en.wikipedia.org/wiki/Integer and MafI2 module
