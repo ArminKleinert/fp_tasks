@@ -56,18 +56,47 @@ foldTree r f tree = r
 
 {- Aufgabe 5 -}
 
---type Queue = ([a], [a])
+{-
+Damit die dequeue Operation auf die Verwendung der (++) Funktion verzichten kann, modellieren Sie Ihre Warteschlange mit Hilfe von zwei Listen. Elemente werden immer aus der ersten Liste entfernt und neue Elemente werden am Anfang der zweiten Liste eingefügt. Wenn die erste Liste leer ist und ein weiteres Element entfernt werden soll, wird die zweite Liste umgedreht und als erste Liste gesetzt. 
+-}
 
-class Queue q where
-  enqueue :: q -> e -> q
-  dequeue :: q -> q
-  isEmpty :: q -> Bool
-  makeQueue :: q
-  showQueue :: q -> [Char]
-  
+type Queue a = ([a], [a])
+
+-- TODO
+enqueue :: Queue -> e -> Queue
+enqueue q0 e = q0
+
+-- TODO
+dequeue :: Queue -> Queue
+dequeue q0 = q0
+
+-- TODO
+isEmpty :: Queue -> Bool
+isEmpty q0 = True
+
+-- TODO
+makeQueue :: Queue
+makeQueue = ([], [])
+
+-- TODO
+showQueue :: Queue -> [Char]
+showQueue q0 = ""
 
 
+-- TODO
+instance (Show q) => Queue q where
+    show q0 = showQueue q0 -- TODO
 
+-- TODO
+instance (Eq q) => Queue q where
+    q0 == q1 = True -- TODO
+
+-- TODO
+instance (Ord q) => Queue q where
+    q0 < q1 = True -- TODO
+    q0 <= q1 = True -- TODO
+    q0 > q1 = True -- TODO
+    q0 >= q1 = True -- TODO
 
 
 
