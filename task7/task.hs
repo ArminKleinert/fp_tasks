@@ -4,9 +4,51 @@ data SimpleBT = L | N SimpleBT SimpleBT deriving Show
 
 {- Aufgabe 1 -}
 
--- TODO
+type Height = Integer
+
+genSimpleBT :: Height -> SimpleBT
+genSimpleBT   0  =  L
+genSimpleBT (n+1) = N (genSimpleBT n) (genSimpleBT n)
+
+nodes :: SimpleBT -> Integer
+nodes L = 1
+nodes (N leftT rightT) = 1 + nodes leftT + nodes rightT
+
+height :: SimpleBT -> Integer
+height L = 0
+height (N lt rt) = (max (height lt) (height rt)) + 1
+
+-- Helper
+makeTree :: SimpleBT
+makeTree = N L L
+
+-- Helper
+-- A tree is balanced when it..
+-- - ends directly in two leaves
+-- - has two sub-trees, both are balanced and both have have the same height.
+-- A tree is not balanced when it..
+-- - has one leaf and one sub-tree
+-- - has two sub-trees but one of them not balanced
+-- - has two sub-trees of different heights.
+balanced :: SimpleBT -> Bool
+balanced (N L L) = True
+balanced (N _ L) = False
+balanced (N L _) = False
+balanced (N t0 t1) = (balanced t0) && (balanced t1) && (height t0) == height t1
+
+-- Helper
+joinTrees :: SimpleBT -> SimpleBT -> SimpleBT
+joinTrees leftT rightT = N leftT rightT
+
+
 isFull :: SimpleBT -> Bool
-isFull tree = False
+isFull L = False
+isFull (N t0 t1) = (height t0) == (height t1)
+
+-- TODO
+insertLeaves :: Integer -> SimpleBT -> SimpleBT
+insertLeaves n tree | even n = tree
+                    | otherwise = error "n must be even!"
 
 -- TODO
 removeLeaves :: Integer -> SimpleBT -> SimpleBT
@@ -14,47 +56,147 @@ removeLeaves n tree = tree
 
 -- TODO
 printSimpleBT :: SimpleBT -> String
-printSimpleBT tree = show tree
+printSimpleBT tree = foldl (\x y -> x ++ y ++ "\n") "" (fst (paintTree tree))
+
+gen :: Int -> [a] -> [a]
+gen n str = take n (foldr (++) [] (repeat str))
+
+
+
+joinLines :: [String] -> String
+joinLines [] = ""
+joinLines (s:ls) = s ++ "\n" ++ joinLines ls
+
+{-
+r = paintTree (genSimpleBT 2)
+foo (s, _) = s
+p = foo r
+joinLines p
+-}
+
+
+
+paintTree :: SimpleBT -> ([String], Int)
+paintTree L = ([" L  "], 1)
+paintTree (N lTree rTree) = ([nodeLine, nodeHLine, horLine] ++ subTrees, newNodePos)
+            where
+                (lNodePicture, leftNodePos)  = paintTree lTree
+                (rNodePicture, rigthNodePos) = paintTree rTree
+
+                ltNewPicture = moveTreePos lNodePicture rNodePicture
+                rtNewPicture = moveTreePos rNodePicture lNodePicture
+
+                {- write spaces in between if necessary -}
+                moveTreePos :: [String] -> [String] -> [String]
+                moveTreePos str1 str2 | length str1 >= length str2 = str1
+                                      | otherwise = str1 ++ (take rowsToFill (repeat spaces))
+                                           where
+                                              spaces = gen (length (head str1))  " "
+                                              rowsToFill = (length str2) - (length str1)
+
+                leftWidth = length (head lNodePicture)
+                rightWidth = length (head rNodePicture)
+                width = leftWidth + rightWidth
+
+                hLineLength = (leftWidth - leftNodePos) + rigthNodePos
+                newNodePos = leftNodePos + (div hLineLength 2)
+
+                horLine  = (gen leftNodePos " ") ++ "*" ++ gen (hLineLength - 1) "-" ++ "*"
+                                                 ++ gen (width - hLineLength - leftNodePos - 1) " "
+                nodeLine  = (gen newNodePos " ") ++ "N" ++ gen (width - newNodePos - 1) " "
+                nodeHLine = (gen newNodePos " ") ++ "|" ++ gen (width - newNodePos - 1) " "
+
+
+
+                subTrees = zipWith (++) ltNewPicture rtNewPicture
 
 {- Aufgabe 2 -}
 
 data BSearchTree a = Nil | Node a (BSearchTree a) (BSearchTree a) deriving Show
 
--- TODO
-postOrder :: (Ord a) => BSearchTree a -> [a]
-postOrder tree = []
+-- Helper
+-- Creates a balanced SearchTree from a list (if the list is sorted)
+listToBST :: (Ord a) => [a] -> BSearchTree a
+listToBST []   = Nil
+listToBST elts = Node (elts !! half)
+                      (listToBST (take half elts))
+                      (listToBST (drop (half+1) elts))
+    where half = length elts `quot` 2
 
--- TODO
+-- Helper (Vorlesungsfolien)
+insert :: (Ord a) => a -> BSearchTree a -> BSearchTree a
+insert k Nil = Node k Nil Nil
+insert k (Node x ltree rtree) | k<x = Node x (insert k ltree) rtree
+                              | otherwise = Node x ltree (insert k rtree)
+
+
+-- postOrder iterate a tree
+-- 
+-- tree = Node 'd' (Node 'b' (Node 'a' Nil Nil) (Node 'c' Nil Nil)) (Node 'f' (Node 'e' Nil Nil) Nil)
+--      d
+--   b     f
+-- a   c e   Nil
+-- postOrder tree => "acbefd"
+postOrder :: BSearchTree a -> [a]
+postOrder Nil = []
+postOrder (Node x ltree rtree) = postOrder ltree ++ postOrder rtree ++ [x]
+
+-- Checks whether or not a tree has exactly one child-node. Nil is not a child.
+-- Node 1 Nil Nil => False
+-- Node 1 (Node ...) Nil => True
+-- Node 1 Nil (Node ...) => True
+-- Node 1 (Node ...) (Node ...) => False
 oneChild :: (Ord a) => BSearchTree a -> Bool
 oneChild (Node _ Nil t1) = True
 oneChild (Node _ t0 Nil) = True
 oneChild (Node _ _ _) = False
 
--- TODO
+{-
+height2 :: BSearchTree a -> Integer
+height2 Nil = 0
+height2 (Node _ lt rt) = (max (height2 lt) (height2 rt)) + 1
+
+balanced2 :: BSearchTree a -> Bool
+balanced2 (Node _ Nil Nil) = True
+balanced2 (Node _ _ Nil) = False
+balanced2 (Node _ Nil _) = False
+balanced2 (Node _ t0 t1) = (balanced2 t0) && (balanced2 t1) && (height2 t0) == height2 t1
+-}
+
+
+
+height2 :: BSearchTree a -> Integer
+height2 Nil = 0
+height2 (Node _ lt rt) = (max (height2 lt) (height2 rt)) + 1
+
+-- Checks whether or not a tree is full (wtf am I supposed to do here?!)
 isFull2 :: (Ord a) => BSearchTree a -> Bool
-isFull2 tree = True
+isFull2 Nil = False
+isFull2 (Node _ t0 t1) = (height2 t0) && (height2 t1)
 
--- TODO
+-- Find successor of an element in a tree. If no successor is found, returns Nothing.
 successor :: (Ord a) => a -> BSearchTree a -> Maybe a
-successor e tree = Nothing
+successor e tree = let l = (filter (\x -> x>e) (inOrderLst tree))
+                   in if (null l) then Nothing else Just (head l)
 
--- TODO
+-- In-order traversal of tree
+inOrderLst :: BSearchTree a -> [a]
+inOrderLst Nil = []
+inOrderLst (Node x ltree rtree) = inOrderLst ltree ++ x : inOrderLst rtree
+
+-- Applies a given function to each element in a tree:
+-- mapTree (+1) (Node 2 (Node 1 Nil Nil) (Node 3 Nil Nil))
+--           =>  Node 3 (Node 2 Nil Nil) (Node 4 Nil Nil)
 mapTree :: (a -> b) -> BSearchTree a -> BSearchTree b
-mapTree f tree = Nil
+mapTree _ Nil = Nil
+mapTree f (Node x ltree rtree) = Node (f x) (mapTree f ltree) (mapTree f rtree)
 
--- TODO
+-- Yay
 foldTree :: b -> (a -> b -> b -> b) -> BSearchTree a -> b
-foldTree r f tree = r
+foldTree r _ Nil  = r
+foldTree r f (Node x lt rt) = f x (foldTree r f lt) (foldTree r f rt)
 
 {- Aufgabe 3 -}
-
--- ._.
-
-{- Aufgabe 4 -}
-
--- ._.
-
-{- Aufgabe 5 -}
 
 {-
 Damit die dequeue Operation auf die Verwendung der (++) Funktion verzichten kann, modellieren Sie Ihre Warteschlange mit Hilfe von zwei Listen. Elemente werden immer aus der ersten Liste entfernt und neue Elemente werden am Anfang der zweiten Liste eingefügt. Wenn die erste Liste leer ist und ein weiteres Element entfernt werden soll, wird die zweite Liste umgedreht und als erste Liste gesetzt. 
@@ -146,14 +288,127 @@ instance (Ord q) => Ord (Queue q) where
     q0 > q1  = qCmp (>) (<) q0 q1
     q0 >= q1 = qCmp (>=) (<=) q0 q1
 
-newQueue xs = Queue xs []
+--newQueue xs = Queue xs []
+
+listToQueue :: [a] -> Queue a
+listToQueue lst = foldl (\q x -> enqueue q x) makeQueue lst
+
+{- Tests -}
+
+-- Tests Aufgabe 2
+
+testPostOrder :: String
+testPostOrder = "postOrder (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))) => " ++
+                show (postOrder (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))))
+
+testOneChild :: String
+testOneChild = "oneChild (Node 5 Nil Nil) => " ++
+               (show (oneChild (Node 5 Nil Nil))) ++ 
+               "\noneChild (Node 5 (Node 1 Nil) Nil) => " ++
+               (show (oneChild (Node 5 Nil Nil))) ++ 
+               "\noneChild (Node 5 Nil (Node 1 Nil)) => " ++
+               (show (oneChild (Node 5 Nil Nil))) ++ 
+               "\noneChild (Node 5 (Node 1 Nil) (Node 6 Nil)) => " ++
+               (show (oneChild (Node 5 Nil Nil)))
+
+testSuccessor :: String
+testSuccessor = "successor 3 (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))) => " ++
+                show (successor 3 (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))))
+
+testMapTree :: String
+testMapTree = "mapTree (+1) (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil)) => " ++
+              show (mapTree (+1) (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))))
+
+testFoldTree :: String
+testFoldTree = "foldTree 0 addMult (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))) => " ++
+               show (foldTree 0 addMult (Node 5 (Node 3 Nil Nil) (Node 8 Nil (Node 4 Nil Nil))))
+  where addMult a b c = a + b*c
+
+-- Tests Aufgabe 3
+
+testMakeQueue :: String
+testMakeQueue = "makeQueue => " ++ show q
+  where q :: Queue Integer -- Must specify type because haskell cannot infer it otherwise
+        q = makeQueue
+
+testlistToQueue :: String
+testlistToQueue = "listToQueue [1 .. 15] => " ++ show (listToQueue [1 .. 15])
+
+testEnqueue :: String
+testEnqueue = "enqueue (Queue [1 .. 15] [16, 17]) 16 => " ++ show (enqueue (Queue [1 .. 15] [16, 17]) 16)
+
+testDequeue :: String
+testDequeue = "dequeue (Queue [1 .. 15] [16, 17]) => " ++ show (dequeue (Queue [1 .. 15] [16, 17]))
+
+testShowQueue :: String
+testShowQueue = "showQueue (Queue [1 .. 15] [16, 17]) => " ++ showQueue (Queue [1 .. 15] [16, 17])
+
+testEq :: String
+testEq = "(==) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
+         show ((Queue [1, 2] [3, 4]) == (Queue [1, 2] [3, 4])) ++
+         "\n(==) (Queue [5, 2] []) (Queue [1, 2] [3, 4])     => " ++
+         show ((Queue [5, 2] []) == (Queue [1, 2] [3, 4])) ++
+         "\n(==) (Queue [] []) (Queue [1, 2] [3, 4])         => " ++
+         show ((Queue [] []) == (Queue [1, 2] [3, 4]))
 
 
+testLt :: String
+testLt = "(<) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
+         show ((Queue [1, 2] [3, 4]) < (Queue [1, 2] [3, 4])) ++
+         "\n(<) (Queue [5, 2] []) (Queue [1, 2] [3, 4])     => " ++
+         show ((Queue [5, 2] []) < (Queue [1, 2] [3, 4])) ++
+         "\n(<) (Queue [] []) (Queue [1, 2] [3, 4])         => " ++
+         show ((Queue [] []) < (Queue [1, 2] [3, 4]))
 
 
+testLe :: String
+testLe = "(<=) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
+         show ((Queue [1, 2] [3, 4]) <= (Queue [1, 2] [3, 4])) ++
+         "\n(<=) (Queue [5, 2] []) (Queue [1, 2] [3, 4])     => " ++
+         show ((Queue [5, 2] []) <= (Queue [1, 2] [3, 4])) ++
+         "\n(<=) (Queue [] []) (Queue [1, 2] [3, 4])         => " ++
+         show ((Queue [] []) <= (Queue [1, 2] [3, 4]))
 
 
+testGt :: String
+testGt = "(>) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
+         show ((Queue [1, 2] [3, 4]) > (Queue [1, 2] [3, 4])) ++
+         "\n(>) (Queue [5, 2] []) (Queue [1, 2] [3, 4])     => " ++
+         show ((Queue [5, 2] []) > (Queue [1, 2] [3, 4])) ++
+         "\n(>) (Queue [] []) (Queue [1, 2] [3, 4])         => " ++
+         show ((Queue [] []) > (Queue [1, 2] [3, 4]))
 
+testGe :: String
+testGe = "(>=) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
+         show ((Queue [1, 2] [3, 4]) >= (Queue [1, 2] [3, 4])) ++
+         "\n(>=) (Queue [5, 2] []) (Queue [1, 2] [3, 4])     => " ++
+         show ((Queue [5, 2] []) >= (Queue [1, 2] [3, 4])) ++
+         "\n(>=) (Queue [] []) (Queue [1, 2] [3, 4])         => " ++
+         show ((Queue [] []) >= (Queue [1, 2] [3, 4]))
+
+testText :: String
+testText = "-----------------\n--- Aufgabe 1 ---" ++
+       "\n\n-----------------\n--- Aufgabe 2 ---" ++
+       "\n\n" ++ testPostOrder ++
+       "\n\n" ++ testOneChild ++
+       "\n\n" ++ testSuccessor ++
+       "\n\n" ++ testMapTree ++
+       "\n\n" ++ testFoldTree ++
+            
+       "\n\n-----------------\n--- Aufgabe 3 ---" ++
+       "\n\n" ++ testMakeQueue ++
+       "\n\n" ++ testlistToQueue++
+       "\n\n" ++ testEnqueue ++
+       "\n\n" ++ testDequeue ++
+       "\n\n" ++ testShowQueue ++ 
+       "\n\n" ++ testEq ++
+       "\n\n" ++ testLt ++
+       "\n\n" ++ testLe ++
+       "\n\n" ++ testGt ++
+       "\n\n" ++ testGe
+
+test :: IO ()
+test = putStrLn testText
 
 
 
