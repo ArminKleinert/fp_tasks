@@ -40,23 +40,66 @@ balanced (N t0 t1) = (balanced t0) && (balanced t1) && (height t0) == height t1
 joinTrees :: SimpleBT -> SimpleBT -> SimpleBT
 joinTrees leftT rightT = N leftT rightT
 
-
+-- A tree is balanced if each node has two leaves or two sub-trees.
+-- Thus, a tree is not balanced if it has one leaf and one node.
+-- A single leaf by itself is full.
 isFull :: SimpleBT -> Bool
-isFull L = False
-isFull (N t0 t1) = (height t0) == (height t1)
+isFull L = True
+isFull (N L L) = True
+isFull (N L _) = False
+isFull (N _ L) = False
+isFull (N t0 t1) = (isFull t0) && (isFull t1)
 
--- TODO
+-- Insert exactly 2 leaves, starting at the smaller sub-tree.
+-- - If the tree is just a leaf, create a Node with two leaves
+-- - If the tree at least one sub-tree which is not a leaf,
+--   check the sizes of the sub-trees. If the right one is smaller,
+--   recursively call on the right tree. Otherwise, recursively
+--   call with the left sub-tree.
+insertLeaves' :: SimpleBT -> SimpleBT
+insertLeaves' L       = N L L
+insertLeaves' (N t0 t1)
+  | (height t0) > (height t1) = N t0 (insertLeaves' t1)
+  | otherwise = N (insertLeaves' t0) t1
+
+-- Inserts n leaves into a tree.
+-- - If n is 0, return the tree
+-- - If n is odd, show an error
+-- - Otherwise, call insertLeaves' (n/2) times, each with 
+--   the result of the previous call.
 insertLeaves :: Integer -> SimpleBT -> SimpleBT
-insertLeaves n tree | even n = tree
+insertLeaves 0 tree = tree
+insertLeaves n tree | even n = insertLeaves (n-2) (insertLeaves' tree) 
+                    | otherwise = error "n must be even!"
+
+-- Remove exactly 2 leaves, starting at the bigger sub-tree.
+-- - If the tree is a node with two leaves, turn it into a leaf
+-- - If the tree is just a leaf, return it
+-- - If the tree at least one sub-tree which is not a leaf,
+--   check the sizes of the sub-trees. If the right one is smaller,
+--   recursively call on the left tree. Otherwise, recursively
+--   call with the right sub-tree.
+removeLeaves' :: SimpleBT -> SimpleBT
+removeLeaves' (N L L) = L
+removeLeaves' L       = L
+removeLeaves' (N t0 t1)
+  | (height t0) > (height t1) = N (removeLeaves' t0) t1
+  | otherwise = N t0 (removeLeaves' t1)
+
+
+-- Removes n leaves from a tree.
+-- - If n is 0, return the tree
+-- - If n is odd, show an error
+-- - Otherwise, call removeLeaves' (n/2) times, each with 
+--   the result of the previous call.
+removeLeaves :: Integer -> SimpleBT -> SimpleBT
+removeLeaves 0 tree = tree
+removeLeaves n tree | even n = removeLeaves (n-2) (removeLeaves' tree)
                     | otherwise = error "n must be even!"
 
 -- TODO
-removeLeaves :: Integer -> SimpleBT -> SimpleBT
-removeLeaves n tree = tree
-
--- TODO
-printSimpleBT :: SimpleBT -> String
-printSimpleBT tree = foldl (\x y -> x ++ y ++ "\n") "" (fst (paintTree tree))
+printSimpleBT :: SimpleBT -> IO ()
+printSimpleBT tree = putStrLn (foldl (\x y -> x ++ y ++ "\n") "" (fst (paintTree tree)))
 
 gen :: Int -> [a] -> [a]
 gen n str = take n (foldr (++) [] (repeat str))
@@ -171,8 +214,11 @@ height2 (Node _ lt rt) = (max (height2 lt) (height2 rt)) + 1
 
 -- Checks whether or not a tree is full (wtf am I supposed to do here?!)
 isFull2 :: (Ord a) => BSearchTree a -> Bool
-isFull2 Nil = False
-isFull2 (Node _ t0 t1) = (height2 t0) && (height2 t1)
+isFull2 Nil = True
+isFull2 (Node _ Nil Nil) = True
+isFull2 (Node _ Nil _) = False
+isFull2 (Node _ _ Nil) = False
+isFull2 (Node _ t0 t1) = (isFull2 t0) == (isFull2 t1)
 
 -- Find successor of an element in a tree. If no successor is found, returns Nothing.
 successor :: (Ord a) => a -> BSearchTree a -> Maybe a
