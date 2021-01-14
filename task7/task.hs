@@ -6,14 +6,12 @@ data SimpleBT = L | N SimpleBT SimpleBT deriving Show
 
 type Height = Integer
 
+-- Helper
 genSimpleBT :: Height -> SimpleBT
 genSimpleBT   0  =  L
 genSimpleBT (n+1) = N (genSimpleBT n) (genSimpleBT n)
 
-nodes :: SimpleBT -> Integer
-nodes L = 1
-nodes (N leftT rightT) = 1 + nodes leftT + nodes rightT
-
+-- Helper
 height :: SimpleBT -> Integer
 height L = 0
 height (N lt rt) = (max (height lt) (height rt)) + 1
@@ -22,26 +20,8 @@ height (N lt rt) = (max (height lt) (height rt)) + 1
 makeTree :: SimpleBT
 makeTree = N L L
 
--- Helper
--- A tree is balanced when it..
--- - ends directly in two leaves
--- - has two sub-trees, both are balanced and both have have the same height.
--- A tree is not balanced when it..
--- - has one leaf and one sub-tree
--- - has two sub-trees but one of them not balanced
--- - has two sub-trees of different heights.
-balanced :: SimpleBT -> Bool
-balanced (N L L) = True
-balanced (N _ L) = False
-balanced (N L _) = False
-balanced (N t0 t1) = (balanced t0) && (balanced t1) && (height t0) == height t1
-
--- Helper
-joinTrees :: SimpleBT -> SimpleBT -> SimpleBT
-joinTrees leftT rightT = N leftT rightT
-
--- A tree is balanced if each node has two leaves or two sub-trees.
--- Thus, a tree is not balanced if it has one leaf and one node.
+-- A tree is full if each node has two leaves or two sub-trees.
+-- Thus, a tree is not full if it has one leaf and one node.
 -- A single leaf by itself is full.
 isFull :: SimpleBT -> Bool
 isFull L = True
@@ -97,28 +77,21 @@ removeLeaves 0 tree = tree
 removeLeaves n tree | even n = removeLeaves (n-2) (removeLeaves' tree)
                     | otherwise = error "n must be even!"
 
--- TODO
+-- Uses paintTree to print a SimpleBT to the console.
+-- 
 printSimpleBT :: SimpleBT -> IO ()
 printSimpleBT tree = putStrLn (foldl (\x y -> x ++ y ++ "\n") "" (fst (paintTree tree)))
 
+-- Aus den Unterlagen
 gen :: Int -> [a] -> [a]
 gen n str = take n (foldr (++) [] (repeat str))
 
-
-
+-- Aus den Unterlagen
 joinLines :: [String] -> String
 joinLines [] = ""
 joinLines (s:ls) = s ++ "\n" ++ joinLines ls
 
-{-
-r = paintTree (genSimpleBT 2)
-foo (s, _) = s
-p = foo r
-joinLines p
--}
-
-
-
+-- Aus den Unterlagen
 paintTree :: SimpleBT -> ([String], Int)
 paintTree L = ([" L  "], 1)
 paintTree (N lTree rTree) = ([nodeLine, nodeHLine, horLine] ++ subTrees, newNodePos)
@@ -340,6 +313,8 @@ listToQueue :: [a] -> Queue a
 listToQueue lst = foldl (\q x -> enqueue q x) makeQueue lst
 
 {- Tests -}
+
+-- Test Aufgabe 1
 
 -- Tests Aufgabe 2
 
