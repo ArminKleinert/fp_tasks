@@ -181,6 +181,7 @@ evenN (S (S n)) = evenN n -- Recursive call with n-2
 -- n>m  => Recursive call with (n-m) and m
 isDivisorN :: Nat -> Nat -> B
 isDivisorN _ Zero = F -- No number can be divided by 0 and 0/0 is undefined, so default to F
+isDivisorN Zero _ = T -- Any number is divisible by 0
 isDivisorN n m = ifB (eqN n m) T case1 -- n==m => T
   where case1 = (ifB (lt n m) F case2) -- n<m => F
         case2 = (isDivisorN (subN n m) m) -- n>m => Recursive call as above
@@ -189,15 +190,17 @@ isDivisorN n m = ifB (eqN n m) T case1 -- n==m => T
 halbN' :: Nat -> Nat -> Nat
 halbN' n0 acc = iff (eqN (subN n0 acc) acc) acc (halbN' n0 (nsucc acc))
 
--- Halves a natural number.
+-- Halves a natural number, rounding down.
 -- If n is 0, return n
--- If n is 1, return n
+-- If n is 1, return 0
 -- If n is not even, add 1 and continue
 -- Go to (halbN' n Zero)
 halbN :: Nat -> Nat
+halbN Zero = Zero
+halbN (S(Zero)) = Zero
 halbN n = iff nIsOneOrLower n (halbN' newN Zero)
   where nIsOneOrLower = (lt n (S (S Zero)))
-        newN = iff (evenN n) n (predN n) -- Rounding down. To round up, use `iff (evenN n) n (nsucc n)`
+        newN = iff (evenN n) n (predN n) -- Rounding down. To round up, use `iff (evenN n) n (nsucc n)
 
 -- Great common divisor
 -- ggtN n Zero = n (Same for Zero and n; Implies ggtN(Zero,Zero) = Zero)
@@ -290,12 +293,10 @@ powZ' z0 z1 = ifZ (eqZ z1 zZero)
 -- Gives fixed value (Z (S Zero) Zero) (1) if second argument is ==0
 -- Error if second argument is <0 because the result would be fractional...
 -- powZ (iToZ
-powZ :: ZInt -> ZInt -> ZInt
-powZ z0 z1 = ifZ (eqZ z1 zZero)
+powZ :: ZInt -> Nat -> ZInt
+powZ z0 n1 = ifZ (eqN n1 Zero)
                zOne
-               (ifZ (isNegZ z1)
-                 (error "second argument must not be negative!")
-                 (powZ' z0 z1))
+               (powZ' z0 (Z n1 Zero))
 
 -- Check whether or not an integer is divisble by another integer.
 -- It doesn't matter which numbers are positive and which are negative,
