@@ -180,8 +180,8 @@ evenN (S (S n)) = evenN n -- Recursive call with n-2
 -- n<m  => F
 -- n>m  => Recursive call with (n-m) and m
 isDivisorN :: Nat -> Nat -> B
+isDivisorN Zero _ = T -- 0 is divisible by any number
 isDivisorN _ Zero = F -- No number can be divided by 0 and 0/0 is undefined, so default to F
-isDivisorN Zero _ = T -- Any number is divisible by 0
 isDivisorN n m = ifB (eqN n m) T case1 -- n==m => T
   where case1 = (ifB (lt n m) F case2) -- n<m => F
         case2 = (isDivisorN (subN n m) m) -- n>m => Recursive call as above

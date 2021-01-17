@@ -20,15 +20,16 @@ height (N lt rt) = (max (height lt) (height rt)) + 1
 makeTree :: SimpleBT
 makeTree = N L L
 
--- A tree is full if each node has two leaves or two sub-trees.
--- Thus, a tree is not full if it has one leaf and one node.
--- A single leaf by itself is full.
+-- Helper v. Esponda
+nodes :: SimpleBT -> Integer
+nodes L = 0
+nodes (N leftT rightT) = 1 + nodes leftT + nodes rightT
+
+-- A tree is full if is has ((2^height)-1) nodes and 2^height leaves 
+-- (which is implied by having 2^h-1 nodes because we have no NIL element)
 isFull :: SimpleBT -> Bool
-isFull L = True
-isFull (N L L) = True
-isFull (N L _) = False
-isFull (N _ L) = False
-isFull (N t0 t1) = (isFull t0) && (isFull t1)
+isFull tree = (2 ^ height tree) - 1 == nnodes 
+  where nnodes = nodes tree
 
 -- Insert exactly 2 leaves, starting at the smaller sub-tree.
 -- - If the tree is just a leaf, create a Node with two leaves
@@ -45,12 +46,11 @@ insertLeaves' (N t0 t1)
 -- Inserts n leaves into a tree.
 -- - If n is 0, return the tree
 -- - If n is odd, show an error
--- - Otherwise, call insertLeaves' (n/2) times, each with 
+-- - Otherwise, call insertLeaves' n-1 times, each with 
 --   the result of the previous call.
 insertLeaves :: Integer -> SimpleBT -> SimpleBT
 insertLeaves 0 tree = tree
-insertLeaves n tree | even n = insertLeaves (n-2) (insertLeaves' tree) 
-                    | otherwise = error "n must be even!"
+insertLeaves n tree = insertLeaves (n-1) (insertLeaves' tree)
 
 -- Remove exactly 2 leaves, starting at the bigger sub-tree.
 -- - If the tree is a node with two leaves, turn it into a leaf
@@ -74,13 +74,7 @@ removeLeaves' (N t0 t1)
 --   the result of the previous call.
 removeLeaves :: Integer -> SimpleBT -> SimpleBT
 removeLeaves 0 tree = tree
-removeLeaves n tree | even n = removeLeaves (n-2) (removeLeaves' tree)
-                    | otherwise = error "n must be even!"
-
--- Uses paintTree to print a SimpleBT to the console.
--- 
-printSimpleBT :: SimpleBT -> IO ()
-printSimpleBT tree = putStrLn (foldl (\x y -> x ++ y ++ "\n") "" (fst (paintTree tree)))
+removeLeaves n tree = removeLeaves (n-1) (removeLeaves' tree)
 
 -- Aus den Unterlagen
 gen :: Int -> [a] -> [a]
@@ -126,6 +120,21 @@ paintTree (N lTree rTree) = ([nodeLine, nodeHLine, horLine] ++ subTrees, newNode
 
                 subTrees = zipWith (++) ltNewPicture rtNewPicture
 
+-- Aus den Unterlagen
+printCharList list = putStr (foldr (++) [] (map (++"\n") list))
+
+-- Aus den Unterlagen
+printSimpleBT tree = printCharList (fst (paintTree tree))
+
+testPrintSimpleBT :: IO [Char]
+testPrintSimpleBT = do {
+                        x <- printSimpleBT (genSimpleBT 1);
+                        y <- printSimpleBT (genSimpleBT 2);
+                        z <- printSimpleBT (genSimpleBT 3);
+                        return ""
+                        }
+    
+
 {- Aufgabe 2 -}
 
 data BSearchTree a = Nil | Node a (BSearchTree a) (BSearchTree a) deriving Show
@@ -158,14 +167,17 @@ postOrder Nil = []
 postOrder (Node x ltree rtree) = postOrder ltree ++ postOrder rtree ++ [x]
 
 -- Checks whether or not a tree has exactly one child-node. Nil is not a child.
+-- Nil => False
 -- Node 1 Nil Nil => False
 -- Node 1 (Node ...) Nil => True
 -- Node 1 Nil (Node ...) => True
--- Node 1 (Node ...) (Node ...) => False
+-- Node 1 (Node ...) (Node ...) => Recurse left and right
 oneChild :: (Ord a) => BSearchTree a -> Bool
+oneChild (Node _ Nil Nil) = False
 oneChild (Node _ Nil t1) = True
 oneChild (Node _ t0 Nil) = True
-oneChild (Node _ _ _) = False
+oneChild Nil = False
+oneChild (Node _ l r) = oneChild l || oneChild r
 
 {-
 height2 :: BSearchTree a -> Integer
@@ -184,7 +196,7 @@ balanced2 (Node _ t0 t1) = (balanced2 t0) && (balanced2 t1) && (height2 t0) == h
 height2 :: BSearchTree a -> Integer
 height2 Nil = 0
 height2 (Node _ lt rt) = (max (height2 lt) (height2 rt)) + 1
-
+{-
 -- Checks whether or not a tree is full (wtf am I supposed to do here?!)
 isFull2 :: (Ord a) => BSearchTree a -> Bool
 isFull2 Nil = True
@@ -192,6 +204,23 @@ isFull2 (Node _ Nil Nil) = True
 isFull2 (Node _ Nil _) = False
 isFull2 (Node _ _ Nil) = False
 isFull2 (Node _ t0 t1) = (isFull2 t0) == (isFull2 t1)
+  -}
+
+-- Helper
+nodes2 :: BSearchTree a -> Integer
+nodes2 Nil = 0
+nodes2 (Node _ leftT rightT) = 1 + nodes2 leftT + nodes2 rightT
+
+-- Helper
+nils2 :: BSearchTree a -> Integer
+nils2 Nil = 1
+nils2 (Node _ leftT rightT) = nils2 leftT + nils2 rightT
+
+-- A tree is full if is has ((2^height)-1) nodes and 2^height leaves
+isFull2 :: BSearchTree a -> Bool
+isFull2 tree = (2 ^ height2 tree) - 1 == nnodes && (2 ^ height2 tree) == nnils
+  where nnodes = nodes2 tree
+        nnils = nils2 tree
 
 -- Find successor of an element in a tree. If no successor is found, returns Nothing.
 successor :: (Ord a) => a -> BSearchTree a -> Maybe a
@@ -212,12 +241,13 @@ mapTree f (Node x ltree rtree) = Node (f x) (mapTree f ltree) (mapTree f rtree)
 
 -- Yay
 foldTree :: b -> (a -> b -> b -> b) -> BSearchTree a -> b
-foldTree r _ Nil  = r
+foldTree r _ Nil  = r -- Rekursionsanker
 foldTree r f (Node x lt rt) = f x (foldTree r f lt) (foldTree r f rt)
 
 {- Aufgabe 3 -}
 
 {-
+Aus der Aufgabe:
 Damit die dequeue Operation auf die Verwendung der (++) Funktion verzichten kann, modellieren Sie Ihre Warteschlange mit Hilfe von zwei Listen. Elemente werden immer aus der ersten Liste entfernt und neue Elemente werden am Anfang der zweiten Liste eingefügt. Wenn die erste Liste leer ist und ein weiteres Element entfernt werden soll, wird die zweite Liste umgedreht und als erste Liste gesetzt. 
 -}
 
@@ -270,7 +300,7 @@ queueLength (Queue l0 l1) = (length l0) + length l1
 listEql :: Eq a => [a] -> [a] -> Bool
 listEql [] []         = True
 listEql (x:xs) (y:ys) = x == y && listEql xs ys
-listEql _      _      = False
+listEql _      _      = False -- Different lengths
 
 -- Compares two lists via. two comparators:
 --   One for the individual elements (cp) and one for the lengths (lc).
@@ -304,8 +334,8 @@ instance (Show a) => Show (Queue a) where
 instance (Ord q) => Ord (Queue q) where
     q0 < q1  = qCmp (<) (<) q0 q1
     q0 <= q1 = qCmp (<=) (<=) q0 q1
-    q0 > q1  = qCmp (>) (<) q0 q1
-    q0 >= q1 = qCmp (>=) (<=) q0 q1
+    q0 > q1  = qCmp (>) (>) q0 q1
+    q0 >= q1 = qCmp (>=) (>=) q0 q1
 
 --newQueue xs = Queue xs []
 
@@ -315,6 +345,11 @@ listToQueue lst = foldl (\q x -> enqueue q x) makeQueue lst
 {- Tests -}
 
 -- Test Aufgabe 1
+
+testIsFull :: String
+testIsFull = "isFull (N L L) => " ++ (show (isFull (N L L))) ++
+             "\nisFull L       => " ++ (show (isFull L)) ++
+             "\nisFull (N L (N L L) => " ++ show (isFull (N L (N L L)))
 
 -- Tests Aufgabe 2
 
@@ -409,13 +444,17 @@ testGe = "(>=) (Queue [1, 2] [3, 4]) (Queue [1, 2] [3, 4]) => " ++
 
 testText :: String
 testText = "-----------------\n--- Aufgabe 1 ---" ++
+       "\n\n" ++ testIsFull ++
+       --"\n\n" ++ testInsertLeaves ++
+       --"\n\n" ++ testRemoveLeaves ++
+
        "\n\n-----------------\n--- Aufgabe 2 ---" ++
        "\n\n" ++ testPostOrder ++
        "\n\n" ++ testOneChild ++
        "\n\n" ++ testSuccessor ++
        "\n\n" ++ testMapTree ++
        "\n\n" ++ testFoldTree ++
-            
+
        "\n\n-----------------\n--- Aufgabe 3 ---" ++
        "\n\n" ++ testMakeQueue ++
        "\n\n" ++ testlistToQueue++
