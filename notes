@@ -1,0 +1,11 @@
+AND = L xy . xyx
+OR  = L xy . xTy
+Z   = L x . x F ~ F // Vergleich mit 0; ~ ist negation
+G   = L x y . Z (x P y) // >=; Z ist von oben; P ist Vorgänger-Funktion; P endet bei 0
+E   = L xy . AND (Z (xPy)) (Z (yPx)) // Equality
+
+L t . t x y // Darstellung für Tupel (t ist enteder T (für erstes Element) oder F (zweites Element), x und y sind freie Variablen)
+
+Rekursion kann mit (L x . x x) erreicht werden.
+
+FV(E) = Menge der freien Variablen in einer Funktion E

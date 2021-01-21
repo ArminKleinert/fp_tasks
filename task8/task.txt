@@ -1,0 +1,136 @@
+{- Abgabe von Anna Sophie Pipperr und Armin Kleinert -}
+
+1) λxy.λxy
+Inkorrekt. Funktionskörper fehlt.
+
+2) λa.λy(zw)(λa.az)
+Inkorrekt. Nach "λy" müsste ein Punkt folgen.
+
+3) λ(y.yzy)x.xyz
+(y.yzy) ist kein valider Parameter. Wenn nur das y ein Parameter sein soll und wir die Klammern vergessen, ist der Ausdruck syntaktisch inkorrekt, da vor "x." ein Lambda-Symbol fehlt.
+
+4. λazy.zxyab.y
+Punkte sind nur nach Parametern erlaubt und ein Lambda-Ausdruck kann nur eine Parameter-Liste auf "Top-Level" enthalten. Dieser Ausdruck hat entweder einen Punkt im Körper oder zwei Parameter-Listen.
+
+2. Aufgabe
+
+1) λz.λy.xy
+z und y sind gebunden, da sie in den Parametern der Lambda-Ausdrücke vorkommen. x ist frei.
+
+2) λazy.zxy(λa.bz)
+z, y und a (beide) sind gebunden, da sie zu den Parametern gehören. x und b sind frei.
+
+3) (λz.λa.az(λa.az))z
+z und a sind innerhalb der Klammern gebunden (a sogar zwei mal). Das z rechts außerhalb der Klammern ist frei.
+
+4) z((λx.xz)x)(λx.xyz)
+x wird in zwei Lambda-Funktionen gebunden und kommt einmal frei vor. z und y sind überall frei.
+Mit Umbenennung:
+a((λb.ba)c)(λd.dea)
+a (vormals z), c (vormals x) und e (früher y) sind frei. b und d sind gebunden.
+
+3. Aufgabe
+
+1) (λy.y)z((λx.xz)x)(λx.xyz)
+(λa.a) b ((λc.cb) d) (λe.efb) -- <- Nach α-Konversion
+((λa.a) b) ((λc.cb) d) (λe.efb)
+b ((λc.cb) d) (λe.efb)
+b (db) (λe.efb)
+
+2) (λzy.z(λabc.b(abc))y) (λsz.z) (λsz.s(z))
+(λde.d(λabc.b(abc))e) (λfg.g) (λhi.h(i)) -- <- Nach α-Konversion
+(λfg.g) (λabc.b(abc)) (λhi.h(i))
+(λhi.h(i))
+
+3. (λzy.zy(λab.b)) (λab.a) (λab.b) z y
+(λab.ab(λcd.d)) (λef.e) (λgh.h) z y -- <- Nach α-Konversion
+((λef.e) (λgh.h) (λcd.d)) z y
+(λgh.h) z y
+y
+
+4. Aufgabe
+
+1) Korrekte Gleichung?
+((λa.λb.(b)a)λx.(x)x)λy.(y)(y)y == (λb.(λa.(a)b)λx.(x)x)λy.(y)(y)y
+
+-- α-Konversion, um die Benahmung klarer zu machen:
+((λa.λb.(b)a)λc.(c)c)λd.(d)(d)d == (λa.(λb.(b)a)λc.(c)c)λd.(d)(d)d
+
+-- Abkürzungen für gemeinsame Ausdrücke:
+E ::= λc.(c)c
+F ::= λd.(d)(d)d
+
+-- Reduzierung:
+        ((λa.λb.(b)a)E)F == (λa.(λb.(b)a)E)F
+              (λb.(b)E)F == (λb.(b)E)F
+                  ((F)E) == ((F)E)
+        ((λd.(d)(d)d) E) == ((λd.(d)(d)d) E) -- <- F wieder ausschreiben
+               ((E)(E)E) == ((E)(E)E)
+
+Die Gleichung ist Korrekt, da Funktionsapplikation linksassoziativ ist.
+
+
+2) 
+((λb.λa.(a)b)λy.(y)(y)y)λx.(x)x == (λa.(λb.(b)b)a)λy.(y)(y)y
+
+-- α-Konversion, um die Benahmung klarer zu machen:
+((λa.λb.(b)a)λc.(c)(c)c)λd.(d)d == (λa.(λb.(b)b)a)λc.(c)(c)c 
+
+-- Abkürzungen für gemeinsame Ausdrücke:
+E ::= λc.(c)(c)c
+
+-- Reduzierung:
+((λa.λb.(b)a)E)λd.(d)d == (λa.(λb.(b)b)a)E
+    ((λb.(b)E))λd.(d)d == ((λb.(b)b)E)
+         ((λd.(d)d)E)) == (E)E
+               ((E)E)E == (E)E
+  (((λc.(c)(c)c)) E) E == (λc.(c)(c)c) E
+         ((E) (E) E) E == (E) (E) E
+
+Die Seiten der Gleichung sind beide unendlich rekursiv (haben also keine Normal-Form), aber nicht unbedingt equivalent.
+
+
+
+5. Aufgabe:
+
+I ::= λx.x -- Identitäts-Funktion
+
+vF == (λxy.xTy)λxy.y
+   == λy.(λab.b)Ty
+   == λy.y
+
+F¬ == (λxy.y) λa.aFT
+   == (λy.y)       -- Erstes Argument wird laut Definition von F verworfen.
+
+
+6. Aufgabe
+
+
+7. Aufgabe
+
+
+
+λ
+
+>= ::= (λxy.Z(xPy)
+E ::= (λxy.∧ (Z (xPy)) (Z(yPx))) -- x >= y && y >= x
+Z ::= Test gegen 0
+P ::= Predecessor
+F ::= λxy.y -- If false
+I ::= λx.x -- Identitäts-Funktion
+
+¬ ::= λx.xFT
+∧ ::= λxy.xyF 
+∨ ::= λxy.xTy
+
+
+
+
+
+
+
+
+
+
+
+
