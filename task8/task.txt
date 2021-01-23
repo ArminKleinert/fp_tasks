@@ -105,6 +105,41 @@ F¬ == (λxy.y) λa.aFT
 
 6. Aufgabe
 
+/=
+(λxy.¬(∧ (Z (xPy)) (Z(yPx))))
+
+((λz.zFT) (∧ (Z (xPy)) (Z(yPx)))) 1 2
+((λz.zFT) (∧ (Z (1 P 2)) (Z(2 P 1))))
+((λz.zFT) (∧ (Z 1) (Z 0)))
+((λz.zFT) (∧ F T))
+((∧ F T) F T)
+(((λxy.xyF) F T) F T)
+((F T F) F T)
+(F F T)
+F
+
+
+<
+-- (x <= y) && (!(x==y))
+(λxy.∧ (Z(yPx)) (¬(E x y)))
+
+(λxy.∧ (Z(yPx)) (¬(E x y))) 1 2
+(∧ (Z(2 P 1)) (¬(E 1 2)))
+(∧ (Z 0) (¬(E 1 2)))
+(∧ T (¬(E 1 2)))
+(¬(E 1 2))
+(¬((λxy.∧ (Z (xPy)) (Z(yPx))) 1 2))
+(¬(∧ (Z (1 P 2)) (Z(2 P 1))))
+(¬(∧ (Z 1) (Z 0)))
+(¬(∧ F T))
+(¬((λxy.xyF) F T))
+(¬(F T F))
+(¬F)
+((λx.xFT) F)
+(F F T)
+T
+
+
 
 7. Aufgabe
 
@@ -112,12 +147,14 @@ F¬ == (λxy.y) λa.aFT
 
 λ
 
->= ::= (λxy.Z(xPy)
+>= ::= (λxy.Z(xPy))
 E ::= (λxy.∧ (Z (xPy)) (Z(yPx))) -- x >= y && y >= x
 Z ::= Test gegen 0
 P ::= Predecessor
 F ::= λxy.y -- If false
 I ::= λx.x -- Identitäts-Funktion
+zero = λf . λx . x
+S = λn . λf . λx . n f (f x)
 
 ¬ ::= λx.xFT
 ∧ ::= λxy.xyF 
