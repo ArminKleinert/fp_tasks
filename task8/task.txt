@@ -143,6 +143,34 @@ T
 
 7. Aufgabe
 
+λxy.(x y ⊥)
+
+-- Test mit T T
+(λxy.(x y ⊥)) T T
+(λxy.(x y ((λab.b) T T))) T T
+(T T ((λab.b) T T))
+T
+
+-- Test mit T F
+(λxy.(x y ⊥)) T F
+(λxy.(x y ((λab.b) x y))) T F
+(T F ((λab.b) T F))
+F
+
+-- Test mit F T
+(λxy.(x y ⊥)) F T
+(λxy.(x y ((λab.b) x y))) F T
+(F T ((λab.b) F T))
+(F T F))
+F
+
+-- Test mit F F
+(λxy.(x y ⊥)) F F
+(λxy.(x y ((λab.b) x y))) F F
+(F F ((λab.b) F F))
+(F F F))
+F
+
 
 
 λ
@@ -159,7 +187,7 @@ S = λn . λf . λx . n f (f x)
 ¬ ::= λx.xFT
 ∧ ::= λxy.xyF 
 ∨ ::= λxy.xTy
-
+⊥ ::= λxy.y
 
 
 
