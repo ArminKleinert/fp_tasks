@@ -4,7 +4,7 @@
 Inkorrekt. Funktionskörper fehlt.
 
 2) λa.λy(zw)(λa.az)
-Inkorrekt. Nach "λy" müsste ein Punkt folgen.
+Inkorrekt. Nach "λy" müsste ein Punkt folgen, da "(zw)" kein valider Parameter ist..
 
 3) λ(y.yzy)x.xyz
 (y.yzy) ist kein valider Parameter. Wenn nur das y ein Parameter sein soll und wir die Klammern vergessen, ist der Ausdruck syntaktisch inkorrekt, da vor "x." ein Lambda-Symbol fehlt.
@@ -18,7 +18,7 @@ Punkte sind nur nach Parametern erlaubt und ein Lambda-Ausdruck kann nur eine Pa
 z und y sind gebunden, da sie in den Parametern der Lambda-Ausdrücke vorkommen. x ist frei.
 
 2) λazy.zxy(λa.bz)
-z, y und a (beide) sind gebunden, da sie zu den Parametern gehören. x und b sind frei.
+z, y und a (beide) sind gebunden, da sie zu den Parametern gehören. x und b sind frei. Das a im Ausdruck "(λa.bz)" ist im umgebenden Ausdruck aber ungebunden.
 
 3) (λz.λa.az(λa.az))z
 z und a sind innerhalb der Klammern gebunden (a sogar zwei mal). Das z rechts außerhalb der Klammern ist frei.
@@ -40,13 +40,19 @@ b (db) (λe.efb)
 2) (λzy.z(λabc.b(abc))y) (λsz.z) (λsz.s(z))
 (λde.d(λabc.b(abc))e) (λfg.g) (λhi.h(i)) -- <- Nach α-Konversion
 (λfg.g) (λabc.b(abc)) (λhi.h(i))
+F (λabc.b(abc)) (λhi.h(i)) -- <- (λfg.g) ist wie F, also bleibt nur der zweite Parameter der Applikation
 (λhi.h(i))
 
 3. (λzy.zy(λab.b)) (λab.a) (λab.b) z y
 (λab.ab(λcd.d)) (λef.e) (λgh.h) z y -- <- Nach α-Konversion
-((λef.e) (λgh.h) (λcd.d)) z y
+((λef.e) (λgh.h) (λcd.d)) z y -- (λef.e) ist wie T, daher bleibt nur (λgh.h) nach der Applikation.
 (λgh.h) z y
+F z y -- <- Nur y bleibt, da (λgh.h) nur den zweiten Parameter übrig lässt.
 y
+
+Hi. Ist `(λab.ab(λcd.d)) (λef.e) (λgh.h) z y` gleich
+`((λab.ab(λcd.d)) (λef.e) (λgh.h)) z y` oder 
+`((λab.ab(λcd.d) (λef.e) ((λgh.h) z y))`
 
 4. Aufgabe
 
@@ -120,7 +126,7 @@ F
 
 
 <
--- (x <= y) && (!(x==y))
+-- (y >= x) && (!(x==y))
 (λxy.∧ (Z(yPx)) (¬(E x y)))
 
 (λxy.∧ (Z(yPx)) (¬(E x y))) 1 2
@@ -143,34 +149,37 @@ T
 
 7. Aufgabe
 
-λxy.(x y ⊥)
+-- Wie `(not (or (not x) (not y)))`
+λxy.¬(v (¬x) (¬y))
 
 -- Test mit T T
-(λxy.(x y ⊥)) T T
-(λxy.(x y ((λab.b) T T))) T T
-(T T ((λab.b) T T))
+(λxy.¬(v (¬x) (¬y))) T T
+(¬(v (¬T) (¬T))) 
+(¬(v (F) (F))) 
+(¬(F)) 
 T
 
 -- Test mit T F
-(λxy.(x y ⊥)) T F
-(λxy.(x y ((λab.b) x y))) T F
-(T F ((λab.b) T F))
+(λxy.¬(v (¬x) (¬y))) T F
+¬(v (¬T) (¬F))
+¬(v (F) (T))
+¬(T)
 F
 
 -- Test mit F T
-(λxy.(x y ⊥)) F T
-(λxy.(x y ((λab.b) x y))) F T
-(F T ((λab.b) F T))
-(F T F))
+(λxy.¬(v (¬x) (¬y))) F T
+¬(v (¬F) (¬T))
+¬(v (T) (F))
+¬(v (T) (F))
+¬(T)
 F
 
 -- Test mit F F
-(λxy.(x y ⊥)) F F
-(λxy.(x y ((λab.b) x y))) F F
-(F F ((λab.b) F F))
-(F F F))
+(λxy.¬(v (¬x) (¬y))) F F
+¬(v (¬F) (¬F))
+¬(v (T) (T))
+¬(T)
 F
-
 
 
 λ
@@ -185,9 +194,8 @@ zero = λf . λx . x
 S = λn . λf . λx . n f (f x)
 
 ¬ ::= λx.xFT
-∧ ::= λxy.xyF 
 ∨ ::= λxy.xTy
-⊥ ::= λxy.y
+F ::= λxy.y
 
 
 

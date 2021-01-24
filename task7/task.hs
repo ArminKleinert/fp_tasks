@@ -52,7 +52,7 @@ insertLeaves :: Integer -> SimpleBT -> SimpleBT
 insertLeaves 0 tree = tree
 insertLeaves n tree = insertLeaves (n-1) (insertLeaves' tree)
 
--- Remove exactly 2 leaves, starting at the bigger sub-tree.
+-- Remove exactly 1 leaf, starting at the bigger sub-tree.
 -- - If the tree is a node with two leaves, turn it into a leaf
 -- - If the tree is just a leaf, return it
 -- - If the tree at least one sub-tree which is not a leaf,
