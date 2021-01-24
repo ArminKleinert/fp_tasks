@@ -14,20 +14,7 @@ Punkte sind nur nach Parametern erlaubt und ein Lambda-Ausdruck kann nur eine Pa
 
 2. Aufgabe
 
-1) λz.λy.xy
-z und y sind gebunden, da sie in den Parametern der Lambda-Ausdrücke vorkommen. x ist frei.
-
-2) λazy.zxy(λa.bz)
-z, y und a (beide) sind gebunden, da sie zu den Parametern gehören. x und b sind frei. Das a im Ausdruck "(λa.bz)" ist im umgebenden Ausdruck aber ungebunden.
-
-3) (λz.λa.az(λa.az))z
-z und a sind innerhalb der Klammern gebunden (a sogar zwei mal). Das z rechts außerhalb der Klammern ist frei.
-
-4) z((λx.xz)x)(λx.xyz)
-x wird in zwei Lambda-Funktionen gebunden und kommt einmal frei vor. z und y sind überall frei.
-Mit Umbenennung:
-a((λb.ba)c)(λd.dea)
-a (vormals z), c (vormals x) und e (früher y) sind frei. b und d sind gebunden.
+Siehe Bild.
 
 3. Aufgabe
 
