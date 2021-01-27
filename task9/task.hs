@@ -17,7 +17,111 @@ Formel:
 (λg . gng) wendet eine Funktion g auf n und g an, erzeugt also Rekursion für g.
 (λxya.x(y a)) ist die Multiplikation.
 (g (1Pn) g) wendet g auf den Vorgänger von n und g an.
+-}
 
+{- Aufgabe 3 -}
+
+{-
+-- a)
+
+-- Parameter z: Die Zahl
+-- Parameter f: Parameter für die ganze Zahl
+λzf . f (z (λab . b)) (z (λab . a))
+
+λzf . (z F) (z T) -- <- In Kurzschreibweise
+
+-- b)
+-- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
+(λxyf . f ((T x) S (F y)) ((F x) S (T y)))
+
+-- c)
+Vorgehen in Pseudocode:
+-- zero? = Check auf 0
+-- head und tail sind klar
+-- n ist die Zahl
+-- recur macht einen Rekursiven Aufruf
+-- decrement Dekrementiert beide Seiten der Zahl
+(lambda (n) (if (or (zero? (head n)) (zero? (tail n))) n (recur (decrement n))))
+
+(λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
+Mit ∨ ≡ λxy.xTy
+
+
+-}
+
+{- Aufgabe 4 -}
+
+{-
+Pseudocode:
+  (lambda ((a,b) (c,d)) (< (+ a d) (+ b c)))
+  (lambda ((a,b) (c,d)) (< (aSd) (bSc)))
+  (lambda (x y) (< ((xT)S(yF)) ((xF)S(yT))))
+
+{z<} ≡ (λxy.< ((xT)S(yF)) ((xF)S(yT)))
+-}
+
+{-
+Pseudocode:
+  (lambda ((a,b) (c,d)) (not (= (+ a d) (+ b c))))
+  (lambda ((a,b) (c,d)) (¬ (= (aSd) (bSc))))
+  (lambda (x y) (¬ (= ((xT)S(yF)) ((xF)S(yT)))))
+
+{/=} ≡ (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT))))
+-}
+
+{- Aufgabe 5 -}
+
+{-
+-- Hilfsfunktion. 0 wenn x=y, 1 wenn x>y oder -1 wenn x<y
+{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)
+--                    ^x=y           ^x>y      ^x<y
+
+-- Pseudocode:
+  (lambda (x y) (cmp (length x) (length y)))
+
+-- Lösung
+{LSTCMP} ≡ λxy.{CMP} ({LEN2}x) ({LEN2}y)
+
+-- Ausformuliert:
+{LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
+-}
+
+{- Aufgabe 6 -}
+
+{-
+a)
+-- In Pseudocode:
+  (lambda (e l) (if (empty? l) #f (if (= (head l) e) #t (recur e (tail l)))))
+
+-- Code:
+(λel. (λfel.ffel) (λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))))
+-}
+
+{-
+b)
+-- In Pseudocode:
+(lambda (e l)
+  (if (empty? l)
+    '()
+    (if (= (head l) e)
+      (tail l)
+      (pair (head l) (recur e (tail l))))))
+
+-- Code:
+(λel.(λfel.ffel)
+(λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l)))))
+e l)
+-}
+
+{- Aufgabe 7 -}
+
+
+
+
+{-
+Tests:
+
+{- Aufgabe 2 -}
 
 Test mit 2
 (λn . (λg . gng) (λng. Zn 1 (S ((λxya.x(y a)) 3 (g (1Pn) g))))) 2
@@ -57,31 +161,16 @@ Test mit 2
 (S 12)
 13 -- <- Ergebnis
 
--}
-
 {- Aufgabe 3 -}
 
-{-
-a)
-
--- Parameter z: Die Zahl
--- Parameter f: Parameter für die ganze Zahl
-λzf . f (z (λab . b)) (z (λab . a))
-
-λzf . (z F) (z T) -- <- In Kurzschreibweise
-
-Beispiel mit 1 (λz.z 0 1):
+-- a)
+-- Beispiel mit 1 (λz.z 0 1):
 (λzf . f (z (λab . b)) (z (λab . a))) (λz.z 0 1)
 (λf . f ((λz.z 0 1) (λab . b)) ((λz.z 0 1) (λab . a)))
 (λf . f (1) (0))
 (λf . f 1 0) -- <- Umkehrung von (λf . f 0 1), also Umkehrung von 1, also (-1)
--}
 
-{-
-b)
--- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
-(λxyf . f ((T x) S (F y)) ((F x) S (T y)))
-
+-- b)
 -- Beispiel mit 2 und 1 (Jeweils in reduzierter Form)
 (λxyf . f ((xT) S (yF)) ((xF) S (yT))) (λa.a02) (λb.b01)
 (λyf . f (((λa.a02)T) S (yF)) (((λa.a02)F) S (yT))) (λb.b01)
@@ -89,21 +178,8 @@ b)
 (λf . f ((T02) S (F01)) ((F02) S (T01)))
 (λf . f (0 S 1) (2 S 0))
 (λf . f 1 2) -- <- Valide Darstellung für die 1 als Integer im Lambda-Kalkül
--}
 
-{-
-c)
-Vorgehen in Pseudocode:
--- zero? = Check auf 0
--- head und tail sind klar
--- n ist die Zahl
--- recur macht einen Rekursiven Aufruf
--- decrement Dekrementiert beide Seiten der Zahl
-(lambda (n) (if (or (zero? (head n)) (zero? (tail n))) n (recur (decrement n))))
-
-(λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
-Mit ∨ ≡ λxy.xTy
-
+-- c)
 -- Test mit (λz.z23), also 1
 (λn . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))) (λz.z23)
 (λg . g(λz.z23)g) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))
@@ -139,20 +215,10 @@ Mit ∨ ≡ λxy.xTy
 ((∨ T F) (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
 (T (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
 (λz.z01) -- <- Ergebnis.
--}
 
 {- Aufgabe 4 -}
 
-{-
-
-Pseudocode:
-  (lambda ((a,b) (c,d)) (< (+ a d) (+ b c)))
-  (lambda ((a,b) (c,d)) (< (aSd) (bSc)))
-  (lambda (x y) (< ((xT)S(yF)) ((xF)S(yT))))
-
-{z<} ≡ (λxy.< ((xT)S(yF)) ((xF)S(yT)))
-
--- Test mit 1 und 2:
+-- Test für < mit 1 und 2:
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) 1 2
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
 (< (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T)))
@@ -161,7 +227,7 @@ Pseudocode:
 (< 3 2)
 F
 
--- Test mit 2 und 1:
+-- Test für < mit 2 und 1:
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) 2 1
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z02) (λz.z12) -- 1 hier absichtlich nicht reduziert.
 (< (((λz.z02)T)S((λz.z12)F)) (((λz.z02)F)S((λz.z12)T)))
@@ -169,17 +235,8 @@ F
 (< (0S2) (2S1))
 (< 2 3)
 T
--}
 
-{-
-Pseudocode:
-  (lambda ((a,b) (c,d)) (not (= (+ a d) (+ b c))))
-  (lambda ((a,b) (c,d)) (¬ (= (aSd) (bSc))))
-  (lambda (x y) (¬ (= ((xT)S(yF)) ((xF)S(yT)))))
-
-{/=} ≡ (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT))))
-
--- Test mit 1 und 2:
+-- Test für /= mit 1 und 2:
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 2
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T))))
@@ -189,7 +246,7 @@ Pseudocode:
 (¬ F)
 T
 
--- Test mit 1 und 1:
+-- Test für /= mit 1 und 1:
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 1
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z01) -- 1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z12)T)S((λz.z01)F)) (((λz.z12)F)S((λz.z01)T))))
@@ -198,7 +255,7 @@ T
 (¬ (E 2 2))
 (¬ T)
 
--- Test mit -1 und -1:
+-- Test für /= mit -1 und -1:
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (-1) (-1)
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z21) (λz.z10) -- -1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z21)T)S((λz.z10)F)) (((λz.z21)F)S((λz.z10)T))))
@@ -207,26 +264,8 @@ T
 (¬ (E 2 2))
 (¬ T)
 F
--}
 
 {- Aufgabe 5 -}
-
-{-
--- Hilfsfunktion. 0 wenn x=y, 1 wenn x>y oder -1 wenn x<y
-{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)
---                    ^x=y           ^x>y      ^x<y
-
--- Pseudocode:
-  (lambda (x y) (cmp (length x) (length y)))
-
--- Lösung
-{LSTCMP} ≡ λxy.{CMP} ({LEN2}x) ({LEN2}y)
-
--- Ausformuliert:
-{LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
-
-
-
 
 Test mit [1] und []:
 {LSTCMP} (λz.z1{NIL}) {NIL}
@@ -255,9 +294,9 @@ Test mit [1] und []:
 
 (λy.{CMP} 1 ({LEN2}y)) {NIL}
 
-({CMP} 1 ({LEN2} {NIL})) 
+({CMP} 1 ({LEN2} {NIL}))
 
-({CMP} 1 0)
+({CMP} 1 0) -- <- Kürze ({LEN2} {NIL}) ab
 
 ((λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)) 1 0)
 
@@ -271,17 +310,88 @@ Test mit [1] und []:
 
 (λz.z01) -- <- Ergebnis; Equivalent zu 1, da [1] länger als [] ist.
 
--}
-
 {- Aufgabe 6 -}
 
+----- a)
 
+-- Test mit 1 und [0,1]
 
-{- Aufgabe 7 -}
+(λel. (λfel.ffel) (λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))) e l) 1 (λf.f0(λg.g1{NIL}))
 
+((λfel.ffel) (λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))) 1 (λf.fx(λg.g1{NIL})))
 
+((λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))) {...} 1 (λf.f0(λg.g1{NIL})))
 
+(({TNIL} (λf.f0(λg.g1{NIL}))) F ((E ({HEAD} (λf.f0(λg.g1{NIL}))) 1) T (r r 1 ({TAIL} (λf.f0(λg.g1{NIL}))))))
+(F F ((E ({HEAD} (λf.f0(λg.g1{NIL}))) 1) T (r r 1 ({TAIL} (λf.f0(λg.g1{NIL}))))))
+((E ({HEAD} (λf.f0(λg.g1{NIL}))) 1) T (r r 1 ({TAIL} (λf.f0(λg.g1{NIL})))))
+((E 0 1) T (r r 1 ({TAIL} (λf.f0(λg.g1{NIL})))))
+(F T (r r 1 ({TAIL} (λf.f0(λg.g1{NIL})))))
+(r r 1 (λg.g1{NIL}))
 
+-- Rekursiver Aufruf:
+((λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r e ({TAIL} l)))) r 1 (λg.g1{NIL}))
+
+(({TNIL} (λg.g1{NIL})) F ((E ({HEAD} (λg.g1{NIL})) 1) T (r 1 ({TAIL} (λg.g1{NIL})))))
+(F F ((E ({HEAD} (λg.g1{NIL})) 1) T (r 1 ({TAIL} (λg.g1{NIL})))))
+((E ({HEAD} (λg.g1{NIL})) 1) T (r 1 ({TAIL} (λg.g1{NIL}))))
+((E 1 1) T (r 1 ({TAIL} (λg.g1{NIL}))))
+(T T (r 1 ({TAIL} (λg.g1{NIL}))))
+T
+
+----- b)
+-- Test mit 1 und [0,1,2]
+(λel. (λfel.ffel) (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) e l) 1 (λf.f0({PAIR}1({PAIR}2{NIL})))
+
+(λel. (λfel.ffel) (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) e l) 1 (λf.f0({PAIR}1({PAIR}2{NIL})))
+
+(λl. (λfel.ffel) (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) 1 l) (λf.f0({PAIR}1({PAIR}2{NIL})))
+
+((λfel.ffel) (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) 1 (λf.f0({PAIR}1({PAIR}2{NIL}))))
+
+-- Die Funktion wird ab hier auch "r" genannt.
+((λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) r 1 (λf.f0({PAIR}1({PAIR}2{NIL}))))
+
+((λl.({TNIL} l) {NIL} ((E ({HEAD} l) 1) ({TAIL} l) ({PAIR} ({HEAD} l) (r r 1 ({TAIL} l))))) (λf.f0({PAIR}1({PAIR}2{NIL}))))
+
+(({TNIL} (λf.f0({PAIR}1({PAIR}2{NIL})))) {NIL} ((E ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) 1) ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))) ({PAIR} ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL}))))))))
+
+(F {NIL} ((E 0 1) ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))) ({PAIR} ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL}))))))))
+
+((E 0 1) ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))) ({PAIR} ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))))))
+
+(F ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))) ({PAIR} ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL})))))))
+
+({PAIR} ({HEAD} (λf.f0({PAIR}1({PAIR}2{NIL})))) (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL}))))))
+
+({PAIR} 0 (r r 1 ({TAIL} (λf.f0({PAIR}1({PAIR}2{NIL}))))))
+
+({PAIR} 0 (r r 1 (λf.f1({PAIR}2{NIL}))))
+
+-- Rekursiver Aufruf:
+({PAIR} 0 ((λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) r 1 (λf.f1({PAIR}2{NIL}))))
+
+({PAIR} 0 ((λl.({TNIL} l) {NIL} ((E ({HEAD} l) 1) ({TAIL} l) ({PAIR} ({HEAD} l) (r r 1 ({TAIL} l))))) (λf.f1({PAIR}2{NIL}))))
+
+({PAIR} 0 (({TNIL} (λf.f1({PAIR}2{NIL}))) {NIL} ((E ({HEAD} (λf.f1({PAIR}2{NIL}))) 1) ({TAIL} (λf.f1({PAIR}2{NIL}))) ({PAIR} ({HEAD} (λf.f1({PAIR}2{NIL}))) (r r 1 ({TAIL} (λf.f1({PAIR}2{NIL}))))))))
+
+({PAIR} 0 (F {NIL} ((E ({HEAD} (λf.f1({PAIR}2{NIL}))) 1) ({TAIL} (λf.f1({PAIR}2{NIL}))) ({PAIR} ({HEAD} (λf.f1({PAIR}2{NIL}))) (r r 1 ({TAIL} (λf.f1({PAIR}2{NIL}))))))))
+
+({PAIR} 0 (F {NIL} ((E 1 1) ({TAIL} (λf.f1({PAIR}2{NIL}))) ({PAIR} ({HEAD} (λf.f1({PAIR}2{NIL}))) (r r 1 ({TAIL} (λf.f1({PAIR}2{NIL}))))))))
+
+({PAIR} 0 ((E 1 1) ({TAIL} (λf.f1({PAIR}2{NIL}))) ({PAIR} ({HEAD} (λf.f1({PAIR}2{NIL}))) (r r 1 ({TAIL} (λf.f1({PAIR}2{NIL})))))))
+
+-- 1==1 -> Beende hier
+({PAIR} 0 (T ({TAIL} (λf.f1({PAIR}2{NIL}))) ({PAIR} ({HEAD} (λf.f1({PAIR}2{NIL}))) (r r 1 ({TAIL} (λf.f1({PAIR}2{NIL})))))))
+
+-- Entferne 2. Hälfte des Ausdrucks
+({PAIR} 0 ({TAIL} (λf.f1({PAIR}2{NIL}))))
+
+-- Liste Verbinden
+({PAIR} 0 ({PAIR}2{NIL}))
+
+(λf.f 0 (λg.g2{NIL})) -- <- Equivalent zu [0,2]
+-}
 
 {-
 Extras:
