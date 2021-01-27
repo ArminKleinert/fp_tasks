@@ -93,8 +93,16 @@ b)
 
 {-
 c)
-N ::= (λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
-Mit ∨ ::= λxy.xTy
+Vorgehen in Pseudocode:
+-- zero? = Check auf 0
+-- head und tail sind klar
+-- n ist die Zahl
+-- recur macht einen Rekursiven Aufruf
+-- decrement Dekrementiert beide Seiten der Zahl
+(lambda (n) (if (or (zero? (head n)) (zero? (tail n))) n (recur (decrement n))))
+
+(λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
+Mit ∨ ≡ λxy.xTy
 
 -- Test mit (λz.z23), also 1
 (λn . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))) (λz.z23)
@@ -135,7 +143,71 @@ Mit ∨ ::= λxy.xTy
 
 {- Aufgabe 4 -}
 
+{-
 
+Pseudocode:
+  (lambda ((a,b) (c,d)) (< (+ a d) (+ b c)))
+  (lambda ((a,b) (c,d)) (< (aSd) (bSc)))
+  (lambda (x y) (< ((xT)S(yF)) ((xF)S(yT))))
+
+{z<} ≡ (λxy.< ((xT)S(yF)) ((xF)S(yT)))
+
+-- Test mit 1 und 2:
+(λxy.< ((xT)S(yF)) ((xF)S(yT))) 1 2
+(λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
+(< (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T)))
+(< ((T12)S(F02)) ((F12)S(T02)))
+(< (1S2) (2S0))
+(< 3 2)
+F
+
+-- Test mit 2 und 1:
+(λxy.< ((xT)S(yF)) ((xF)S(yT))) 2 1
+(λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z02) (λz.z12) -- 1 hier absichtlich nicht reduziert.
+(< (((λz.z02)T)S((λz.z12)F)) (((λz.z02)F)S((λz.z12)T)))
+(< ((T02)S(F12)) ((F02)S(T12)))
+(< (0S2) (2S1))
+(< 2 3)
+T
+-}
+
+{-
+Pseudocode:
+  (lambda ((a,b) (c,d)) (not (= (+ a d) (+ b c))))
+  (lambda ((a,b) (c,d)) (¬ (= (aSd) (bSc))))
+  (lambda (x y) (¬ (= ((xT)S(yF)) ((xF)S(yT)))))
+
+{/=} ≡ (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT))))
+
+-- Test mit 1 und 2:
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 2
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
+(¬ (E (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T))))
+(¬ (E ((T12)S(F02)) ((F12)S(T02))))
+(¬ (E (1S2) (2S0)))
+(¬ (E 3 2))
+(¬ F)
+T
+
+-- Test mit 1 und 1:
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 1
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z01) -- 1 hier absichtlich nicht reduziert.
+(¬ (E (((λz.z12)T)S((λz.z01)F)) (((λz.z12)F)S((λz.z01)T))))
+(¬ (E ((T12)S(F01)) ((F12)S(T01))))
+(¬ (E (1S1) (2S0)))
+(¬ (E 2 2))
+(¬ T)
+
+-- Test mit -1 und -1:
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (-1) (-1)
+(λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z21) (λz.z10) -- -1 hier absichtlich nicht reduziert.
+(¬ (E (((λz.z21)T)S((λz.z10)F)) (((λz.z21)F)S((λz.z10)T))))
+(¬ (E ((T21)S(F10)) ((F21)S(T10))))
+(¬ (E (2S0) (1S1)))
+(¬ (E 2 2))
+(¬ T)
+F
+-}
 
 {- Aufgabe 5 -}
 
@@ -151,7 +223,6 @@ Mit ∨ ::= λxy.xTy
 
 
 
-
 {-
 Extras:
 
@@ -162,5 +233,26 @@ Multiplikation
 (λa.(λv.(λu.a(a(u)))((λu.a(a(u)))(v))))
 (λav.(λu.a(a(u)))(a(a(v))))
 (λav.a(a(a(a(v)))))
+-}
+
+{-
+Genutzte Formeln:
+∧ ≡ λx y . x y F 
+∨ ≡ λxy.xTy
+N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
+E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
+G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
+¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
+< ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
+
+{PAIR} ≡ λxy.λz.zxy
+{LIST2}≡ λxy.λf.fx({PAIR}y{NIL})
+{LIST3}≡ λxyz.λf.fx({PAIR}y({PAIR}z{NIL}))
+{NIL}  ≡ λx.xTFF
+{NIL?} ≡ {TNIL} ≡ λx.x(λabc.a)
+{HEAD} ≡ λx.x(λabc.b)
+{TAIL} ≡ λx.x(λabc.c)
+{LEN}  ≡ λrx.{TNIL} x 0 (S (r ({TAIL} x)))
+{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))
 -}
 
