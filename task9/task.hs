@@ -219,8 +219,12 @@ F
 -- Pseudocode:
   (lambda (x y) (cmp (length x) (length y)))
 
+-- Lösung
 {LSTCMP} ≡ λxy.{CMP} ({LEN2}x) ({LEN2}y)
-{LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
+
+-- Ausformuliert:
+{LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
+
 
 
 
@@ -229,13 +233,43 @@ Test mit [1] und []:
 
 (λxy.{CMP} ({LEN2}x) ({LEN2}y)) (λz.z1{NIL}) {NIL}
 
-(λxy.{CMP} ((λlf.flf) x (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) (λz.z1{NIL}) {NIL}
+(λxy.{CMP} ((λlf.ffl) x (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) ({LEN2}y)) (λz.z1{NIL}) {NIL}
 
-(λy.{CMP} ((λlf.flf) (λz.z1{NIL}) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+(λy.{CMP} ((λlf.ffl) (λz.z1{NIL}) (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) ({LEN2}y)) {NIL}
 
-(λy.{CMP} ((λf.f(λz.z1{NIL})f) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+(λy.{CMP} ({TNIL} (λz.z1{NIL}) 0 (S (r r ({TAIL} (λz.z1{NIL}))))) ({LEN2}y)) {NIL}
 
-(λy.{CMP} ((λf.f(λz.z1{NIL})f) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+(λy.{CMP} (F 0 (S (r r ({TAIL} (λz.z1{NIL}))))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 (S (r r {NIL}))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 (S ((λrx.{TNIL} x 0 (S (r r ({TAIL} x)))) r {NIL}))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 (S ({TNIL} {NIL} 0 (S (r r ({TAIL} {NIL})))))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 (S (T 0 (S (r r ({TAIL} {NIL})))))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 (S 0)) ({LEN2}y)) {NIL}
+
+(λy.{CMP} (F 0 1) ({LEN2}y)) {NIL}
+
+(λy.{CMP} 1 ({LEN2}y)) {NIL}
+
+({CMP} 1 ({LEN2} {NIL})) 
+
+({CMP} 1 0)
+
+((λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)) 1 0)
+
+(({>=}10) ((E10) (λz.z00) (λz.z01)) (λz.z10))
+
+(T ((E10) (λz.z00) (λz.z01)) (λz.z10))
+
+((E10) (λz.z00) (λz.z01))
+
+(F (λz.z00) (λz.z01))
+
+(λz.z01) -- <- Ergebnis; Equivalent zu 1, da [1] länger als [] ist.
 
 -}
 
