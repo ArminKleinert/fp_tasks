@@ -211,7 +211,33 @@ F
 
 {- Aufgabe 5 -}
 
+{-
+-- Hilfsfunktion. 0 wenn x=y, 1 wenn x>y oder -1 wenn x<y
+{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)
+--                    ^x=y           ^x>y      ^x<y
 
+-- Pseudocode:
+  (lambda (x y) (cmp (length x) (length y)))
+
+{LSTCMP} ≡ λxy.{CMP} ({LEN2}x) ({LEN2}y)
+{LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
+
+
+
+Test mit [1] und []:
+{LSTCMP} (λz.z1{NIL}) {NIL}
+
+(λxy.{CMP} ({LEN2}x) ({LEN2}y)) (λz.z1{NIL}) {NIL}
+
+(λxy.{CMP} ((λlf.flf) x (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) (λz.z1{NIL}) {NIL}
+
+(λy.{CMP} ((λlf.flf) (λz.z1{NIL}) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} ((λf.f(λz.z1{NIL})f) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+
+(λy.{CMP} ((λf.f(λz.z1{NIL})f) (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) ({LEN2}y)) {NIL}
+
+-}
 
 {- Aufgabe 6 -}
 
@@ -240,10 +266,13 @@ Genutzte Formeln:
 ∧ ≡ λx y . x y F 
 ∨ ≡ λxy.xTy
 N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
+
 E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
 G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 ¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
 < ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
+{CMP} ≡ Hilfsfunktion aus 5. (nimmt 2 Werte, vergleicht sie und gibt 1 für >, 0 für = oder -1 für < zurück)
+{>=} ≡ (Z(yPx))
 
 {PAIR} ≡ λxy.λz.zxy
 {LIST2}≡ λxy.λf.fx({PAIR}y{NIL})
