@@ -58,7 +58,6 @@ Test mit 2
 13 -- <- Ergebnis
 
 -}
-(λav.a(a(a(a(v)))))
 
 {- Aufgabe 3 -}
 
@@ -80,14 +79,58 @@ Beispiel mit 1 (λz.z 0 1):
 
 {-
 b)
+-- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
+(λxyf . f ((T x) S (F y)) ((F x) S (T y)))
 
-
+-- Beispiel mit 2 und 1 (Jeweils in reduzierter Form)
+(λxyf . f ((xT) S (yF)) ((xF) S (yT))) (λa.a02) (λb.b01)
+(λyf . f (((λa.a02)T) S (yF)) (((λa.a02)F) S (yT))) (λb.b01)
+(λf . f (((λa.a02)T) S ((λb.b01)F)) (((λa.a02)F) S ((λb.b01)T)))
+(λf . f ((T02) S (F01)) ((F02) S (T01)))
+(λf . f (0 S 1) (2 S 0))
+(λf . f 1 2) -- <- Valide Darstellung für die 1 als Integer im Lambda-Kalkül
 -}
 
 {-
 c)
+N ::= (λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
+Mit ∨ ::= λxy.xTy
 
-λzf . f () ()
+-- Test mit (λz.z23), also 1
+(λn . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))) (λz.z23)
+(λg . g(λz.z23)g) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))
+
+-- Die Funktion wird ab hier für Rekursive Aufrufe "g" genannt
+((∨ (Z ((λz.z23)T)) (Z ((λz.z23)F))) (λz.z23) (g (λz.z(P((λz.z23)T))(P((λz.z23)F))) g))
+
+-- T und F in Zahl einsetzen und Aufteilen:
+((∨ (Z (T23)) (Z (F23))) (λz.z23) (g (λz.z(P(T23))(P(F23))) g))
+((∨ (Z 2) (Z 3)) (λz.z23) (g (λz.z(P 2)(P 3)) g))
+
+-- Z2 und Z3 ausführen, ∨ anwenden, P2 und P3 ausführen:
+((∨ F F) (λz.z23) (g (λz.z(P 2)(P 3)) g))
+(F (λz.z23) (g (λz.z(P 2)(P 3)) g))
+(g (λz.z(P 2)(P 3)) g)
+(g (λz.z12) g)
+
+-- Rekursiver Aufruf:
+((λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)) (λz.z12) g)
+((∨ (Z ((λz.z12)T)) (Z ((λz.z12)F))) (λz.z12) (g (λz.z(P((λz.z12)T))(P((λz.z12)F))) g))
+((∨ (Z (T12)) (Z (F12))) (λz.z12) (g (λz.z(P(T12))(P(F12))) g))
+((∨ (Z 1) (Z 2)) (λz.z12) (g (λz.z(P 1)(P 2)) g))
+((∨ F F) (λz.z12) (g (λz.z(P 1)(P 2)) g))
+(F (λz.z12) (g (λz.z(P 1)(P 2)) g))
+(g (λz.z(P 1)(P 2)) g)
+(g (λz.z01) g)
+
+-- Nächster rekursiver Aufruf:
+((λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)) (λz.z01) g)
+((∨ (Z ((λz.z01)T)) (Z ((λz.z01)F))) (λz.z01) (g (λz.z(P((λz.z01)T))(P((λz.z01)F))) g))
+((∨ (Z (T01)) (Z (F01))) (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
+((∨ (Z 0) (Z 1)) (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
+((∨ T F) (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
+(T (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
+(λz.z01) -- <- Ergebnis.
 -}
 
 {- Aufgabe 4 -}
