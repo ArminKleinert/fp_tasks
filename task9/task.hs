@@ -123,7 +123,7 @@ Tests:
 
 {- Aufgabe 2 -}
 
-Test mit 2
+----- Test mit 2 -----
 (λn . (λg . gng) (λng. Zn 1 (S ((λxya.x(y a)) 3 (g (1Pn) g))))) 2
 ((λg . g2g) (λng. Zn 1 (S ((λxya.x(y a)) 3 (g (1Pn) g)))))
 ((λng. Zn 1 (S ((λxya.x(y a)) 3 (g (1Pn) g)))) 2 g) -- Funktion ab jetzt auch "g" genannt, um es kurz zu halten.
@@ -161,16 +161,20 @@ Test mit 2
 (S 12)
 13 -- <- Ergebnis
 
+----------
+
 {- Aufgabe 3 -}
 
--- a)
+----- a) -----
+
 -- Beispiel mit 1 (λz.z 0 1):
 (λzf . f (z (λab . b)) (z (λab . a))) (λz.z 0 1)
 (λf . f ((λz.z 0 1) (λab . b)) ((λz.z 0 1) (λab . a)))
 (λf . f (1) (0))
 (λf . f 1 0) -- <- Umkehrung von (λf . f 0 1), also Umkehrung von 1, also (-1)
 
--- b)
+----- b) -----
+
 -- Beispiel mit 2 und 1 (Jeweils in reduzierter Form)
 (λxyf . f ((xT) S (yF)) ((xF) S (yT))) (λa.a02) (λb.b01)
 (λyf . f (((λa.a02)T) S (yF)) (((λa.a02)F) S (yT))) (λb.b01)
@@ -179,7 +183,8 @@ Test mit 2
 (λf . f (0 S 1) (2 S 0))
 (λf . f 1 2) -- <- Valide Darstellung für die 1 als Integer im Lambda-Kalkül
 
--- c)
+----- c) -----
+
 -- Test mit (λz.z23), also 1
 (λn . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))) (λz.z23)
 (λg . g(λz.z23)g) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g))
@@ -216,9 +221,12 @@ Test mit 2
 (T (λz.z01) (g (λz.z(P(T01))(P(F01))) g))
 (λz.z01) -- <- Ergebnis.
 
+----------
+
 {- Aufgabe 4 -}
 
--- Test für < mit 1 und 2:
+----- Test für < mit 1 und 2: -----
+
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) 1 2
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
 (< (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T)))
@@ -227,7 +235,8 @@ Test mit 2
 (< 3 2)
 F
 
--- Test für < mit 2 und 1:
+----- Test für < mit 2 und 1: -----
+
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) 2 1
 (λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z02) (λz.z12) -- 1 hier absichtlich nicht reduziert.
 (< (((λz.z02)T)S((λz.z12)F)) (((λz.z02)F)S((λz.z12)T)))
@@ -236,7 +245,8 @@ F
 (< 2 3)
 T
 
--- Test für /= mit 1 und 2:
+----- Test für /= mit 1 und 2: -----
+
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 2
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T))))
@@ -246,7 +256,8 @@ T
 (¬ F)
 T
 
--- Test für /= mit 1 und 1:
+----- Test für /= mit 1 und 1: -----
+
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) 1 1
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z12) (λz.z01) -- 1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z12)T)S((λz.z01)F)) (((λz.z12)F)S((λz.z01)T))))
@@ -255,7 +266,7 @@ T
 (¬ (E 2 2))
 (¬ T)
 
--- Test für /= mit -1 und -1:
+----- Test für /= mit -1 und -1: -----
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (-1) (-1)
 (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT)))) (λz.z21) (λz.z10) -- -1 hier absichtlich nicht reduziert.
 (¬ (E (((λz.z21)T)S((λz.z10)F)) (((λz.z21)F)S((λz.z10)T))))
@@ -265,9 +276,11 @@ T
 (¬ T)
 F
 
+----------
+
 {- Aufgabe 5 -}
 
-Test mit [1] und []:
+----- Test mit [1] und []: -----
 {LSTCMP} (λz.z1{NIL}) {NIL}
 
 (λxy.{CMP} ({LEN2}x) ({LEN2}y)) (λz.z1{NIL}) {NIL}
@@ -310,9 +323,11 @@ Test mit [1] und []:
 
 (λz.z01) -- <- Ergebnis; Equivalent zu 1, da [1] länger als [] ist.
 
+----------
+
 {- Aufgabe 6 -}
 
------ a)
+----- a) -----
 
 -- Test mit 1 und [0,1]
 
@@ -339,7 +354,8 @@ Test mit [1] und []:
 (T T (r 1 ({TAIL} (λg.g1{NIL}))))
 T
 
------ b)
+----- b) -----
+
 -- Test mit 1 und [0,1,2]
 (λel. (λfel.ffel) (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l))))) e l) 1 (λf.f0({PAIR}1({PAIR}2{NIL})))
 
