@@ -1,5 +1,29 @@
 {- Abgabe von Anna Sophie Pipperr und Armin Kleinert -}
 
+{-
+Genutzte Formeln:
+∧ ≡ λx y . x y F 
+∨ ≡ λxy.xTy
+N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
+
+E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
+G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
+¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
+< ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
+{CMP} ≡ Hilfsfunktion aus 5. (nimmt 2 Werte, vergleicht sie und gibt 1 für >, 0 für = oder -1 für < zurück)
+{>=} ≡ (Z(yPx))
+
+{PAIR} ≡ λxy.λz.zxy
+{LIST2}≡ λxy.λf.fx({PAIR}y{NIL})
+{LIST3}≡ λxyz.λf.fx({PAIR}y({PAIR}z{NIL}))
+{NIL}  ≡ λx.xTFF
+{NIL?} ≡ {TNIL} ≡ λx.x(λabc.a)
+{HEAD} ≡ λx.x(λabc.b)
+{TAIL} ≡ λx.x(λabc.c)
+{LEN}  ≡ λrx.{TNIL} x 0 (S (r ({TAIL} x)))
+{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))
+-}
+
 {- Aufgabe 1 -}
 
 -- Die Definition von const ist
@@ -28,23 +52,18 @@ Formel:
 -- Parameter f: Parameter für die ganze Zahl
 λzf . f (z (λab . b)) (z (λab . a))
 
-λzf . (z F) (z T) -- <- In Kurzschreibweise
+λzf . f (z F) (z T) -- <- In Kurzschreibweise
 
 -- b)
 -- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
 (λxyf . f ((T x) S (F y)) ((F x) S (T y)))
 
 -- c)
-Vorgehen in Pseudocode:
--- zero? = Check auf 0
--- head und tail sind klar
--- n ist die Zahl
--- recur macht einen Rekursiven Aufruf
--- decrement Dekrementiert beide Seiten der Zahl
-(lambda (n) (if (or (zero? (head n)) (zero? (tail n))) n (recur (decrement n))))
 
-(λnf . (λg . gng) (λng.(∨ (Z (nT)) (Z (nF))) n (g (λz.z(P(nT))(P(nF))) g)))
-Mit ∨ ≡ λxy.xTy
+-- Zieht die beiden Teile des Zahlenpaares voneinander ab.
+-- Es funktioniert, da die Predecessor (P) -Funktion bei 0 abbricht.
+U ≡ (λxz . z ((xF)P(xT)) ((xT)P(xF)))
+
 
 
 -}
@@ -52,12 +71,11 @@ Mit ∨ ≡ λxy.xTy
 {- Aufgabe 4 -}
 
 {-
-Pseudocode:
-  (lambda ((a,b) (c,d)) (< (+ a d) (+ b c)))
-  (lambda ((a,b) (c,d)) (< (aSd) (bSc)))
-  (lambda (x y) (< ((xT)S(yF)) ((xF)S(yT))))
 
-{z<} ≡ (λxy.< ((xT)S(yF)) ((xF)S(yT)))
+(U ist definiert in 3c)
+  
+H ≡ λxy.∧ (Z(xPy)) (¬(Z(yPx)))
+{>} ≡ λxy . H((Ux)F) ((Uy)F))
 -}
 
 {-
@@ -72,8 +90,9 @@ Pseudocode:
 {- Aufgabe 5 -}
 
 {-
--- Hilfsfunktion. 0 wenn x=y, 1 wenn x>y oder -1 wenn x<y
-{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z01)) (λz.z10)
+-- Zahlen wie in Aufgabe vorgeschrieben:
+-- Hilfsfunktion. 0 wenn x=y, -1 wenn x>y oder 1 wenn x<y
+{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z10)) (λz.z01)
 --                    ^x=y           ^x>y      ^x<y
 
 -- Pseudocode:
@@ -85,6 +104,9 @@ Pseudocode:
 -- Ausformuliert:
 {LSTCMP} ≡ λxy.{CMP} ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))) x) ((λl.(λlf.ffl) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))) y)
 -}
+
+-- (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))
+-- Rekursive Funktion, gibt 0 wenn NIL gefunden wurde oder addiert 1 auf das Ergebnis eines rekursiven Aufrufs mit dem Rest von x.
 
 {- Aufgabe 6 -}
 
@@ -102,7 +124,7 @@ b)
 -- In Pseudocode:
 (lambda (e l)
   (if (empty? l)
-    '()
+    NIL
     (if (= (head l) e)
       (tail l)
       (pair (head l) (recur e (tail l))))))
@@ -112,9 +134,6 @@ b)
 (λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l)))))
 e l)
 -}
-
-{- Aufgabe 7 -}
-
 
 
 
@@ -227,22 +246,22 @@ Tests:
 
 ----- Test für < mit 1 und 2: -----
 
-(λxy.< ((xT)S(yF)) ((xF)S(yT))) 1 2
-(λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
-(< (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T)))
-(< ((T12)S(F02)) ((F12)S(T02)))
-(< (1S2) (2S0))
-(< 3 2)
+(λxy.> ((xT)S(yF)) ((xF)S(yT))) 1 2
+(λxy.> ((xT)S(yF)) ((xF)S(yT))) (λz.z12) (λz.z02) -- 1 hier absichtlich nicht reduziert.
+(> (((λz.z12)T)S((λz.z02)F)) (((λz.z12)F)S((λz.z02)T)))
+(> ((T12)S(F02)) ((F12)S(T02)))
+(> (1S2) (2S0))
+(> 3 2)
 F
 
 ----- Test für < mit 2 und 1: -----
 
-(λxy.< ((xT)S(yF)) ((xF)S(yT))) 2 1
-(λxy.< ((xT)S(yF)) ((xF)S(yT))) (λz.z02) (λz.z12) -- 1 hier absichtlich nicht reduziert.
-(< (((λz.z02)T)S((λz.z12)F)) (((λz.z02)F)S((λz.z12)T)))
-(< ((T02)S(F12)) ((F02)S(T12)))
-(< (0S2) (2S1))
-(< 2 3)
+(λxy.> ((xT)S(yF)) ((xF)S(yT))) 2 1
+(λxy.> ((xT)S(yF)) ((xF)S(yT))) (λz.z02) (λz.z12) -- 1 hier absichtlich nicht reduziert.
+(> (((λz.z02)T)S((λz.z12)F)) (((λz.z02)F)S((λz.z12)T)))
+(> ((T02)S(F12)) ((F02)S(T12)))
+(> (0S2) (2S1))
+(> 2 3)
 T
 
 ----- Test für /= mit 1 und 2: -----
@@ -419,29 +438,5 @@ Multiplikation
 (λa.(λv.(λu.a(a(u)))((λu.a(a(u)))(v))))
 (λav.(λu.a(a(u)))(a(a(v))))
 (λav.a(a(a(a(v)))))
--}
-
-{-
-Genutzte Formeln:
-∧ ≡ λx y . x y F 
-∨ ≡ λxy.xTy
-N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
-
-E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
-G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
-¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
-< ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
-{CMP} ≡ Hilfsfunktion aus 5. (nimmt 2 Werte, vergleicht sie und gibt 1 für >, 0 für = oder -1 für < zurück)
-{>=} ≡ (Z(yPx))
-
-{PAIR} ≡ λxy.λz.zxy
-{LIST2}≡ λxy.λf.fx({PAIR}y{NIL})
-{LIST3}≡ λxyz.λf.fx({PAIR}y({PAIR}z{NIL}))
-{NIL}  ≡ λx.xTFF
-{NIL?} ≡ {TNIL} ≡ λx.x(λabc.a)
-{HEAD} ≡ λx.x(λabc.b)
-{TAIL} ≡ λx.x(λabc.c)
-{LEN}  ≡ λrx.{TNIL} x 0 (S (r ({TAIL} x)))
-{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))
 -}
 
