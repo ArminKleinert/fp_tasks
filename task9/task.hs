@@ -54,6 +54,7 @@ Formel:
 
 λzf . f (z F) (z T) -- <- In Kurzschreibweise
 
+
 -- b)
 -- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
 (λxyf . f ((T x) S (F y)) ((F x) S (T y)))
