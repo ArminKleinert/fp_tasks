@@ -1,10 +1,13 @@
 {- Abgabe von Anna Sophie Pipperr und Armin Kleinert -}
 
+1. Aufgabe
+
 1) λxy.λxy
-Inkorrekt. Funktionskörper fehlt.
+Punkt und Funktionskörper fehlen am Ende.
 
 2) λa.λy(zw)(λa.az)
-Inkorrekt. Nach "λy" müsste ein Punkt folgen, da "(zw)" kein valider Parameter ist..
+Nach "λy" müsste ein Punkt folgen, da "(zw)" kein valider Parameter ist.
+Korrekt wäre "λa.λy.(zw)(λa.az)"
 
 3) λ(y.yzy)x.xyz
 (y.yzy) ist kein valider Parameter. Wenn nur das y ein Parameter sein soll und wir die Klammern vergessen, ist der Ausdruck syntaktisch inkorrekt, da vor "x." ein Lambda-Symbol fehlt.
@@ -36,10 +39,6 @@ F (λabc.b(abc)) (λhi.h(i)) -- <- (λfg.g) ist wie F, also bleibt nur der zweit
 (λgh.h) z y
 F z y -- <- Nur y bleibt, da (λgh.h) nur den zweiten Parameter übrig lässt.
 y
-
-Hi. Ist `(λab.ab(λcd.d)) (λef.e) (λgh.h) z y` gleich
-`((λab.ab(λcd.d)) (λef.e) (λgh.h)) z y` oder 
-`((λab.ab(λcd.d) (λef.e) ((λgh.h) z y))`
 
 4. Aufgabe
 
@@ -81,8 +80,6 @@ E ::= λc.(c)(c)c
          ((E) (E) E) E == (E) (E) E
 
 Die Seiten der Gleichung sind beide unendlich rekursiv (haben also keine Normal-Form), aber nicht unbedingt equivalent.
-
-
 
 5. Aufgabe:
 
@@ -177,11 +174,13 @@ Z ::= Test gegen 0
 P ::= Predecessor
 F ::= λxy.y -- If false
 I ::= λx.x -- Identitäts-Funktion
+¬ ::= λx.xFT
 zero = λf . λx . x
 S = λn . λf . λx . n f (f x)
 
 ¬ ::= λx.xFT
 ∨ ::= λxy.xTy
+∧ ::= λxy.xyF
 F ::= λxy.y
 
 

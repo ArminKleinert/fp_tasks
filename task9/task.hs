@@ -20,8 +20,8 @@ G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 {NIL?} ≡ {TNIL} ≡ λx.x(λabc.a)
 {HEAD} ≡ λx.x(λabc.b)
 {TAIL} ≡ λx.x(λabc.c)
-{LEN}  ≡ λrx.{TNIL} x 0 (S (r ({TAIL} x)))
-{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r ({TAIL} x))))
+{LEN}  ≡ λrx.{TNIL} x 0 (S (r r ({TAIL} x)))
+{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))
 -}
 
 {- Aufgabe 1 -}
@@ -57,7 +57,7 @@ Formel:
 
 -- b)
 -- x und y sind Zahlen, f ist der Parameter für die neue Zahl.
-(λxyf . f ((T x) S (F y)) ((F x) S (T y)))
+(λxyf . f ((xT) S (yF)) ((xF) S (yT)))
 
 -- c)
 
@@ -108,6 +108,8 @@ Pseudocode:
 
 -- (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))
 -- Rekursive Funktion, gibt 0 wenn NIL gefunden wurde oder addiert 1 auf das Ergebnis eines rekursiven Aufrufs mit dem Rest von x.
+
+
 
 {- Aufgabe 6 -}
 
