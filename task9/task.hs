@@ -13,7 +13,7 @@ G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 {CMP} ≡ Hilfsfunktion aus 5. (nimmt 2 Werte, vergleicht sie und gibt 1 für >, 0 für = oder -1 für < zurück)
 {>=} ≡ (Z(yPx))
 
-{PAIR} ≡ λxy.λz.zxy
+{PAIR} ≡ λxy.λz.zFxy
 {LIST2}≡ λxy.λf.fx({PAIR}y{NIL})
 {LIST3}≡ λxyz.λf.fx({PAIR}y({PAIR}z{NIL}))
 {NIL}  ≡ λx.xTFF
