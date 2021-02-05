@@ -10,7 +10,14 @@
 pow3 :: Double -> Double
 pow3 = (\x -> 3**x)
 
+--(.) :: (b -> c) -> (a -> b) -> a -> c
+--(.) g f x = (g (f x))
 
+fun :: (t1 -> t2) -> (t3 -> t1) -> (t4 -> t3) -> t4 -> t2
+fun f g h = (\x -> f (g (h x)))
+
+remove :: (a -> Bool) -> [a] -> [a]
+remove f = filter (not . f)
 
 -- b)
 -- fix = (\y -> (\x -> y (x x)) (\z -> y (z z)))
