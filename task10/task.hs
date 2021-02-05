@@ -7,30 +7,34 @@
 
 -- a)
 -- TODO
-
+pow3 :: Double -> Double
 pow3 = (\x -> 3**x)
 
 
 
 -- b)
---fix = (\y -> (\x -> y (x x)) (\z -> y (z z)))
+-- fix = (\y -> (\x -> y (x x)) (\z -> y (z z)))
 
-fix :: (t -> t) -> t
-fix = (\x -> x (fix x))
 -- Z.B.
 -- cnt r n = if (n==0) then 0 else n+(r (n-1))
 -- `(fix cnt) 6`
+fix :: (t -> t) -> t
+fix = (\x -> x (fix x))
 
+-- FIXME War das so gemeint???
 -- Eg. (fix reverse0) [1,2,3,4,5] => [5,4,3,2,1]
 reverse0 :: [a] -> [a]
 reverse0 = fix (\r xs -> if (null xs) then [] else (r (tail xs)) ++ [(head xs)])
 
 {- Aufgabe 2 -}
 
+collatz_help :: Integral a => a -> a
 collatz_help n
     | n `mod` 2 == 0 = n `div` 2
     | otherwise      = 3 * n + 1
 
+-- FIXME War das so gemeint???
+collatz :: Integral t => (t -> [t]) -> t -> [t]
 collatz r n
     | n <= 0 = error "The number must be positive."
     | n == 1 = [n]
@@ -49,6 +53,8 @@ filter0 :: Foldable t => (a -> Bool) -> t a -> [a]
 filter0 p l = foldl (\r x -> if (p x) then r++[x] else r) [] l
 
 -- b)
+
+insertSort :: Ord a => [a] -> [a]
 insertSort [] = [] 
 insertSort xs = foldl (\r x -> insert x r) [] xs
   where                        
@@ -116,10 +122,6 @@ S(Ky)(SI(Ky))                   ≡ S(Ky)(SI(Ky)) -- Regel 4
 {- Aufgabe 6 -}
 
 {-
-I = Identitätsfunktion λx.x
-K = λab.a
-S = λxyz.xz(yz)
-
 λs.λx.s(s(s(x))) ≡ (S(S(KS)K)(S(S(KS)K)I))
 
 λs.λx.s(s(s(x))) 1 2
@@ -154,38 +156,10 @@ S = λxyz.xz(yz)
 (λc.(λf.(λb.c)f((λy.c)f(cf)))) 1 2
 ((λb.1)2((λy.1)2(1(2))))
 (1((λy.1)2(1(2))))
-(1(1(1(2)))) -- Dieser Schritt kam auch bei 
+(1(1(1(2))))
+
+1(1(1(2))) ≡ 1(1(1(2)))
 
 -}
 
-Kombinator: Freie Lambda-Abstraktion, die keine freien Variablen hat und das Lambda-Kalkül vereinfachen soll
-- Lambda-Abstraktion
-- Keine freien Variablen
-- Primitiv
 
-
-(S(S(KS)K)(S(S(KS)K)I)) 1 2
-((λabc.ac(bc))(S(KS)K)(S(S(KS)K)I)) 1 2
-(λc.(S(KS)K)c((S(S(KS)K)I)c)) 1 2
-(λc.((λdef.df(ef))(KS)K)c((S(S(KS)K)I)c)) 1 2
-(λc.(λf.(KS)f(Kf))c((S(S(KS)K)I)c)) 1 2
-(λc.((KS)c(Kc))((S(S(KS)K)I)c)) 1 2
-(λc.((λb.S)c(λd.c))((S(S(KS)K)I)c)) 1 2
-(λc.(S(λd.c))((S(S(KS)K)I)c)) 1 2
-(λc.((λefg.eg(fg))(λd.c))((S(S(KS)K)I)c)) 1 2
-(λc.(λfg.(λd.c)g(fg))((S(S(KS)K)I)c)) 1 2
-(λc.(λfg.fg)((S(S(KS)K)I)c)) 1 2
-(λc.(λg.((S(S(KS)K)I)c)g)) 1 2
-(((S(S(KS)K)I)1)2)
-((((λxyz.xz(yz))(S(KS)K)I)1)2)
-(((λz.(S(KS)K)z(Iz)) 1) 2)
-(((λz.(S(KS)K)zz) 1) 2)
-(((λz.((λabc.ac(bc))(KS)K)zz) 1) 2)
-(((λz.(λc.(KS)c(Kc))zz) 1) 2)
-(((λz.(KS)z(Kz)z) 1) 2)
-(((λz.((λab.a)S)z((λab.a)z)z) 1) 2)
-(((λz.(λb.S)z(λb.z)z) 1) 2)
-(((λz.S(λb.z)z) 1) 2)
-(((λz.(λdef.df(ef))(λb.z)z) 1) 2)
-(((λz.(λf.(λb.z)f(zf))) 1) 2)
-(((λz.(λf.z(zf))) 1) 2)
