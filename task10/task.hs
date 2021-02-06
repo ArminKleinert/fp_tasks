@@ -6,21 +6,21 @@
 {- Aufgabe 1 -}
 
 -- a)
--- TODO
 pow3 :: Double -> Double
 pow3 = \x -> 3**x
 
---(.) :: (b -> c) -> (a -> b) -> a -> c
---(.) g f x = (g (f x))
-
-fun :: (t1 -> t2) -> (t3 -> t1) -> (t4 -> t3) -> t4 -> t2
-fun f g h = \x -> f (g (h x))
+fun :: (t1 -> t2) -> (t3 -> t4) -> (t4 -> t1) -> t3 -> t2
+fun f g h = \x -> f (h (g x))
 
 remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
 
--- b)
--- fix = (\y -> (\x -> y (x x)) (\z -> y (z z)))
+-- b)´
+
+reverse2 :: Foldable t => t a -> [a]
+reverse2 l = foldl (\x y -> [y] ++ x) [] l
+
+{- Aufgabe 2 -}
 
 -- Z.B.
 -- cnt r n = if (n==0) then 0 else n+(r (n-1))
@@ -28,23 +28,15 @@ remove f = filter (not . f)
 fix :: (t -> t) -> t
 fix = (\x -> x (fix x))
 
--- FIXME War das so gemeint???
--- Eg. (fix reverse0) [1,2,3,4,5] => [5,4,3,2,1]
-reverse0 :: [a] -> [a]
-reverse0 = fix (\r xs -> if (null xs) then [] else (r (tail xs)) ++ [(head xs)])
-
-{- Aufgabe 2 -}
-
 collatz_help :: Integral a => a -> a
 collatz_help n
     | n `mod` 2 == 0 = n `div` 2
     | otherwise      = 3 * n + 1
 
--- FIXME War das so gemeint???
 collatz :: Integral t => (t -> [t]) -> t -> [t]
 collatz r n
     | n <= 0 = error "The number must be positive."
-    | n == 1 = [n]
+    | n == 1 = [n] -- Anker
     | otherwise = n:r (collatz_help n)
 
 {- Aufgabe 3 -}
@@ -53,7 +45,7 @@ collatz r n
 
 -- Eg. length0 [1,2,3,4,5] => 5
 length0 :: (Foldable t, Integral a1) => t a2 -> a1
-length0 l = foldl (\r x -> r+1) 0 l
+length0 l = foldl (\r _ -> r+1) 0 l
 
 -- Eg. filter0 (even) [1,2,3,4,5] => [1,2]
 filter0 :: Foldable t => (a -> Bool) -> t a -> [a]
@@ -61,9 +53,8 @@ filter0 p l = foldl (\r x -> if (p x) then r++[x] else r) [] l
 
 -- b)
 
-insertSort :: Ord a => [a] -> [a]
-insertSort [] = [] 
-insertSort xs = foldl (\r x -> insert x r) [] xs
+insertionSort :: Ord a => [a] -> [a]
+insertionSort = foldl (\r x -> insert x r) []
   where                        
     insert a []    = [a]
     insert a (b:y) | a<= b     = a:(b:y)                                            
