@@ -86,35 +86,13 @@ S(KK)I ≡ K
 -- b)
 
 {-
-SS(SI(K(KI)))(KK(S(KK)I))(KI) -- Ursprüngliche Formel
-SS(SI(K(KI)))(K)(KI) -- (KK(S(KK)I)) zu K auflösen, da K nur das 1. Argument behält
-((SK)((SI(K(KI)))K))(KI) -- (SS(SI(K(KI)))(K)) erweitern
-((SK)(((λxyz.xz(yz))I(K(KI)))K))(KI) -- 
-((SK)(((λyz.(Iz)(yz))(K(KI)))K))(KI) -- 
-((SK)(((λyz.z(yz))(K(KI)))K))(KI) -- 
-((SK)((λz.z((K(KI))z))K))(KI) -- 
-((SK)(K((K(KI))K)))(KI) -- 
-((SK)(K(KI)))(KI) -- 
-((SK)((λb.(KI))))(KI) -- 
-((SK)((λb.(KI))))(λa.I) -- 
-((λyz.Kz(yz))(λb.(KI)))(λa.I)
-((λyz.z)(λb.(KI)))(λa.I)
-(λz.z)(λa.I)
-(λa.I)
-(λa.(λx.x))
-(λax.x)
+Siehe andere Datei
 -}
 
 {- Aufgabe 5 -}
 
 {-
-T[λx.y(xy)]                     ≡ S(Ky)(SI(Ky))
-elim. x [y (xy)]                ≡ S(Ky)(SI(Ky)) -- Regel 2
-S(elim. x [y]) (elim. x [(xy)]) ≡ S(Ky)(SI(Ky)) -- Regel 7
-S(Ky)(elim. x [xy])             ≡ S(Ky)(SI(Ky)) -- Regel 4
-S(Ky)(S(elim. x [x])(elim. x [y])) ≡ S(Ky)(SI(Ky)) -- Regel 7
-S(Ky)(SI(elim. x [y]))          ≡ S(Ky)(SI(Ky)) -- Regel 3
-S(Ky)(SI(Ky))                   ≡ S(Ky)(SI(Ky)) -- Regel 4
+Siehe andere Datei
 -}
 
 {- Aufgabe 6 -}
@@ -157,7 +135,6 @@ S(Ky)(SI(Ky))                   ≡ S(Ky)(SI(Ky)) -- Regel 4
 (1(1(1(2))))
 
 1(1(1(2))) ≡ 1(1(1(2)))
-
 -}
 
 
