@@ -27,6 +27,7 @@ class Files
           begin
             content.downcase! unless strict_casing
           rescue
+            puts "Error: " << f.name
             content = ""
           end
         end

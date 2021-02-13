@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=ISO-8859-1">
+   <meta name="AUTHOR" content="Alexander Gloye">
+   <meta name="GENERATOR" content="vim, netscape, emacs, ultraedit">
+   <meta name="Content-Language" content="de">
+   <meta name="MS.LOCALE" content="DE">
+   <meta name="CHARSET" content="iso8859-1">
+   <meta name="CATEGORY" content="Events">
+   <meta name="PUBLISHED_DATE" content="Siehe Fußnote im Dokument">
+   <meta name="Description" content="Vorlesungsmaterial der Freien Universität Berlin, Institut für Informatik, Fachbereichs Mathematik und Informatik">
+   <meta name="KeyWords" content="Vorlesungsmaterial">
+   <title>Vorlesung Algorithmen und Programmieren I - Probeklausur</title>
+</head><body>
+<table width="100%">
+<tbody><tr>
+<td align="LEFT">
+<h4>
+19504 V Algorithmen und Programmieren I&nbsp;<br>
+Wintersemester 2001/2002</h4>
+</td>
+
+<td align="RIGHT">
+<h4>
+<a href="http://www.inf.fu-berlin.de/%7Erojas">Rojas<br>
+</a><a href="http://www.inf.fu-berlin.de/%7Egloye">Gloye</a></h4>
+</td>
+</tr>
+</tbody></table>
+<hr>
+<center>
+<h1>Probeklausur</h1></center>
+
+<center><h5>31. Januar 2002</h5></center>
+<p>
+<b>Hinweis:</b> Verwenden Sie keine
+Hilfsmittel (Bücher, Skripte, Vorlesungsmitschriften, Taschenrechner). Sie 
+haben 120 Minuten Zeit. Fangen Sie mit den einfachsten Aufgaben an. Geben Sie 
+zu allen Funktionen die Signatur an und kommentieren Sie die Funktionen 
+ausreichend!
+</p>
+<h3>Aufgabe 1 (1 Punkt) [5 min]</h3>
+<p>
+Schreiben Sie in Haskell eine Quicksort-Variante, die eine Liste von Listen
+nach der Länge der Teillisten sortiert. Beispiel:
+</p><pre>qs [[1,2,3],[1],[1,2]] = [[1],[1,2],[1,2,3]]
+</pre>
+<p></p>
+<h3>Aufgabe 2 (3 Punkte) [15 min]</h3>
+<p>
+Wir möchten mit Daten vom Typ <tt>Nom</tt> arbeiten, wobei wir auch 
+<tt>PlusUnendlich</tt>, <tt>MinusUnendlich</tt> und <tt>Undefiniert</tt> 
+verwenden wollen. Definieren Sie einen passenden algebraischen Datentyp 
+und die Funktionen <tt>add</tt>, <tt>sub</tt>, <tt>mul</tt> und <tt>div</tt>, 
+die mit diesem Datentyp operieren. Für alle n&gt;0 soll 0/0 undefiniert, 
+n/0 unendlich und -n/0 negativ unendlich sein. (Es gibt noch weitere Fälle, in 
+denen das Ergebnis undefiniert sein kann.)  
+</p>
+<h3>Aufgabe 3 (2 Punkte) [10 min]</h3>
+<p>
+Definieren Sie die Multiplikation Natürlicher Zahlen (inklusive Null) als primitiv 
+rekursive Funktion. Verwenden Sie nur die Grundfunktionen der primitiv rekursiven Funktionen.
+</p>
+<h3>Aufgabe 4 (2 Punkte) [5 min]</h3>
+<p>
+Beweisen Sie durch Induktion <tt>take n l ++ drop n l = l</tt>, wobei <tt>l</tt>
+auch eine leere Liste sein kann. Die Funktionen sind wie folgt definiert:
+<table>
+<tbody><tr><td><tt>[] ++ xs</tt></td><td><tt>= xs</tt></td><td>(++.1)</td></tr>
+<tr><td><tt>(a:as) ++ xs</tt></td><td><tt>= a:(as++xs)</tt></td><td>(++.2)</td></tr>
+
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+
+<tr><td><tt>drop 0 as</tt></td><td><tt>= as</tt></td><td>(drop.1)</td></tr>
+<tr><td><tt>drop (n+1) []</tt></td><td><tt>= []</tt></td><td>(drop.2)</td></tr>
+<tr><td><tt>drop (n+1) (a:as)</tt></td><td><tt>= drop n as</tt></td><td>(drop.3)</td></tr>
+
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+
+<tr><td><tt>take 0 as</tt></td><td><tt>= []</tt></td><td>(take.1)</td></tr>
+<tr><td><tt>take (n+1) []</tt></td><td><tt>= []</tt></td><td>(take.2)</td></tr>
+<tr><td><tt>take (n+1) (a:as)</tt></td><td><tt>= a:(take n as)</tt></td><td>(take.3)</td></tr>
+</tbody></table>
+Geben Sie für alle Beweisschritte die verwendeten Beziehungen oder Gesetze an.
+</p>
+<h3>Aufgabe 5 (3 Punkte) [20 min]</h3>
+<p>
+Definieren Sie eine Turing-Maschine, die eine Binäre Zahl in eine Zahl zur Basis 4 überführt. 
+Die Initialisierung des Bandes ist beliebig (unvorhersehbar). Beispiel:
+</p>
+<p>
+<table>
+<tbody><tr><td><tt>...|B|0|1|1|1|A|...</tt></td></tr>
+<tr><td><tt>&nbsp;&nbsp;&nbsp;&nbsp;^</tt></td></tr>
+</tbody></table>
+</p>
+geht über in
+<p>
+<table>
+<tbody><tr><td><tt>...|C|1|3|B|0|1|1|1|A|...</tt></td></tr>
+<tr><td><tt>&nbsp;&nbsp;&nbsp;&nbsp;^</tt></td></tr>
+</tbody></table>
+</p>
+<h3>Aufgabe 6 (3 Punkte) [20 min]</h3>
+<p>
+Definieren Sie in Haskell einen abstrakten Datentyp für Binärbäume von Zahlen.
+</p><ol type="a">
+<b></b><li><b></b>
+Definieren Sie eine Funktion, um ein neues Element in den Baum einzufügen. Dabei 
+sollen immer die links stehenden Kinder kleiner gleich, die rechts stehenden 
+Kinder größer als die Eltern sein. Wenn der Wert schon im Baum vorhanden ist, 
+dann soll der Baum selbst zurückgegeben werden.
+</li>
+<b></b><li><b></b>
+Definieren Sie eine Funktion, um ein Element in einem solchen Binärbaum zu
+suchen. Die Funktion soll mit einem Wahrheitswert anzeigen, ob der Wert im Baum 
+vorhanden ist oder nicht.
+</li>
+<b></b><li><b></b>
+Definieren Sie eine Funktion, die das kleinste Element im Baum findet.</li>
+<b></b><li><b></b>
+Definieren Sie eine Funktion, die die im Baum vorhandenen Zahlen sortiert ausgibt.
+</li>
+</ol>
+<p></p>
+<hr>
+letzte Änderung am 31. Januar 2002 (<a href="mailto:gloye@inf.fu-berlin.de">Alexander Gloye</a>)
+</body></html>

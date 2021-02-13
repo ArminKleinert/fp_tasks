@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+
+
+   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=ISO-8859-1">
+   <meta name="AUTHOR" content="Alexander Gloye">
+   <meta name="GENERATOR" content="vim, netscape, emacs, ultraedit">
+   <meta name="Content-Language" content="de">
+   <meta name="MS.LOCALE" content="DE">
+   <meta name="CHARSET" content="iso8859-1">
+   <meta name="CATEGORY" content="Events">
+   <meta name="PUBLISHED_DATE" content="Siehe Fußnote im Dokument">
+   <meta name="Description" content="Vorlesungsmaterial der Freien Universität Berlin, Institut für Informatik, Fachbereichs Mathematik und Informatik">
+   <meta name="KeyWords" content="Vorlesungsmaterial">
+   <title>Vorlesung Algorithmen und Programmieren I - Probeklausur</title>
+</head><body>
+<table width="100%">
+<tbody><tr>
+<td align="LEFT">
+<h4>
+19504 V Algorithmen und Programmieren I&nbsp;<br>
+Wintersemester 2003/2004</h4>
+</td>
+
+<td align="RIGHT">
+<h4>
+<a href="http://www.inf.fu-berlin.de/%7Erojas">Rojas<br>
+</a><a href="http://www.inf.fu-berlin.de/%7Egloye">Gloye</a></h4>
+</td>
+</tr>
+</tbody></table>
+<hr>
+<center>
+<h1>Übung Klausuraufgaben</h1></center>
+
+<center><h5>2. Februar 2004</h5></center>
+<p>
+<b>Hinweis:</b> Verwenden Sie keine
+Hilfsmittel (Bücher, Skripte, Vorlesungsmitschriften,
+      Taschenrechner), denn diese dürfen Sie in der Klausur
+      auch nicht benutzen. Geben Sie 
+zu allen Funktionen die Signatur an und kommentieren Sie die Funktionen 
+ausreichend!
+</p>
+<h3>Aufgabe 1 (5 Punkt) [5 min]</h3>
+<p>
+Schreiben Sie in Haskell eine Quicksort-Variante, die eine Liste von Listen
+nach der Länge der Teillisten sortiert. Beispiel:
+</p><pre>qs [[1,2,3],[1],[1,2]] = [[1],[1,2],[1,2,3]]
+</pre>
+<p></p>
+<h3>Aufgabe 2 (10 Punkte) [15 min]</h3>
+<p>
+</p><ol type="a">
+<li>
+Schreiben Sie eine Haskell-Funktion, die eine nicht negative Zahl (Typ Integer) in eine Liste 
+von Nullen und Einsen umwandelt, wobei die Liste die Binärdarstellung der Zahl
+repräsentieren soll. Eine Fehlerbehandlung für falsch
+	eingegebene Zahlen ist nicht notwendig. 
+	Tip: Bauen Sie die Zahl von rechts nach links auf. 
+</li>
+<li>
+Verallgemeinern Sie die Funktion, sodaß die Zahl bezüglich einer beliebigen 
+Basis dargestellt werden kann.
+</li>
+</ol>
+<p></p>
+<h3>Aufgabe 3 (15 Punkte) [15 min]</h3>
+<p>
+Wir möchten mit Daten vom Typ <tt>Nom</tt> arbeiten, wobei wir auch 
+<tt>PlusUnendlich</tt>, <tt>MinusUnendlich</tt> und <tt>Undefiniert</tt> 
+verwenden wollen. Definieren Sie einen passenden algebraischen Datentyp 
+und die Funktionen <tt>add</tt>, <tt>sub</tt>, <tt>mul</tt> und <tt>div</tt>, 
+die mit diesem Datentyp operieren. Für alle n&gt;0 soll 0/0 undefiniert, 
+n/0 unendlich und -n/0 negativ unendlich sein. (Es gibt noch weitere Fälle, in 
+denen das Ergebnis undefiniert sein kann.)  
+</p>
+<h3>Aufgabe 4 (15 Punkte) [20 min]</h3>
+<p>
+</p><ol type="a">
+<li>
+Definieren Sie einen neuen Datentyp <tt>Bruch</tt>, der entweder aus  
+zwei Integern besteht (mit dem Konstruktor F), oder aus einem Integer 
+(mit dem Konstruktor G). Die Zahl 0,5 wird dann als <tt>F 1 2</tt> geschrieben 
+und die Zahl -3 als <tt>G -3</tt>. 
+</li>
+<li>
+Schreiben Sie in Haskell die Funktionen 
+<tt>add</tt>, <tt>sub</tt>, <tt>mul</tt> und <tt>div</tt>, die auf diesem 
+Datentyp arbeiten.    
+</li>
+<li>
+Schreiben Sie eine Funktion <tt>norm</tt>, die die Brüche so weit wie möglich 
+vereinfacht, d. h.
+<ol type="i">
+<li>
+den Bruch kürzt, wenn dies möglich ist (z.B. <tt>F 2 4</tt><font face="symbol"> Þ </font><tt>F 1 2</tt>),
+</li>
+<li>
+den Bruch in eine ganze Zahl umwandelt, wenn dies möglich ist (z.B. <tt>F 4 2</tt><font face="symbol"> Þ </font><tt>G 2</tt>), und
+</li>
+<li>
+negative Zahlen nur im Zähler stehen (z.B. <tt>F 2 -4</tt><font face="symbol"> Þ </font><tt>F -1 2</tt>).
+</li>
+</ol>
+Sie dürfen die Haskell-Funktion <tt>gcd</tt> benutzen.
+</li>
+</ol>
+<p></p>
+<h3>Aufgabe 5 (15 Punkte) [20 min]</h3>
+<p>
+Definieren Sie in Haskell einen abstrakten Datentyp für Binärbäume von Zahlen.
+</p><ol type="a">
+<li>
+Definieren Sie eine Funktion, um ein neues Element in den Baum einzufügen. Dabei 
+sollen immer die links stehenden Kinder kleiner gleich, die rechts stehenden 
+Kinder größer als die Eltern sein. Wenn der Wert schon im Baum vorhanden ist, 
+dann soll der Baum selbst zurückgegeben werden.
+</li>
+<li>
+Definieren Sie eine Funktion, um ein Element in einem solchen Binärbaum zu
+suchen. Die Funktion soll mit einem Wahrheitswert anzeigen, ob der Wert im Baum 
+vorhanden ist oder nicht.
+</li>
+<li>
+Definieren Sie eine Funktion, die das kleinste Element im Baum findet.</li>
+<li>
+Definieren Sie eine Funktion, die die im Baum vorhandenen Zahlen sortiert ausgibt.
+</li>
+</ol>
+<p></p>
+<h3>Aufgabe 6 (10 Punkte) [25 min]</h3>
+<p>
+Ein Algorithmus zum schnellen Berechnen der <i>n</i>-ten Fibonaccizahl (aus der Folge 0,1,1,2,3,5,8,...):
+</p><ul>
+<li>
+Man starte mit dem Paar f<sub>0</sub>=(1,0) für n=0.
+</li>
+<li>
+Das nächste Paar f<sub>n</sub> erhalten wir, indem wir die linke Zahl nach 
+rechts schreiben und die Summe der beiden Zahlen nach links 
+schreiben, aus f<sub>2</sub> = (2,1) folgt also f<sub>3</sub> = (2+1,2) = (3,2).
+</li>
+<li>
+die linke Zahl ist die <i>n</i>-te Fibonaccizahl, also fibo(4) = 5, 
+denn f<sub>4</sub> = (5,3). 
+</li>
+</ul>
+<p></p>
+<p>
+</p><ol type="a">
+<li>
+Schreiben Sie eine Funktion in Haskell, die Fibonacci-Zahlen
+	nach dem oben 
+angegebenen Verfahren schnell (und endrekursiv) 
+berechnet. 
+</li>
+<li>
+Schreiben Sie diese Funktion im &#955;-Kalkül. Sie dürfen 
+alle Makros aus der Vorlesung verwenden ohne sie zu definieren (zum Beispiel 
+<tt>T</tt> (True), <tt>F</tt> (False), <tt>S</tt> (Nachfolger), 
+<tt>P</tt> (Vorgänger), <tt>PHI</tt> , Zahlen, <tt>Z</tt> (Test auf 0), 
+Vergleichsoperatoren, Boolsche Operatoren, 
+<tt>MUL</tt> (Multiplikation), <tt>Y</tt> (Rekursionsoperator)).
+ 
+</li>
+</ol>
+<p></p>
+<h3>Aufgabe 7 (15 Punkte) [20 min]</h3>
+<p>
+</p><ol type="a">
+<li><p>
+Schreiben Sie eine Funktion in Haskell, die die syntaktische Gleichheit von 
+Lambda-Ausdrücken  
+testet, ohne <tt>derive Eq</tt> zu benutzen. Die Ausdrücke sollen in dem aus der Vorlesung bekannten Datentyp 
+<tt>Expr</tt> vorliegen. Zwei Lambda-Ausdrücke sollen genau dann 
+gleich sein, wenn die Syntaxbäume gleich und wenn alle Variablennamen in den 
+jeweils korrespondierenden Blättern gleich sind.
+</p>
+<p>
+Die Lambda-Ausdrücke <tt>(Lam "x" (Var "x"))</tt> und <tt>(Lam "y" (Var "y"))</tt> sind 
+somit nicht syntaktisch gleich. 
+</p> 
+</li>
+<li>
+Schreiben Sie eine Funktion isInTable, die zu einem gegebenen String <i>a</i>
+und einer gegebenen Liste von 2-Tupeln von Strings <tt>True</tt> zurückgibt, wenn 
+der String <i>a</i> das erste Element in irgendeinem 2-Tupel in der Liste ist.
+</li>
+<li>
+Schreiben Sie eine Funktion getFromTable, die zu einem gegebenen String <i>a</i>
+und einer gegebenen Liste von 2-Tupeln von Strings den String <i>b</i> zurückgibt, 
+wenn das 2-Tupel (<i>a</i>,<i>b</i>) in der Liste vorkommt. Sie können davon ausgehen, 
+daß das Vorhandensein von <i>a</i> als erstem Element eines 2-Tupels in der Liste 
+gewährleistet ist.
+</li>
+</ol>
+<p></p>
+<h3>Aufgabe 8 (10 Punkte) [10 min]</h3>
+<p>
+Definieren Sie die Multiplikation Natürlicher Zahlen (inklusive Null) als primitiv 
+rekursive Funktion. Verwenden Sie nur die Grundfunktionen der primitiv rekursiven Funktionen.
+</p>
+<h3>Aufgabe 9 (10 Punkte) [5 min]</h3>
+<p>
+Beweisen Sie durch Induktion <tt>take n l ++ drop n l = l</tt>, wobei <tt>l</tt>
+auch eine leere Liste sein kann. Die Funktionen sind wie folgt definiert:
+<table>
+<tbody><tr><td><tt>[] ++ xs</tt></td><td><tt>= xs</tt></td><td>(++.1)</td></tr>
+<tr><td><tt>(a:as) ++ xs</tt></td><td><tt>= a:(as++xs)</tt></td><td>(++.2)</td></tr>
+
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+
+<tr><td><tt>drop 0 as</tt></td><td><tt>= as</tt></td><td>(drop.1)</td></tr>
+<tr><td><tt>drop (n+1) []</tt></td><td><tt>= []</tt></td><td>(drop.2)</td></tr>
+<tr><td><tt>drop (n+1) (a:as)</tt></td><td><tt>= drop n as</tt></td><td>(drop.3)</td></tr>
+
+<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+
+<tr><td><tt>take 0 as</tt></td><td><tt>= []</tt></td><td>(take.1)</td></tr>
+<tr><td><tt>take (n+1) []</tt></td><td><tt>= []</tt></td><td>(take.2)</td></tr>
+<tr><td><tt>take (n+1) (a:as)</tt></td><td><tt>= a:(take n as)</tt></td><td>(take.3)</td></tr>
+</tbody></table>
+Geben Sie für alle Beweisschritte die verwendeten Beziehungen oder Gesetze an.
+</p>
+<h3>Aufgabe 10 (15 Punkte) [20 min]</h3>
+<p>
+Definieren Sie eine Turing-Maschine, die eine Binäre Zahl in eine Zahl zur Basis 4 überführt. 
+Die Initialisierung des Bandes ist beliebig (unvorhersehbar). Beispiel:
+</p>
+<p>
+<table>
+<tbody><tr><td><tt>...|B|0|1|1|1|A|...</tt></td></tr>
+<tr><td><tt>&nbsp;&nbsp;&nbsp;&nbsp;^</tt></td></tr>
+</tbody></table>
+</p>
+geht über in
+<p>
+<table>
+<tbody><tr><td><tt>...|C|1|3|B|0|1|1|1|A|...</tt></td></tr>
+<tr><td><tt>&nbsp;&nbsp;&nbsp;&nbsp;^</tt></td></tr>
+</tbody></table>
+</p>
+<hr>
+letzte Änderung am 2. Februar 2004 (<a href="mailto:gloye@inf.fu-berlin.de">Alexander Gloye</a>)
+</body></html>

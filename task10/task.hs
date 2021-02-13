@@ -13,12 +13,12 @@ fun :: (t1 -> t2) -> (t3 -> t4) -> (t4 -> t1) -> t3 -> t2
 fun f g h = \x -> f (h (g x))
 
 remove :: (a -> Bool) -> [a] -> [a]
-remove f = filter (not . f)
+remove f = filter (\x -> not (f x))
 
--- b)´
+-- b)
 
 reverse2 :: Foldable t => t a -> [a]
-reverse2 l = foldl (\x y -> [y] ++ x) [] l
+reverse2 l = foldl (\x y -> y : x) [] l
 
 {- Aufgabe 2 -}
 

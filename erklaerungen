@@ -1,0 +1,14 @@
+Vollständige Induktion: Beweise für natürliche Zahlen
+Strukturelle Induktion: Beweise für Mengen
+
+Induktion auf Listen:
+1. Induktionsanfang (I.A.):  Man zeigt Eigenschaft P für []
+2. Induktionsschritt (I.S.): Man zeigt P(x:xs) unter der Annahme, dass auch P(xs) gilt.
+   Damit ist dann bewiesen, dass P für alle endlichen Listen gilt.
+
+reverse (reverse xs) = xs
+I.A. xs = []
+     reverse [] ++ ys = reverse ys -- (6)
+     = reverse xs ++ reverse ys = reverse ys ++ [] = reverse ys -- (4)
+I.V. für xs = xs' gilt reverse (xs' ++ ys) = reverse ys ++ reverse xs'
+I.S. xs = (x:xs')
