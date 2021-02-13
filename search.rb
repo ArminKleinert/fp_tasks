@@ -37,4 +37,4 @@ class Files
   end
 end
 
-puts Files.filter_files_for_text(".", ARGV[0]) { |f| f.end_with? ".txt" or f.end_with? ".hs" }
+puts Files.filter_files_for_text(".", ARGV.join(" ")) { |f| f.end_with? ".txt" or f.end_with? ".hs" }
