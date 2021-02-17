@@ -55,7 +55,7 @@ Exponentiell: O(2^n), O(n!), O(n^k), ...
 Pattern (n+1) aktivieren: ghci <file?> -XNPlusKPatterns
   sub1 (n+1) = n
 
-Lazy-evaluation (lazyness ; lazy ; eval ; lazyevaluation)
+Lazy-evaluation (; lazyness ; lazy ; eval ; lazyevaluation ;)
 Ist eine optimierte Auswertungsvariante von call-by-name und wird in Haskell und anderen funktionalen Sprachen verwendet.
   Vorteil:
     - Wenn eine Normalform existiert, wird diese erreicht.
@@ -72,7 +72,7 @@ Der Datentyp von Funktionen wird statisch während der Übersetzungszeit des Pro
 - Durch die Reduzierung der Typ-Überprüfung wird das Programm schneller
 - Typ-Inferenz ist möglich
 
-Striktheit ; Pureness ; Purheit ; Reinheit ; Functional purity
+Striktheit ; Pureness ; Purheit ; Reinheit ; Functional purity;
 Eine Funktion kann lazy ausgeführt werden und terminiert nicht. Sie gibt für den selben Input den selben Output und nimmt immer die selbe Anzahl von Argumenten.
   Definition: f ist strikt wenn (f ⊥ = ⊥)
   "Eine Funktion f ist nach einem ihrer Argumente a strikt, wenn für die Auswertung der Funktion die Auswertung von a notwendig ist."
@@ -81,7 +81,7 @@ foldl vs foldr
 foldl (:) [] [1,2,3,4,5] => Error (Versucht ((((([]:1):2):3):4):5) auszuführen)
 foldr (:) [] [1,2,3,4,5] => [1,2,3,4,5] (Wird zu (1:(2:(3:(4:(5:[]))))))
 
-Kombinator ; Combinator
+; Kombinator ; Combinator ;
 Freie Lambda-Abstraktion, die keine freien Variablen hat und das Lambda-Kalkül vereinfachen soll
 - Lambda-Abstraktion
 - Keine freien Variablen
@@ -107,12 +107,12 @@ map4 (_, [])     = []
 map4 (f, (x:xs)) = (f x) : map4 (f, xs)
 
 -- First of list
--- first ; fst ; head
+-- ; first ; fst ; head ;
 head1 :: [a] -> a
 head1 (x:xs) = x
 
 -- Rest of list
--- rest ; tail
+-- ; rest ; tail ;
 tail1 :: [a] -> [a]
 tail1 []     = []
 tail1 (_:xs) = xs
@@ -324,7 +324,7 @@ commonPrefix (x:xs) (y:ys)
 twoTimes  ::  (a -> a) -> a -> a
 twoTimes  f  x  =  f ( f  x )
 
--- pot ; all combinations ; combinations ; allcombinations
+-- ; pot ; all combinations ; combinations ; allcombinations ;
 pot :: [t] -> [[t]]
 pot [] = [[]]
 pot (t:ts) = pot ts ++ map (t:) (pot ts)
@@ -373,7 +373,7 @@ dropWhile2 p [] = []
 dropWhile2 p (x:xs) | p x = dropWhile2 p xs
                     | otherwise = x:xs
 
--- indices ; indices by ; indices ; index
+-- ; indices ; indices by ; indices ; index ;
 
 matchIndices :: Num a => (t -> Bool) -> [t] -> [a]
 matchIndices p ls = miSub p ls 0
@@ -415,7 +415,7 @@ zipWith7 :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWith7 f xs ys = [(f x y) | (x,y) <- zip xs ys] 
 
 --
--- contains ; include ; includes ; issublist ; is sublist ; subseq ; subsequence ; substring ; infix ; infixof ; isinfixof
+-- ; contains ; include ; includes ; issublist ; is sublist ; subseq ; subsequence ; substring ; infix ; infixof ; isinfixof ;
 --
 
 subseq :: Eq a => [a] -> [a] -> Bool
@@ -443,7 +443,7 @@ prefix (_:_) [] = False
 prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
 
 -- 
---  contains ; include ; includes ; elem ; has element ; indexof
+--  ; contains ; include ; includes ; elem ; has element ; indexof ;
 --
 
 elem1 :: Eq a => a -> [a] -> Bool
@@ -486,7 +486,7 @@ none3 p []     = True
 none3 p (x:xs) | p x = False
                | otherwise = none3 p xs
 
--- Sum (add all ; addall)
+-- Sum (; add all ; addall ;)
 
 sum2 :: (Num a) => [a] -> a
 sum2 [] = 0
@@ -500,7 +500,7 @@ sum3 (x:xs) = x + sum3 xs
 
 sum4 = betweenAll (+) 0
 
--- multiply all (multall ; mulall)
+-- multiply all (; multall ; mulall ;)
 
 mulAll :: (Num a) => [a] -> a
 mulAll [] = 0
@@ -553,7 +553,7 @@ pow1 n m = natFold (*n) 1 m
     natFold h c n = h (natFold h c (n-1))
 
 -- (++)
--- concat ; append ; appendall ; prepend ; concatenate
+-- ; concat ; append ; appendall ; prepend ; concatenate ;
 {-
 -- O(n) wobei n die Lnge der ersten Liste ist.
 (++) :: [a] -> [a] -> [a]
@@ -581,7 +581,7 @@ bubbleSort xs  | isSorted (<=) xs = xs
                           | otherwise  = y: moveBubble (x:rest)
 
 --
--- ( composition ; functioncomposition .-operator ; dotoperator ; dot-operator )
+-- (; composition ; functioncomposition .-operator ; dotoperator ; dot-operator ;)
 -- Funktions-Komposition:
 --
 {-
@@ -593,7 +593,7 @@ bubbleSort xs  | isSorted (<=) xs = xs
 -- Pseudo-Sets
 --
 
--- remove ; Opposite of filter
+--  ;remove ; Opposite of filter ;
 -- O(n)
 remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
@@ -669,7 +669,7 @@ intersection xs ys = filter (\x -> inSet x ys) xs
 -}
 
 -- Count occurences of element in list 
--- frequency ; freq
+-- ; frequency ; freq ;
 -- O(n)
 countOf :: (Num p, Eq t) => t -> [t] -> p
 countOf _ []     = 0
@@ -677,7 +677,7 @@ countOf x (y:ys) | x == y = 1 + countOf x ys
                  | otherwise = countOf x ys
 
 -- Count occurences of element in list (tail recursive)
--- frequency ; freq
+-- ; frequency ; freq ;
 -- O(n)
 countOf1 :: (Num p, Eq t) => t -> [t] -> p
 countOf1 _ []     = 0
@@ -987,9 +987,12 @@ N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
 E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
 G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 ¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
-< ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
-{>=} ≡ (Z(yPx))
+< ≡ λxy.¬({>=}xy)
+{>=} ≡ λxy.(Z(yPx))
+> ≡ λxy.(Exy)F({>=}xy) -- (if (= x y) F (>= x y)) 
+{<=} ≡ λxy.(Z(xPy))
 
+-- Vergleich für natürliche Zahlen
 -- 0 wenn x=y, -1 wenn x>y oder 1 wenn x<y
 {CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z10)) (λz.z01)
 
@@ -1003,6 +1006,7 @@ G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 {LEN}  ≡ λrx.{TNIL} x 0 (S (r r ({TAIL} x)))
 {LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))
 {CONST} ≡ λxy.x
+{LSTCMP} ≡ λxy.{CMP} ({LEN2}x) ({LEN2}y) -- Vergleich von Listen
 
 {NOT} ≡ λx.xFT -- if x then F else T
 {AND} ≡ λxy.xyF -- if x then y else F
@@ -1016,14 +1020,89 @@ Y ≡ λf.f(Yf)
   R ≡ (λrn .Zn0 (nS(r(Pn)))) -- R r n = if n==0 then 0 else n+(r(n-1))
   Y{R}2
 
--}
+--
 
-{-
+Aufbau von Listen:
+(λbxyf.f b x y)
+(λf.f T x y) -- Leere Liste. Erkennbar am T. x und y sind beliebig.
+(λf.f F x y) -- Nicht-leere Liste mit Elementen x und y. y kann eine weitere Liste sein.
+
+--
+
+Aufbau natürlicher Zahlen:
+(λsz.z) -- 0
+(λsz.s(z)) -- 1
+(λsz.s(s(z))) -- 2
+...
+
+--
+
+; Z ; ganze zahl ;
+
+Aufbau ganzer Zahlen:
+(λxyf.fxy) -- Wendet f auf das Paar xy an. x und y sind natürliche Zahlen.
+
+(λf.f00) -- Ganze Zahl 0
+(λf.f55) -- Auch 0
+(λf.f01) -- 1
+(λf.f10) -- -1
+...
+
+(λz.Tz) -- Erster Wert
+(λz.Fz) -- Zweiter Wert
+
+Negierung:
+{NEG} ≡ λzf . f (z F) (z T)
+
+Addition:
+(λxyf . f ((xT) S (yT)) ((xT) S (yT)))
+
+Subtraktion:
+(λxyf . f ((xT) S (yF)) ((xF) S (yT)))
+
+Normalisierung (Wandelt Zahlen zum Format (0,n) oder (n,0) um):
+U ≡ (λxz . z ((xF)P(xT)) ((xT)P(xF)))
+
+; > für ganze Zahlen
+H ≡ λxy.∧ (Z(xPy)) (¬(Z(yPx)))
+{>} ≡ λxy . H((Ux)F) ((Uy)F))
+
+-- Ungleich für ganze Zahlen ; Ungleichheit ganzer Zahlen
+-- (lambda ((a,b) (c,d)) (not (= (+ a d) (+ b c))))
+{/=} ≡ (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT))))
+--
+
+; {SEARCH} ; {FIND} ;
+Finde Wert in Liste.
+
+{SEARCH} ≡ (λel. (λfel.ffel) (λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))))
+
+--
+
+; {REMOVE} ; {DELETE} ; {REJECT} ;
+
+-- In Pseudocode:
+(lambda (e l)
+  (if (empty? l)
+    NIL
+    (if (= (head l) e)
+      (tail l)
+      (pair (head l) (recur e (tail l))))))
+
+-- Code:
+(λel.(λfel.ffel)
+(λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l)))))
+e l)
+
+--
+
 {ITERATE} ≡ λrfa.{CONS}a(rf(fa))
   Aufgerufen als Y{ITERATE}fa
--}
 
-{-
+--
+
+; {filter} ; {keep} ;
+
 filter = (lambda (r f l)
           (if (empty? l)
             NIL
@@ -1070,7 +1149,7 @@ halfN n = halfN_help n n
 
 (lambda (r n m) (if (= n m) 0 (if (< 0 (- n m)) n (r (- n m) m))))
 
-{DIV} ≡ λrnm.(Enm) 0 ((Z(mPn)) n (r (mPn) m))
+{REM} ≡ λrnm.(Enm) 0 ((Z(mPn)) n (r (mPn) m))
   Aufrufen als Y{MOD}nm
 -}
 
