@@ -74,10 +74,15 @@ sptransponiere s = foldr (++) [] (foldr op [] s)
 
 -- 6.
 {-
-run [] s = s
-run (i:il) s = run il (execute i s)
+run :: [t] -> u -> u
+run [] s = s                        -- run.1
+run (i:il) s = run il (execute i s) -- run.2
 
+execute :: t -> u -> u
 execute i s = ...
+
+(++) [] ys = ys                 -- (++).1
+(++) (x:xs) ys = x:((++) xs ys) -- (++).2
 
 Beweis über die Struktur von il1
 Zu zeigen: run ((++) il1 il2) s = run il2 (run il1 s)
@@ -90,18 +95,17 @@ run il2 s           =? run il2 s -- run.1
 I.V. il1 = il1'
 run ((++) il1' il2) s = run il2 (run il1' s)
 
-I.S. il1' = a : il1'
+I.S. il1 = a : il1'
 
 run ((++) (a:il1') il2) s         = run il2 (run (a:il1') s)
 run (a:((++) il1' il2)) s         = run il2 (run (a:il1') s) -- (++).2
 run ((++) il1' il2) (execute a s) = run il2 (run (a:il1') s) -- run.2
-run ((++) il1' il2) (execute a s) = run il2 (run il1' (execute a s)) -- I.V.
-run ((++) il1' il2) (execute a s) = run il2 (run il1' (execute a s)) -- I.V.
-????????????????????????????????????????????????
+run ((++) il1' il2) (execute a s) = run il2 (run il1' (execute a s)) -- run.2
+run il2 (run il1' (execute a s))  = run il2 (run il1' (execute a s)) -- I.V.
 -}
 
 
-
+Lustig, dass Spotify von "Enemy of the night" auf "The day is my enemy" umschaltet.
 
 
 
