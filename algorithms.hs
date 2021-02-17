@@ -324,6 +324,11 @@ commonPrefix (x:xs) (y:ys)
 twoTimes  ::  (a -> a) -> a -> a
 twoTimes  f  x  =  f ( f  x )
 
+-- pot ; all combinations ; combinations ; allcombinations
+pot :: [t] -> [[t]]
+pot [] = [[]]
+pot (t:ts) = pot ts ++ map (t:) (pot ts)
+
 -- Map
 map2 :: (a -> b) -> [a] -> [b]
 map2 f [] = []
@@ -368,6 +373,13 @@ dropWhile2 p [] = []
 dropWhile2 p (x:xs) | p x = dropWhile2 p xs
                     | otherwise = x:xs
 
+-- indices ; indices by ; indices ; index
+
+matchIndices :: Num a => (t -> Bool) -> [t] -> [a]
+matchIndices p ls = miSub p ls 0
+  where miSub _ [] _ = []
+        miSub p (x:xs) i | p x = i : miSub p xs (i+1)
+                         | otherwise = miSub p xs (i+1)
 -- dropUntil
 
 dropUntil :: (a -> Bool) -> [a] -> [a]
@@ -725,7 +737,7 @@ first_by_pred p xs =
 first_by_pred2 :: (a -> Bool) -> [a] -> Maybe a
 first_by_pred2 _ [] = Nothing
 first_by_pred2 p (x:xs) | p x = Just x
-                        | otherwise = first_by_pred2 xs
+                        | otherwise = first_by_pred2 p xs
 
 --
 -- Stack
@@ -880,8 +892,8 @@ balanced :: SimpleBT -> Bool
 balanced  L = True
 balanced  (N lt rt) = (balanced lt) && (balanced rt) && height lt == height rt
 
-balanced :: SimpleBT -> Bool
-balance1 tree = (size tree) == (2^((height tree)+1)-1)
+balanced1 :: SimpleBT -> Bool
+balanced1 tree = (size tree) == (2^((height tree)+1)-1)
   where
     size :: SimpleBT -> Integer
     size L = 1
@@ -963,7 +975,128 @@ Ausdruck 5
 = 0
 -}
 
+--
+-- Wichtige lambdas
+--
 
+{-
+∧ ≡ λx y . x y F 
+∨ ≡ λxy.xTy
+N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
+
+E ≡ (λxy.∧(Z(xPy))(Z(yPx))) -- Check auf Gleichheit aus Vorlesung 18
+G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
+¬ ≡ λx.xFT -- Boolsche Negation aus Vorlesung 18
+< ≡ (λxy.∧ (Z(yPx)) (¬(E x y))) -- Aus Übung 8. Wir gehen hier von der Richtigkeit aus, da die Abgabe noch nicht bewertet wurde.
+{>=} ≡ (Z(yPx))
+
+-- 0 wenn x=y, -1 wenn x>y oder 1 wenn x<y
+{CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z10)) (λz.z01)
+
+{CONS} ≡ λxy.λz.zFxy
+{LIST2}≡ λxy.λf.fx({CONS}y{NIL})
+{LIST3}≡ λxyz.λf.fx({CONS}y({CONS}z{NIL}))
+{NIL}  ≡ λx.xTFF
+{NIL?} ≡ {TNIL} ≡ λx.x(λabc.a)
+{HEAD} ≡ λx.x(λabc.b)
+{TAIL} ≡ λx.x(λabc.c)
+{LEN}  ≡ λrx.{TNIL} x 0 (S (r r ({TAIL} x)))
+{LEN2} ≡ λl.(λlf.flf) l (λrx.{TNIL} x 0 (S (r r ({TAIL} x))))
+{CONST} ≡ λxy.x
+
+{NOT} ≡ λx.xFT -- if x then F else T
+{AND} ≡ λxy.xyF -- if x then y else F
+{OR} ≡ λxy.xTy -- if x then T else y
+{XOR} ≡ λxy.x(yFT)y -- if x then (not y) else y
+
+Y ≡ λf.(λx.f(xx))(λx.f(xx))
+Y ≡ λf.f(Yf)
+  Aufgerufen als {Y}f wobei f eine Funktion ist. Yf bedeutet `f(Yf)`
+  Beispiel:
+  R ≡ (λrn .Zn0 (nS(r(Pn)))) -- R r n = if n==0 then 0 else n+(r(n-1))
+  Y{R}2
+
+-}
+
+{-
+{ITERATE} ≡ λrfa.{CONS}a(rf(fa))
+  Aufgerufen als Y{ITERATE}fa
+-}
+
+{-
+filter = (lambda (r f l)
+          (if (empty? l)
+            NIL
+            (if (f (head l))
+              (cons (head l) (r f (tail l)))
+              (r f (tail l)))))
+--
+{FILTER} ≡ λrfl.({TNIL}l) NIL ((f({HEAD}l)) ({CONS}({HEAD}l)(rf({TAIL}l))) (rf({TAIL}l)))
+-}
+
+{-
+foldl :: (a -> b -> a) -> a -> [b] -> a
+foldl f z []     = z
+foldl f z (x:xs) = foldl2 f (f z x) xs
+
+(lambda (f z l) (if (empty? l) z (r f (f z (head l)) (tail l))))
+
+{FOLDL} ≡ λrfzl.(({TNIL}l) z (r f (f z ({HEAD}l)) ({TAIL}l))))
+-}
+
+{-
+halfN_help n 0 = 0
+halfN_help n m = if (m+m==n) m (halfN_help n (m-1))
+
+halfN n = halfN_help n n
+
+(lambda (n) ((lambda (r n m) (if (= m 0) 0 (if (= (m+m) n) m (r n (P m))))) n n))
+
+{HALFN} ≡ λn.(λrnm.Zm 0 ((E(mSm)n) m (r n (Pm))) n n)
+  Aufrufen als Y{HALFN}n
+-}
+
+{-
+{division} ; {div} ; {divn} ; {div_n}
+
+(lambda (r n m) (if (<= n 0) 0 (S (r (- n m) m))))
+
+{DIV} ≡ λrnm.Zn 0 (S (r (mPn) m))
+  Aufrufen als Y{DIV}nm
+-}
+
+{-
+{modulo} ; {rem} ; {remainder} ; {modn} ; {mod_n} ; {remn} ; {rem_n}
+
+(lambda (r n m) (if (= n m) 0 (if (< 0 (- n m)) n (r (- n m) m))))
+
+{DIV} ≡ λrnm.(Enm) 0 ((Z(mPn)) n (r (mPn) m))
+  Aufrufen als Y{MOD}nm
+-}
+
+{-
+{sorted} ; {issorted} ; {is_sorted} ; {sorted?}
+
+(lambda (r l) (if (or (empty? l) (empty? (tail l))) T (if (> (head l) (head (tail l))) F (r (tail l)))))
+
+{SORTED} ≡ λrl.({OR}({TNIL}l)({TNIL}({TAIL}l))) T ((> ({HEAD}l) ({HEAD}({TAIL}l))) F (r ({TAIL} l))) 
+-}
+
+{-
+
+-}
+
+{-
+
+-}
+
+{-
+
+-}
+
+{-
+
+-}
 
 
 
