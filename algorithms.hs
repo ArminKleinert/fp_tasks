@@ -81,11 +81,15 @@ foldl vs foldr
 foldl (:) [] [1,2,3,4,5] => Error (Versucht ((((([]:1):2):3):4):5) auszuführen)
 foldr (:) [] [1,2,3,4,5] => [1,2,3,4,5] (Wird zu (1:(2:(3:(4:(5:[]))))))
 
-; Kombinator ; Combinator ;
+; Kombinator ; Combinator ; SKI ;
 Freie Lambda-Abstraktion, die keine freien Variablen hat und das Lambda-Kalkül vereinfachen soll
 - Lambda-Abstraktion
 - Keine freien Variablen
 - Primitiv
+
+I = Identitätsfunktion λx.x
+K = λab.a
+S = λxyz.xz(yz)
 
 
 -}
