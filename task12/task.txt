@@ -1,0 +1,116 @@
+Aufgabe 1
+
+(++) [] ys = ys -- (++).1
+(++) (x:xs) ys = x:(xs++ys) -- (++).2
+
+reverse [] = [] -- reverse.1
+reverse (x:xs) = reverse xs ++ [x] -- reverse.2
+
+elem x [] = False -- elem.1
+elem x (y:ys) | x == y = True -- elem.2
+              | otherwise = elem ys -- elem3
+
+a)
+Durch strukturelle Induktion zu zeigen:
+  reverse(reverse xs)=xs
+gilt für jede endliche Liste xs.
+
+I.A. xs = []
+reverse (reverse []) = []
+reverse []           = [] | reverse.1
+[]                   = [] | reverse.1
+
+I.V. xs' = xs
+reverse (reverse xs') = xs'
+
+I.S. xs = x:xs'
+reverse (reverse (x:xs'))      = x:xs'
+reverse ((reverse xs') ++ [x]) = x:xs' | reverse.2
+...?
+x:xs' = x:xs' | I.V.
+
+Bewiesen durch strukturelle Induktion über xs.
+
+b)
+Durch strukturelle Induktion zu zeigen:
+  elem a (xs++ys) = elem a xs || elem a ys
+gilt für alle endlichen Listen xs und ys.
+
+I.A. xs=[]
+elem a ([]++ys) = elem a [] || elem a ys
+elem a ys = elem a [] || elem a ys | (++).1
+elem a ys = False || elem a ys     | elem.1
+elem a ys = elem a ys              | (||).1
+
+I.V. xs' = xs
+elem a (xs'++ys) = elem a xs' || elem a ys
+
+I.S. xs = x:xs'
+elem a ((x:xs')++ys) = elem a (x:xs) || elem a ys
+
+Fall 1: (elem a xs) = True
+elem a ((x:xs')++ys) =? True || elem a ys | elem.2
+elem a ((x:xs')++ys) =? True | (||).2
+elem a (x:(xs'++ys)) =? True | (++).2
+                True =  True | elem.2
+
+Fall 2: (elem a xs) = False
+elem a ((x:xs')++ys) =? False || elem a ys
+elem a ((x:xs')++ys) =? elem a ys         | (||).1
+elem a (x:(xs'++ys)) =? elem a ys         | (++).2
+elem a (xs'++ys)     =? elem a ys         | elem.3
+...?
+
+Bewiesen durch strukturelle Induktion über xs.
+
+
+
+Aufgabe 2
+
+maxPieces 0 = 1 -- maxPieces.1
+maxPieces n = maxPieces (n-1) + n -- maxPieces.2
+
+maxPieces' n = aux 0 n -- maxPieces'.1
+    where
+      aux acc 0 = acc + 1 -- aux.1
+      aux acc n = aux (acc+n) (n-1) -- aux.2
+
+Zu zeigen ist, dass maxPieces äquivalent zu maxPieces' ist.
+
+Vollständige Induktion durch n:
+
+I.A. n=0
+maxPieces 0 =? maxPieces' 0
+          1 =? maxPieces' 0 | maxPieces.1
+          1 =? aux 0 0      | maxPieces'.1
+          1 =? 0+1          | aux.1
+          1 =  1            | Einfache Arithmetik
+
+I.V. n=n'
+
+maxPieces n' = maxPieces' n'
+maxPieces n' = aux 0 n' | maxPieces'.1
+
+I.S. n=n'+1
+
+maxPieces (n'+1)       =? maxPieces' (n'+1)
+maxPieces(n') + (n'+1) =? maxPieces (n'+1) | maxPieces.2
+maxPieces(n') + (n'+1) =? aux 0 (n'+1)     | maxPieces'.1
+maxPieces(n') + (n'+1) =? aux (0+(n'+1)) n'| aux.2 und einfache Arithmetik
+maxPieces(n') + (n'+1) =? aux (n'+1) n'    | Arithmetik
+...?
+
+Bewiesen durch vollständige Induktion.
+
+Aufgabe 3
+
+
+Aufgabe 4
+
+
+Aufgabe 5
+
+
+Aufgabe 6
+
+

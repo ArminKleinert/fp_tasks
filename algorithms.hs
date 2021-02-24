@@ -328,10 +328,16 @@ commonPrefix (x:xs) (y:ys)
 twoTimes  ::  (a -> a) -> a -> a
 twoTimes  f  x  =  f ( f  x )
 
--- ; pot ; all combinations ; combinations ; allcombinations ;
+-- ; pot ; all combinations ; combinations ; allcombinations ; powerset ; ^
 pot :: [t] -> [[t]]
 pot [] = [[]]
 pot (t:ts) = pot ts ++ map (t:) (pot ts)
+
+powerset ::  [a] -> [[a]]
+powerset [] =  [[]]
+powerset (x:xs) = powerset' ++ [x:ys | ys <- powerset']
+  where
+    powerset' = powerset xs
 
 -- Map
 map2 :: (a -> b) -> [a] -> [b]
@@ -597,10 +603,14 @@ bubbleSort xs  | isSorted (<=) xs = xs
 -- Pseudo-Sets
 --
 
---  ;remove ; Opposite of filter ;
+-- ; remove ; Opposite of filter ;
 -- O(n)
 remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
+
+-- remove mit lambda
+remove :: (a -> Bool) -> [a] -> [a]
+remove f = filter (\x -> not (f x))
 
 -- Remove element from List
 -- O(n)
@@ -839,7 +849,6 @@ smaller Zero _    = T
 smaller (S n) (S m) = smaller n m
 
 power :: Nat -> Nat -> Nat
-power Zero Zero = error "undefined"
 power _ Zero  = S Zero
 power n (S m) = mult n (power n m)
 
@@ -1181,22 +1190,56 @@ halfN n = halfN_help n n
 
 -}
 
+-- Reduzierung
+
+{-
+foldl (\ys x-> x:ys) [] (take 4 [1..])
+= foldl (\ys x-> x:ys) [] [1,2,3,4] -- take auflösen
+= foldl (\ys x-> x:ys) [1] [2,3,4] -- foldl...
+= foldl (\ys x-> x:ys) [2,1] [3,4]
+= foldl (\ys x-> x:ys) [3,2,1] [4]
+= foldl (\ys x-> x:ys) [4,3,2,1] []
+= [4,3,2,1] -- Yay
+-}
 
 
+fib n = fib_sub n 1 0
+  where fib_sub 0 _ b = b
+        fib_sub n a b = fib_sub (n-1) (a+b) a
 
 
+zipWith1 :: (t1 -> t2 -> a, [t1], [t2]) -> [a]
+zipWith1 (f, [], ys) = []
+zipWith1 (f, xs, []) = []
+zipWith1 (f, (x:xs), (y:ys)) = (f x y) : (zipWith1 (f, xs, ys))
 
+zipWithLg :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWithLg f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((min (length xs) (length ys))-1)]]
 
+{-
+xor :: B -> B -> B
+xor T T = F
+xor F F = F
+xor _ _ = T
 
+smaller :: Nat -> Nat -> B
+smaller _ Zero = F
+smaller Zero _ = T
+smaller (S n) (S m) = smaller n m
 
+equal :: B -> B -> B
+equal T T = T
+equal F F = T
+equal _ _ = F
 
+equal :: Nat -> Nat -> B
+equal Zero Zero = T
+equal _ Zero = F
+equal Zero _ = F
+equal (S n) (S m) = equal n m
+-}
 
-
-
-
-
-
-
+powerN1 a (S n) = foldn (\x -> mult x a) (S Zero) n 
 
 
 
