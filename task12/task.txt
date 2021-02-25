@@ -1,116 +1,381 @@
-Aufgabe 1
+1. Aufgabe
 
-(++) [] ys = ys -- (++).1
-(++) (x:xs) ys = x:(xs++ys) -- (++).2
+(++) [] ys     = ys                 --(++).1
+(++) (x:xs) ys = x : (xs ++ ys)     --(++).2
 
-reverse [] = [] -- reverse.1
-reverse (x:xs) = reverse xs ++ [x] -- reverse.2
+reverse []     = []                 --reverse.1
+reverse (x:xs) = reverse xs ++ [x]  --reverse.2
 
-elem x [] = False -- elem.1
-elem x (y:ys) | x == y = True -- elem.2
-              | otherwise = elem ys -- elem3
+elem x []                 = False   --elem.1
+elem x (y:ys) | x==y      = True    --elem.2
+              | otherwise = elem ys --elem.2
 
-a)
-Durch strukturelle Induktion zu zeigen:
-  reverse(reverse xs)=xs
-gilt für jede endliche Liste xs.
+Zusätzliche Definitionen:
+(:) x [] = [x]       --(:).1
+(:) x xs = [x] ++ xs --(:).2
 
-I.A. xs = []
-reverse (reverse []) = []
-reverse []           = [] | reverse.1
-[]                   = [] | reverse.1
+(||) False x = x   --(||).1
+(||) True _ = True --(||).2
 
-I.V. xs' = xs
+Beide sind aus der Vorlesung bekannt.
+
+reverse [x] = [x] --reverse.hilf
+
+(Direkter Beweis: zz.: reverse [x] = [x]
+reverse (x:[]) =? [x]                    --(:).1
+reverse [] ++ [x] =? [x]                 --reverse.2
+[] ++ [x] =? [x]                         --reverse.1
+[x] = [x]                                --(++).1)
+            
+a) zz.: reverse (reverse xs) = xs
+
+Beweis durch strukturelle Induktion über xs.
+
+IA: xs = []
+reverse (reverse []) =? []
+reverse [] =? []            --reverse.1
+[] = []                     --reverse.1
+
+IV: xs = xs' (mit beliebiger, aber fester Liste xs')
 reverse (reverse xs') = xs'
 
-I.S. xs = x:xs'
-reverse (reverse (x:xs'))      = x:xs'
-reverse ((reverse xs') ++ [x]) = x:xs' | reverse.2
-...?
-x:xs' = x:xs' | I.V.
+IS: xs = (x:xs')
+reverse (reverse (x:xs')) =? (x:xs')
+reverse (reverse xs' ++ [x]) =? (x:xs')                  --reverse.2
+reverse (reverse xs' ++ [x]) =? (x:reverse(reverse xs')) --IV
 
-Bewiesen durch strukturelle Induktion über xs.
+Hilfsbeweis: zz.: reverse (xs ++ [a]) = (a:reverse xs)
+Beweis durch strukturelle Induktion über xs.
+IA: xs = []
+reverse ([] ++ [a]) =? (a:reverse []) 
+reverse ([] ++ [a]) =? (a:[])         --reverse.1
+reverse [a] =? (a:[])                 --(++).1
+reverse [a] =? [a]                    --(:).1
+[a] = [a]                             --reverse.hilf         
+IV: xs = xs'
+reverse (xs' ++ [a]) = a:reverse xs'
+IS: xs = (x:xs')
+reverse ((x:xs') ++ [a]) =? a:reverse (x:xs')
+reverse (x:(xs' ++ [a])) =? a:reverse (x:xs')    --(++).2
+reverse (xs' ++ [a]) ++ [x] =? a:reverse (x:xs') --reverse.2
+(a:reverse xs') ++ [x] =? a:reverse (x:xs')      --IV
+(a:reverse xs') ++ [x] =? a:(reverse xs' ++ [x]) --reverse.2
+(a:reverse xs') ++ [x] = (a:reverse xs') ++ [x]  --(++).2
+Für alle endlichen Listen xs gilt: reverse (xs ++ [a]) = (a:reverse xs)
 
-b)
-Durch strukturelle Induktion zu zeigen:
-  elem a (xs++ys) = elem a xs || elem a ys
-gilt für alle endlichen Listen xs und ys.
+=> reverse (reverse xs' ++ [x]) = (x:reverse(reverse xs')) --Hilfbeweis (xs = reverse xs')
 
-I.A. xs=[]
-elem a ([]++ys) = elem a [] || elem a ys
-elem a ys = elem a [] || elem a ys | (++).1
-elem a ys = False || elem a ys     | elem.1
-elem a ys = elem a ys              | (||).1
+reverse (reverse xs) = xs gilt für alle endlichen Listen xs.
 
-I.V. xs' = xs
-elem a (xs'++ys) = elem a xs' || elem a ys
+b) zz.: elem a (xs ++ ys) = elem a xs || elem a ys
 
-I.S. xs = x:xs'
-elem a ((x:xs')++ys) = elem a (x:xs) || elem a ys
+Beweis durch strukturelle Induktion über xs.
 
-Fall 1: (elem a xs) = True
-elem a ((x:xs')++ys) =? True || elem a ys | elem.2
-elem a ((x:xs')++ys) =? True | (||).2
-elem a (x:(xs'++ys)) =? True | (++).2
-                True =  True | elem.2
+IA: xs = []
+elem a ([] ++ ys) =? elem a [] || elem a ys
+elem a ([] ++ ys) =? False || elem a ys     --elem.1
+elem a ([] ++ ys) =? elem a ys              --(||).1
+elem a ys = elem a ys                       --(++).1
 
-Fall 2: (elem a xs) = False
-elem a ((x:xs')++ys) =? False || elem a ys
-elem a ((x:xs')++ys) =? elem a ys         | (||).1
-elem a (x:(xs'++ys)) =? elem a ys         | (++).2
-elem a (xs'++ys)     =? elem a ys         | elem.3
-...?
+IV: xs = xs'
+elem a (xs' ++ ys) = elem a xs' || elem a ys
 
-Bewiesen durch strukturelle Induktion über xs.
+IS: xs = (x:xs')
+elem a ((x:xs') ++ ys) =? elem a (x:xs') || elem a ys
+
+Fall 1: a == x
+elem a ((x:xs') ++ ys) =? True || elem a ys --elem.2
+elem a ((x:xs') ++ ys) =? True              --(||).2
+elem a (x:(xs' ++ ys)) =? True              --(++).2
+True = True                                 --elem.2
+
+Fall 2: a /= x
+elem a ((x:xs') ++ ys) =? elem a xs' || elem a ys --elem.2 
+elem a (x:(xs' ++ ys)) =? elem a xs' || elem a ys --(++).2
+elem a (xs' ++ ys) =? elem a xs' || elem a ys     --elem.2
+elem a xs' || elem a ys = elem a xs' || elem a ys --IV
+
+Für alle endlichen Listen xs und ys gilt elem a (xs ++ ys) = elem a xs || elem a ys.
 
 
+2. Aufgabe
 
-Aufgabe 2
+maxPieces 0 = 1                       --maxPieces.1
+maxPieces n = maxPieces (n - 1) + n   --maxPieces.2
 
-maxPieces 0 = 1 -- maxPieces.1
-maxPieces n = maxPieces (n-1) + n -- maxPieces.2
+maxPieces' n = aux 0 n                          --maxPieces'
+               where
+                aux acc 0 = acc + 1             --aux.1
+                aux acc n = aux (acc + n) (n-1) --aux.2
+                
+                
+zz.: maxPieces n = maxPieces' n
 
-maxPieces' n = aux 0 n -- maxPieces'.1
-    where
-      aux acc 0 = acc + 1 -- aux.1
-      aux acc n = aux (acc+n) (n-1) -- aux.2
+Beweis mit vollständiger Induktion über n.
 
-Zu zeigen ist, dass maxPieces äquivalent zu maxPieces' ist.
-
-Vollständige Induktion durch n:
-
-I.A. n=0
+IA: n = 0
 maxPieces 0 =? maxPieces' 0
-          1 =? maxPieces' 0 | maxPieces.1
-          1 =? aux 0 0      | maxPieces'.1
-          1 =? 0+1          | aux.1
-          1 =  1            | Einfache Arithmetik
+1 =? maxPieces' 0             --maxPieces.1
+1 =? aux 0 0                  --maxPieces'
+1 =? 0 + 1                    --aux.1
+1 = 1
 
-I.V. n=n'
-
+IV: n = n'
 maxPieces n' = maxPieces' n'
-maxPieces n' = aux 0 n' | maxPieces'.1
 
-I.S. n=n'+1
+IS: n = n' + 1
+maxPieces (n'+ 1) =? maxPieces' (n'+ 1)
+maxPieces n' + (n'+ 1) =? maxPieces' (n'+ 1) --maxPieces.2
+maxPieces n' + (n'+ 1) =? aux 0 (n'+ 1)      --maxPieces'
+maxPieces' n' + (n'+ 1) =? aux 0 (n'+ 1)     --IV
+aux 0 n' + (n'+ 1) =? aux 0 (n'+ 1)          --maxPieces'
+aux 0 n' + (n'+ 1) =? aux (n'+ 1) n'         --aux.2
 
-maxPieces (n'+1)       =? maxPieces' (n'+1)
-maxPieces(n') + (n'+1) =? maxPieces (n'+1) | maxPieces.2
-maxPieces(n') + (n'+1) =? aux 0 (n'+1)     | maxPieces'.1
-maxPieces(n') + (n'+1) =? aux (0+(n'+1)) n'| aux.2 und einfache Arithmetik
-maxPieces(n') + (n'+1) =? aux (n'+1) n'    | Arithmetik
-...?
+Hilfsbeweis: zz.: aux 0 n + m = aux m n
+Beweis mit vollständiger Induktion über n.
+IA: n = 0
+aux 0 0 + m =? aux m 0
+0 + 1 + m =? aux m 0   --aux.1
+m+1 = m+1              --aux.1
+IV: n = n'
+aux 0 n' + m = aux m n'
+IS: n = n'+ 1
+aux 0 (n'+ 1) + m =? aux m (n'+ 1)
+aux (n'+ 1) n' + m =? aux m (n'+ 1)         --aux.2
+aux (n'+ 1) n' + m =? aux (m + n'+ 1) n'    --aux.2
+aux (n'+ 1) n' + m =? aux 0 n' + m + n'+ 1  --IV
+aux 0 n' + m + n'+ 1 = aux 0 n' + m + n'+ 1 --IV 
+aux 0 n + m = aux m n gilt für alle natürlichen Zahlen n und m.
 
-Bewiesen durch vollständige Induktion.
+=> aux 0 n' + (n'+ 1) = aux (n'+ 1) n' --Hilfsbeweis (mit m = n'+ 1)
 
-Aufgabe 3
-
-
-Aufgabe 4
+Für alle natürlichen Zahlen n gilt: maxPieces n = maxPieces' n.
 
 
-Aufgabe 5
+3. Aufgabe
+
+powerset :: [a] -> [[a]]
+powerset [] = [[]]                                         --powerset.1
+powerset (x:xs) = powerset' ++ [x:ys | ys <- powerset']    --powerset.2
+                  where
+                    powerset' = powerset xs                --powerset'
+    
+length xs = length [z | x <- xs] mit z gleich einem beliebigen Ausdruck -- e.1                
+
+length ist aus der Vorlesung bekannt.
+                    
+zz.: length (powerset xs) = 2^(length xs)
+               
+Beweis durch strukturelle Induktion über xs.
+
+IA: xs = []
+length (powerset []) =? 2^(length []) 
+length ([[]]) =? 2^(length [])        --powerset.1
+1 =? 2^0                              --length [] = 0 und length [[]] = 1 (eine innere Liste -> Länge = 1)
+1 = 1
+
+IV: xs = xs' 
+length (powerset xs') = 2^(length xs') 
+
+IS: xs = (x:xs')
+length (powerset (x:xs')) =? 2^(length (x:xs'))     
+length (powerset' ++ [x:ys | ys <- powerset']) =? 2^(length (x:xs'))       --powerset.2
+length (powerset xs' ++ [x:ys | ys <- powerset xs']) =? 2^(length (x:xs')) --powerset'  
+
+Hilfsbeweis: zz.: length (xs ++ ys) = length xs + length ys
+Beweis durch strukturelle Induktion über xs.
+IA: xs = []
+length ([] ++ ys) =? length [] + length ys
+length ys =? length [] + length ys          --(++).1 (siehe 1. Aufgabe)
+length ys =? 0 + length ys                  --length [] = 0
+length ys = length ys
+IV: xs = xs'
+length (xs' ++ ys) = length xs' + length ys
+IS: xs = (x:xs')
+length ((x:xs') ++ ys) =? length (x:xs') + length ys
+length (x:(xs' ++ ys) =? length (x:xs') + length ys     --(++).2
+length (xs' ++ ys) + 1 =? length (x:xs') + length ys    --length (x:xs) = length xs + 1
+length xs'+ length ys + 1 =? length (x:xs') + length ys --IV
+length xs'+ length ys + 1 = length xs' + length ys + 1  --length (x:xs) = length xs + 1
+Für alle endlichen Listen xs und ys gilt: length (xs ++ ys) = length xs ++ length ys
+
+length (powerset xs') + length [x:ys | ys <- powerset xs'] =? 2^(length (x:xs')) --Hilfsbeweis (xs = powerset xs', ys = [x:ys | ys <- powerset xs'])
+length (powerset xs') + length (powerset xs') =? 2^(length (x:xs'))              --e.1
+2 * length (powerset xs') =? 2^(length (x:xs'))                             
+2 * 2^(length xs') =? 2^(length (x:xs'))                                         --IV
+2 * 2^(length xs') =? 2^(length xs' + 1)                                         --length (x:xs) = length xs + 1
+2^(length xs' + 1) = 2^(length xs' + 1)  
+
+Für alle endlichen Listen xs gilt: length (powerset xs) = 2^(length xs)
 
 
-Aufgabe 6
+4. Aufgabe
+
+f = flip g --f
+
+flip f x y = f y x --flip
+
+Aus der Vorlesung:
+foldl f z [] = z                       --foldl.1
+foldl f z (x:xs) = foldl f (f z x) xs  --foldl.2
+
+foldr f z [] = z                       --foldr.1
+foldr f z (x:xs) = f x (foldr f z xs)  --foldr.2
+
+zz.: foldl g z xs = foldr f z (reverse xs)
+
+Beweis durch strukturelle Induktion über xs.
+
+IA: xs = []
+foldl g z [] =? foldr f z (reverse [])
+z =? foldr f z (reverse [])           --foldl.1
+z =? foldr f z []                     --reverse.1 (siehe 1. Aufgabe)
+z = z                                 --foldr.1
+
+IV: xs = xs'
+foldl g z xs' = foldr f z (reverse xs')
+
+IS: xs = (x:xs')
+foldl g z (x:xs') =? foldr f z (reverse (x:xs'))
+foldl g (g z x) xs' =? foldr f z (reverse (x:xs'))                            --foldl.2
+foldr f (g z x) (reverse xs') =? foldr f z (reverse (x:xs'))                  --IV
+foldr (flip g) (g z x) (reverse xs') =? foldr (flip g) z (reverse (x:xs'))    --flip
+foldr (flip g) (g z x) (reverse xs') =? foldr (flip g) z (reverse xs' ++ [x]) --reverse.2 (s. 1. Aufgabe)
+
+Hilfsbeweis: zz.: foldr f (flip f z a) xs = foldr f z (xs ++ [a])
+Beweis durch strukturelle Induktion über xs.
+IA: xs = []
+foldr f (flip f z a) [] =? foldr f z ([] ++ [a])
+flip f z a =? foldr f z ([] ++ [a])              --foldr.1
+flip f z a =? foldr f z [a]                      --(++).1 (s. 1. Aufgabe)
+f a z =? foldr f z [a]                           --flip
+f a z =? foldr f z (a:[])                        --(:).1
+f a z =? f a  (foldr f z [])                     --foldr.2
+f a z = f a z                                    --foldr.1
+IV: xs = xs'
+foldr f (flip f z a) xs' = foldr f z (xs' ++ [a])
+IS: xs = (x:xs')
+foldr f (flip f z a) (x:xs') =? foldr f z ((x:xs') ++ [a])
+foldr f (flip f z a) (x:xs') =? foldr f z (x:(xs' ++ [a]))     --(++).2
+foldr f (flip f z a) (x:xs') =? f x (foldr f z (xs' ++ [a]))   --foldr.2
+foldr f (flip f z a) (x:xs') =? f x (foldr f (flip f z a) xs') --IV
+foldr f (f a z) (x:xs') =? f x (foldr f (f a z) xs')           --flip 2x
+f x (foldr f (f a z) xs') = f x (foldr f (f a z) xs')          --foldr.2
+Für alle endlichen Listen xs gilt: foldr f (flip f z a) xs = foldr f z (xs ++ [a])
+
+=> foldr (flip g) (g z x) (reverse xs') =? foldr (flip g) (flip (flip g) z x) (reverse xs') --Hilfsbeweis (xs = reverse xs', a = x, f = flip g)
+foldr (flip g) (g z x) (reverse xs') =? foldr (flip g) (flip g x z) (reverse xs')           --flip
+foldr (flip g) (g z x) (reverse xs') = foldr (flip g) (g z x) (reverse xs')                 --flip 
+
+Für alle endliche Listen xs gilt: foldl g z xs = foldr f z (reverse xs)
 
 
+5. Aufgabe
+
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+
+sumLeaves :: Tree a -> Integer
+sumLeaves (Leaf x) = 1                               --sL.1
+sumLeaves (Node lt rt) = sumLeaves lt + sumLeaves rt --sL.2
+
+sumNodes :: Tree a -> Integer
+sumNodes (Leaf x) = 0                                 --sN.1
+sumNodes (Node lt rt) = 1 + sumNodes lt + sumNodes rt --sN.2
+
+
+zz.: sumLeaves t = sumNodes t + 1 
+
+Beweis durch strukturelle Induktion über t.
+
+IA: t = Leaf a
+sumLeaves (Leaf a) =? sumNodes (Leaf a) + 1 
+1 =? sumNodes (Leaf a) + 1                   --sL.1
+1 =? 0 + 1                                   --sN.1
+1 = 1
+
+IV: 
+t = lt: sumLeaves lt = sumNodes lt + 1 
+t = rt: sumLeaves rt = sumNodes rt + 1 
+
+IS: t = Node lt rt
+sumLeaves (Node lt rt) =? sumNodes (Node lt rt) + 1 
+sumLeaves lt + sumLeaves rt =? sumNodes (Node lt rt) + 1         --sL.2
+sumLeaves lt + sumLeaves rt =? sumNodes lt + sumNodes rt + 1 + 1 --sN.2
+sumLeaves lt + sumLeaves rt = sumLeaves lt + sumLeaves rt        --IV
+
+Für jeden endlichen Baum t gilt: sumLeaves t = sumNodes t + 1.
+
+
+6. Aufgabe
+
+data Tree a = Nil | Node a (Tree a) (Tree a) | Leaf a
+
+sumTree :: (Num a) => Tree a -> a                  
+sumTree Nil = 0                                  --sT.1
+sumTree (Leaf x) = x                             --sT.2
+sumTree (Node x l r) = x + sumTree l + sumTree r --sT.3
+
+tree2list :: (Num a) => Tree a -> [a]
+tree2list Nil = []                                         --t2L.1
+tree2list (Leaf x) = [x]                                   --t2L.2
+tree2list (Node x l r) = tree2list l ++ [x] ++ tree2list r --t2L.3
+
+sum :: (Num a) => [a] -> a
+sum [] = 0              --sum.1
+sum (x:xs) = x + sum xs --sum.2
+
+(.) f g = \x -> f (g x)
+
+zz.: sum.tree2list t = sumTree t
+
+Beweis durch strukturelle Induktion über t.
+
+IA: t = Nil
+sum.tree2list Nil =? sumTree Nil
+sum.tree2list Nil =? 0           --sT.1
+sum (tree2list Nil) =? 0         --(.)
+sum [] =? 0                      --t2L.1
+0 = 0                            --sum.1
+
+t = Leaf a
+sum.tree2list (Leaf a) =? sumTree (Leaf a)
+sum.tree2list (Leaf a) =? a                --sT.2
+sum (tree2list (Leaf a)) =? a              --(.)
+sum [a] =? a                               --t2L.2
+sum (a:[]) =? a                            --(:)
+a + sum [] =? a                            --sum.2
+a + 0 =? a                                 --sum.1
+a = a
+
+IV:
+t = lt: sum.tree2list lt = sumTree lt
+t = rt: sum.tree2list rt = sumTree rt
+
+IS: t = Node a lt rt
+sum.tree2list (Node a lt rt) =? sumTree (Node a lt rt)
+sum.tree2list (Node a lt rt) =? a + sumTree lt + sumTree rt                              --sT.3
+sum (tree2list (Node a lt rt)) =? a + sumTree lt + sumTree rt                            --(.)
+sum (tree2list lt ++ [a] ++ tree2list rt) =? a + sumTree lt + sumTree rt                 --t2L.3
+sum (tree2list lt ++ [a] ++ tree2list rt) =? a + sum.tree2list lt + sum.tree2list rt     --IV
+sum (tree2list lt ++ [a] ++ tree2list rt) =? a + sum (tree2list lt) + sum (tree2list rt) --(.)
+
+Hilfsbeweis: zz.: sum (xs ++ ys) = sum xs + sum ys
+Beweis durch strukturelle Induktion über xs.
+IA: xs = []
+sum ([] ++ ys) =? sum [] + sum ys
+sum ys =? sum [] + sum ys         --(++).1 (s. 1. Aufgabe)
+sum ys =? 0 + sum ys              --sum.1
+sum ys = sum ys
+IV: xs = xs'
+sum (xs' ++ ys) = sum xs' + sum ys
+IS: xs = (x:xs')
+sum ((x:xs') ++ ys) =? sum (x:xs') + sum ys
+sum (x:(xs' ++ ys)) =? sum (x:xs') + sum ys --(++).2 (s. 1. Aufgabe)
+x + sum (xs' ++ ys) =? x + sum xs' + sum ys --sum.2 2x
+x + sum xs' + sum ys = x + sum xs' + sum ys --IV
+Für alle endlichen Listen xs und ys gilt: sum (xs ++ ys) = sum xs + sum ys
+
+=> sum (tree2list lt) + sum (a:tree2list rt) =? a + sum (tree2list lt) + sum (tree2list rt) --Hilfsbeweis (xs = tree2list lt, ys = a:tree2list rt)
+sum (tree2list lt) + a + sum (tree2list rt) = a + sum (tree2list lt) + sum (tree2list rt)   --sum.2
+
+Für jeden endlichen Baum t gilt: sum.tree2list t = sumTree t.

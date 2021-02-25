@@ -104,6 +104,10 @@ g = map (show . length)
 -- FP Algorithmen
 --
 
+-- uncurry
+uncurry1 :: (a -> b -> c) -> ((a, b) -> c)
+uncurry1 f p =  f (fst p) (snd p)
+
 -- Un-curryfiziertes map
 -- Verwende Tupel für Argumente.
 map4 :: ((a -> b), [a]) -> [b]
@@ -160,6 +164,12 @@ binarySearch b []     = False
 binarySearch b (a:xs) | a < b     = binarySearch b xs 
                       | a == b    = True 
                       | otherwise = False
+
+-- Maximum in list with complexity O(n^2)
+maxInList :: (Ord a) => [a] -> a
+maxInList [x] = x
+maxInList (x:xs) | all (<= x) xs  = x
+                 | otherwise = maxInList xs
 
 -- Maximum by comparator with complexity O(n^2)
 maxByComparator :: (a -> a -> Bool) -> [a] -> a
@@ -422,7 +432,7 @@ zipWith6 f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((min (length xs) (leng
 
 -- zipWith mit Listengenerator (V2)
 zipWith7 :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith7 f xs ys = [(f x y) | (x,y) <- zip xs ys] 
+zipWith7 f xs ys = [(f x y) | (x,y) <- zip xs ys]
 
 --
 -- ; contains ; include ; includes ; issublist ; is sublist ; subseq ; subsequence ; substring ; infix ; infixof ; isinfixof ;
@@ -544,6 +554,7 @@ length3 (x:xs) = 1 + length3 xs
 
 -- foldl
 
+-- O(n)
 foldl2 :: (a -> b -> a) -> a -> [b] -> a
 foldl2 f z []     = z
 foldl2 f z (x:xs) = foldl2 f (f z x) xs
@@ -551,10 +562,12 @@ foldl2 f z (x:xs) = foldl2 f (f z x) xs
 -- pow
 
 -- pow using foldl and list generator
+-- O(n)
 pow :: Integer -> Int -> Integer
 pow b n = foldl (*) 1 (take n [b,b .. b])
 
 -- pow without list generator
+-- O(n)
 pow1 :: Integer -> Integer -> Integer
 pow1 n m = natFold (*n) 1 m
   where
@@ -609,8 +622,8 @@ remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
 
 -- remove mit lambda
-remove :: (a -> Bool) -> [a] -> [a]
-remove f = filter (\x -> not (f x))
+remove2 :: (a -> Bool) -> [a] -> [a]
+remove2 f = filter (\x -> not (f x))
 
 -- Remove element from List
 -- O(n)
@@ -690,6 +703,7 @@ countOf _ []     = 0
 countOf x (y:ys) | x == y = 1 + countOf x ys
                  | otherwise = countOf x ys
 
+                 -- TODO?!
 -- Count occurences of element in list (tail recursive)
 -- ; frequency ; freq ;
 -- O(n)
@@ -701,6 +715,9 @@ countOf1 x (y:ys) | x == y = 1 + countOf1 x ys
     countOf1' _ []     acc = acc
     countOf1' x (y:ys) acc | x == y = countOf1' x ys (acc+1)
                            | otherwise = countOf1' x ys acc
+
+freq :: (Eq a) => a -> [a] -> Int
+freq e xs = foldl (\x y -> x + (if (y==e) then 1 else 0)) 0 xs
 
 --
 -- Selectionsort 
@@ -857,6 +874,17 @@ powerf :: Nat -> Nat -> Nat
 powerf Zero Zero = error "undefined"
 powerf m n = foldn (mult m) (S Zero) n
 
+gerade :: Nat -> Bool
+gerade Zero = True
+gerade (S Zero) = False
+gerade (S (S n)) = gerade n
+
+fibonnacciN :: Nat -> Nat
+fibonnacciN Zero = Zero
+fibonnacciN (S Zero) = (S Zero)
+fibonnacciN (S n) = add (fibonnacciN n) (fibonnacciN (minus1 n))
+  where minus1 (S n) = n
+
 -- Stuff with Maybe
 
 data Maybe1 a = Nothing1 | Just1 a 
@@ -993,6 +1021,8 @@ Ausdruck 5
 --
 
 {-
+S ≡ λnab.a(nab)
+
 ∧ ≡ λx y . x y F 
 ∨ ≡ λxy.xTy
 N ≡ Formel aus 3b zur "Normalisierung" einer ganzen Zahl
@@ -1085,10 +1115,10 @@ H ≡ λxy.∧ (Z(xPy)) (¬(Z(yPx)))
 {/=} ≡ (λxy.¬ (E ((xT)S(yF)) ((xF)S(yT))))
 --
 
-; {SEARCH} ; {FIND} ;
+; {SEARCH} ; {FIND} ; {IN} ;
 Finde Wert in Liste.
 
-{SEARCH} ≡ (λel. (λfel.ffel) (λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r r e ({TAIL} l)))))
+{SEARCH} ≡ Y(λrel.({TNIL} l) F ((E ({HEAD} l) e) T (r e ({TAIL} l))))
 
 --
 
@@ -1103,8 +1133,7 @@ Finde Wert in Liste.
       (pair (head l) (recur e (tail l))))))
 
 -- Code:
-(λel.(λfel.ffel)
-(λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r r e ({TAIL} l)))))
+Y(λrel.({TNIL} l) {NIL} ((E ({HEAD} l) e) ({TAIL} l) ({PAIR} ({HEAD} l) (r e ({TAIL} l)))))
 e l)
 
 --
@@ -1123,7 +1152,7 @@ filter = (lambda (r f l)
               (cons (head l) (r f (tail l)))
               (r f (tail l)))))
 --
-{FILTER} ≡ λrfl.({TNIL}l) NIL ((f({HEAD}l)) ({CONS}({HEAD}l)(rf({TAIL}l))) (rf({TAIL}l)))
+{FILTER} ≡ Y(λrfl.({TNIL}l) NIL ((f({HEAD}l)) ({CONS}({HEAD}l)(rf({TAIL}l))) (rf({TAIL}l))))
 -}
 
 {-
@@ -1133,7 +1162,7 @@ foldl f z (x:xs) = foldl2 f (f z x) xs
 
 (lambda (f z l) (if (empty? l) z (r f (f z (head l)) (tail l))))
 
-{FOLDL} ≡ λrfzl.(({TNIL}l) z (r f (f z ({HEAD}l)) ({TAIL}l))))
+{FOLDL} ≡ Y(λrfzl.(({TNIL}l) z (r f (f z ({HEAD}l)) ({TAIL}l)))))
 -}
 
 {-
@@ -1144,8 +1173,7 @@ halfN n = halfN_help n n
 
 (lambda (n) ((lambda (r n m) (if (= m 0) 0 (if (= (m+m) n) m (r n (P m))))) n n))
 
-{HALFN} ≡ λn.(λrnm.Zm 0 ((E(mSm)n) m (r n (Pm))) n n)
-  Aufrufen als Y{HALFN}n
+{HALFN} ≡ λn.(Y(λrnm.Zm 0 ((E(mSm)n) m (r n (Pm)))) n n)
 -}
 
 {-
@@ -1153,8 +1181,7 @@ halfN n = halfN_help n n
 
 (lambda (r n m) (if (<= n 0) 0 (S (r (- n m) m))))
 
-{DIV} ≡ λrnm.Zn 0 (S (r (mPn) m))
-  Aufrufen als Y{DIV}nm
+{DIV} ≡ Y(λrnm.Zn 0 (S (r (mPn) m)))
 -}
 
 {-
@@ -1162,8 +1189,7 @@ halfN n = halfN_help n n
 
 (lambda (r n m) (if (= n m) 0 (if (< 0 (- n m)) n (r (- n m) m))))
 
-{REM} ≡ λrnm.(Enm) 0 ((Z(mPn)) n (r (mPn) m))
-  Aufrufen als Y{MOD}nm
+{REM} ≡ Y(λrnm.(Enm) 0 ((Z(mPn)) n (r (mPn) m)))
 -}
 
 {-
@@ -1171,11 +1197,13 @@ halfN n = halfN_help n n
 
 (lambda (r l) (if (or (empty? l) (empty? (tail l))) T (if (> (head l) (head (tail l))) F (r (tail l)))))
 
-{SORTED} ≡ λrl.({OR}({TNIL}l)({TNIL}({TAIL}l))) T ((> ({HEAD}l) ({HEAD}({TAIL}l))) F (r ({TAIL} l))) 
+{SORTED} ≡ Y(λrl.({OR}({TNIL}l)({TNIL}({TAIL}l))) T ((> ({HEAD}l) ({HEAD}({TAIL}l))) F (r ({TAIL} l))))
 -}
 
 {-
+Nachfolger ; SKI-Nachfolger ; SKI Nachfolger ; Nachfolger SKI
 
+S(S(KS)K)
 -}
 
 {-
@@ -1241,17 +1269,76 @@ equal (S n) (S m) = equal n m
 
 powerN1 a (S n) = foldn (\x -> mult x a) (S Zero) n 
 
+---
+
+-- Komplexität der Huffman-Kodierung
+
+data HTree = Leaf Char Int | Node Int HTree HTree
+
+-- O(n^2)
+makeTree :: [(Char, Int)] -> HTree
+makeTree = makeCodes . toTreeList
+
+-- O(n)
+toTreeList ::  [(Char, Int)] -> [HTree]
+toTreeList = map (uncurry Leaf) -- n*3
+
+-- O(n)
+amalgamate :: [HTree] -> [HTree] 
+amalgamate (t1:t2:ts) = insertTree (join t1 t2) ts -- O(n)
+
+-- O(n^2)
+makeCodes :: [HTree] -> HTree
+makeCodes [t] = t -- 1
+makeCodes ts = makeCodes (amalgamate ts) -- n*n
+
+-- O(1)
+join :: HTree -> HTree -> HTree
+join t1 t2 = Node (freq1+freq2) t1 t2 -- 1+1+1
+  where                   
+    freq1 = value t1 -- 1         
+    freq2 = value t2 -- 1
+
+-- O(1)
+value :: HTree -> Int
+value (Leaf   _  n ) = n -- 1
+value (Node n _ _) = n  -- 1
+
+-- O(n)
+insertTree :: HTree -> [HTree] -> [HTree]
+insertTree t [] = [t] -- 1
+insertTree t (t1:ts)  | value t < value t1 = t:t1:ts -- 1+1+1+1+1
+                      | otherwise = t1 : insertTree t ts -- 1+1 => n
+
+---
+--- ; BSearchTree ; Binary Search Tree
+---
+
+data BSearchTree a = Nil | Node a (BSearchTree a) (BSearchTree a)
+
+-- O(n*log(n))
+height :: BSearchTree a -> Integer
+height Nil = 0
+height (Node _ lt rt) = (max (height lt) (height rt)) + 1
+
+-- O(n ^ 2)
+complete :: BSearchTree a -> Bool
+complete Nil = True 
+complete (Node x lt rt) = (complete lt) && (complete rt) && ((height lt) == (height rt))
+
+-- O(n*log(n))
+size :: BSearchTree a -> Integer
+size Nil = 1
+size (Node _ lt rt) = size lt + size rt + 1
+
+-- O(n*log(n))
+complete2 :: BSearchTree a -> Bool
+complete2 Nil = True
+complete2 (Node _ lt rt) = (complete2 lt) && (complete2 rt) && ((size lt) == (size rt))
 
 
-
-
-
-
-
-
-
-
-
+complete3 :: BSearchTree a -> Bool
+complete3 tree = (size tree) == (2^((height tree) + 1) - 1)
 
 
 
