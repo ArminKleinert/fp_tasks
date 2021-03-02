@@ -78,6 +78,8 @@ Eine Funktion kann lazy ausgeführt werden und terminiert nicht. Sie gibt für d
   "Eine Funktion f ist nach einem ihrer Argumente a strikt, wenn für die Auswertung der Funktion die Auswertung von a notwendig ist."
 
 foldl vs foldr
+foldl: O(n)
+foldr: 
 foldl (:) [] [1,2,3,4,5] => Error (Versucht ((((([]:1):2):3):4):5) auszuführen)
 foldr (:) [] [1,2,3,4,5] => [1,2,3,4,5] (Wird zu (1:(2:(3:(4:(5:[]))))))
 
@@ -146,6 +148,10 @@ blink = 0:1:blink
 -- List of natural numbers without list generator
 nats :: Int -> [Int]
 nats n = n: map (+1) (nats n)
+
+foldl' :: (a -> b -> a) -> a -> [b] -> a
+foldl' f z []     = z
+foldl' f z (x:xs) = foldl' f (f z x) xs
 
 --
 -- Searching algorithms
@@ -541,12 +547,13 @@ allTrue (x:xs) = x && allTrue xs
 
 allTrue2 = betweenAll (&&) True
 
--- betweenAll
+-- ; betweenAll ; between ;
 
 betweenAll :: (a -> a -> a) -> a -> [a] -> a
 betweenAll f k [] = k
 betweenAll f k (x:xs) = f x (betweenAll f k xs)
 
+-- ; length ; size ; count ;
 -- length of list (size)
 
 length2 :: [a] -> Int
@@ -557,14 +564,19 @@ length3 :: [a] -> Int
 length3 []     = 0
 length3 (x:xs) = 1 + length3 xs
 
--- foldl
+-- ; foldl ; fold ; foldr ;
 
 -- O(n)
 foldl2 :: (a -> b -> a) -> a -> [b] -> a
 foldl2 f z []     = z
 foldl2 f z (x:xs) = foldl2 f (f z x) xs
 
--- pow
+-- O(n)
+foldr2 :: (t1 -> t2 -> t2) -> t2 -> [t1] -> t2
+foldr2 f z []     = z
+foldr2 f z (x:xs) = f x (foldr2 f z xs)
+
+-- ; pow ;
 
 -- pow using foldl and list generator
 -- O(n)
@@ -580,13 +592,17 @@ pow1 n m = natFold (*n) 1 m
     natFold h c 0 = c
     natFold h c n = h (natFold h c (n-1))
 
--- (++)
+-- ; (++) ; ++ ;
 -- ; concat ; append ; appendall ; prepend ; concatenate ;
 {-
--- O(n) wobei n die Lnge der ersten Liste ist.
+-- O(n) wobei n die Länge der ersten Liste ist.
 (++) :: [a] -> [a] -> [a]
 (++) [] ys = ys
 (++) (x:xs) ys = x : (xs ++ ys)
+
+-- O(n^2)
+concat :: [[a]] -> [a]
+concat xs = foldr (++) [] xs
 -}
 
 --
@@ -701,21 +717,18 @@ intersection xs ys = filter (\x -> inSet x ys) xs
 -}
 
 -- Count occurences of element in list 
--- ; frequency ; freq ;
+-- ; frequency ; freq ; count ; count of ; countof ;
 -- O(n)
 countOf :: (Num p, Eq t) => t -> [t] -> p
 countOf _ []     = 0
 countOf x (y:ys) | x == y = 1 + countOf x ys
                  | otherwise = countOf x ys
 
-                 -- TODO?!
 -- Count occurences of element in list (tail recursive)
 -- ; frequency ; freq ;
 -- O(n)
 countOf1 :: (Num p, Eq t) => t -> [t] -> p
-countOf1 _ []     = 0
-countOf1 x (y:ys) | x == y = 1 + countOf1 x ys
-                  | otherwise = countOf1 x ys
+countOf1 x ys = countOf1' x ys 0
   where 
     countOf1' _ []     acc = acc
     countOf1' x (y:ys) acc | x == y = countOf1' x ys (acc+1)
@@ -903,7 +916,7 @@ data Maybe1 a = Nothing1 | Just1 a
 majority :: (Eq a) => [a] -> Maybe1 a
 majority []   = Nothing1
 majority [x]  = Just1 x
-majority xs | (freq l_maj xs) > half = (Just1 l_maj)
+majority xs | (freq' l_maj xs) > half = (Just1 l_maj)
             | otherwise = Nothing1
   where
     (c, l_maj) = local_maj (1, head xs) (tail xs)
@@ -914,8 +927,8 @@ majority xs | (freq l_maj xs) > half = (Just1 l_maj)
       | otherwise = local_maj (n-1,m) es
     half = div (length xs) 2
 
-freq :: Eq a => a -> [a] -> Int
-freq e xs = sum [ 1 | x<-xs, x == e ]
+freq' :: Eq a => a -> [a] -> Int
+freq' e xs = sum [ 1 | x<-xs, x == e ]
 
 --
 -- Tree stuff
@@ -1373,31 +1386,31 @@ insertTree t (t1:ts)  | value t < value t1 = t:t1:ts -- 1+1+1+1+1
 --- ; BSearchTree ; Binary Search Tree
 ---
 
-data BSearchTree a = Nil | Node a (BSearchTree a) (BSearchTree a)
+data BSearchTree a = Nil | BSNode a (BSearchTree a) (BSearchTree a)
 
 -- O(n*log(n))
-height :: BSearchTree a -> Integer
-height Nil = 0
-height (Node _ lt rt) = (max (height lt) (height rt)) + 1
+bs_height :: BSearchTree a -> Integer
+bs_height Nil = 0
+bs_height (BSNode _ lt rt) = (max (bs_height lt) (bs_height rt)) + 1
 
 -- O(n ^ 2)
-complete :: BSearchTree a -> Bool
-complete Nil = True 
-complete (Node x lt rt) = (complete lt) && (complete rt) && ((height lt) == (height rt))
+bs_complete :: BSearchTree a -> Bool
+bs_complete Nil = True 
+bs_complete (BSNode x lt rt) = (bs_complete lt) && (bs_complete rt) && ((bs_height lt) == (bs_height rt))
 
 -- O(n*log(n))
-size :: BSearchTree a -> Integer
-size Nil = 1
-size (Node _ lt rt) = size lt + size rt + 1
+bs_size :: BSearchTree a -> Integer
+bs_size Nil = 1
+bs_size (BSNode _ lt rt) = bs_size lt + bs_size rt + 1
 
 -- O(n*log(n))
-complete2 :: BSearchTree a -> Bool
-complete2 Nil = True
-complete2 (Node _ lt rt) = (complete2 lt) && (complete2 rt) && ((size lt) == (size rt))
+bs_complete2 :: BSearchTree a -> Bool
+bs_complete2 Nil = True
+bs_complete2 (BSNode _ lt rt) = (bs_complete2 lt) && (bs_complete2 rt) && ((bs_size lt) == (bs_size rt))
 
 
-complete3 :: BSearchTree a -> Bool
-complete3 tree = (size tree) == (2^((height tree) + 1) - 1)
+bs_complete3 :: BSearchTree a -> Bool
+bs_complete3 tree = (bs_size tree) == (2^((bs_height tree) + 1) - 1)
 
 ---
 --- ; Span und unfold ; 
@@ -1438,9 +1451,47 @@ ggt p q | p==q = q
 
 -- 
 
+-- ; data ; instance ; Show ;
 
+data Variable = U | V | W | X | Y | Z1
+  deriving (Eq, Ord, Show)
 
+data Exp = Var Variable | Add Exp Exp | Mult Exp Exp
 
+-- Beispiel: show (Add (Var X) (Mult (Var Y) (Var X)))
+instance Show Exp where
+  show (Var a) = show a
+  show (Add a b) = ("(" ++ (show a) ++ " + " ++ (show b) ++ ")")
+  show (Mult a b) = ("(" ++ (show a) ++ " * " ++ (show b) ++ ")")
+
+instance Eq Exp where
+  (Var x) == (Var y)           = x==y 
+  (Add e1 e2) == (Add e3 e4)   = (e1==e3 && e2==e4) || (e1==e4 && e2==e3)
+  (Mult e1 e2) == (Mult e3 e4) = (e1==e3 && e2==e4) || (e1==e4 && e2==e3)
+  _ == _                       = False
+
+eval :: (Variable -> Int) -> Exp -> Int
+eval f (Var x)       = f x
+eval f (Add e1 e2)   = eval f e1 + eval f e2
+eval f (Mult e1 e2)  = eval f e1 * eval f e2
+
+help :: Int -> Exp -> [(Variable,Int)]
+help n (Var x)       = [(x,n)]
+help n (Add e1 e2)   = help (n+1) e1 ++ help (n+1) e2
+help n (Mult e1 e2)  = help (n+1) e1 ++ help (n+1) e2
+
+-- varsWithDepth (Mult (Var Y) (Add (Var X) (Add (Var Y) (Var W))))
+varsWithDepth :: Exp -> [(Variable, Int)]
+varsWithDepth e  = help 0 e
+
+-- minVar  (Mult (Var Y) (Add (Var X) (Add (Var X) (Var W))))
+minVar :: Exp -> Variable
+minVar e = minimum[x | (x,_)<-(varsWithDepth e)]
+
+-- minVarOfMaxD  (Mult (Var Y) (Add (Var X) (Add (Var X) (Var W))))
+minVarOfMaxD :: Exp -> Variable
+minVarOfMaxD e = minimum[x | (x,y)<-(varsWithDepth e), y==maxD]
+  where maxD = maximum[y | (x,y)<-(varsWithDepth e)]
 
 
 
