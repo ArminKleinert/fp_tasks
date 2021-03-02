@@ -72,7 +72,7 @@ Der Datentyp von Funktionen wird statisch während der Übersetzungszeit des Pro
 - Durch die Reduzierung der Typ-Überprüfung wird das Programm schneller
 - Typ-Inferenz ist möglich
 
-Striktheit ; Pureness ; Purheit ; Reinheit ; Functional purity;
+; Striktheit ; Pureness ; Purheit ; Reinheit ; Functional purity ;
 Eine Funktion kann lazy ausgeführt werden und terminiert nicht. Sie gibt für den selben Input den selben Output und nimmt immer die selbe Anzahl von Argumenten.
   Definition: f ist strikt wenn (f ⊥ = ⊥)
   "Eine Funktion f ist nach einem ihrer Argumente a strikt, wenn für die Auswertung der Funktion die Auswertung von a notwendig ist."
@@ -461,6 +461,11 @@ prefix :: String -> String -> Bool
 prefix [] _ = True
 prefix (_:_) [] = False
 prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
+
+prefix1 :: String -> String -> String
+prefix1 (x:xs) (y:ys) | x == y = x : prefix1 xs ys
+                      | otherwise = ""
+prefix1 _ _ = ""
 
 -- 
 --  ; contains ; include ; includes ; elem ; has element ; indexof ;
@@ -1035,6 +1040,8 @@ G ≡ (λxy.Z(xPy)) -- Formel für (>=) aus Vorlesung 18
 > ≡ λxy.(Exy)F({>=}xy) -- (if (= x y) F (>= x y)) 
 {<=} ≡ λxy.(Z(xPy))
 
+{GGT} ≡ Y(λrpq . (= p q) q ((> p q) (r (-pq) q) (r p (-qp))))
+
 -- Vergleich für natürliche Zahlen
 -- 0 wenn x=y, -1 wenn x>y oder 1 wenn x<y
 {CMP} ≡ λxy.({>=}xy) ((Exy) (λz.z00) (λz.z10)) (λz.z01)
@@ -1207,7 +1214,59 @@ S(S(KS)K)
 -}
 
 {-
+Tranformationsregeln (Wandelt Lambda-Terme in SKI-Terme um)
+1) T[x]           => x
+2) T[(E F)]       => (T[E] T[F])
+3) T[λx.x]        => I
+4) T[λx.E]        => K T[E]             wenn x gebunden in E
+5) T[λx.E x]      => T[E]               wenn x gebunden in E
+6) T[λx.(E F)]    => S T[λx.E] T[λx.F]) wenn x frei in E oder x frei in F
+7) T[λx.T[λy.E]]  => T[λx.T[λy.E]]      wenn x frei in E
 
+Eliminierungsregeln (Vereinfacht Ausdrücke des Lambda-Kalküls)
+0) T[x]           => x
+   T[I]           => I
+   T[K]           => K
+   T[S]           => S
+1) T[E F]         => T[E] T[F]
+2) T[λx.E]        => elim. x [E]
+3) elim. x [x]    => I
+4) elim. x [y]    => K y                wenn x /= y
+   elim. x [I]    => K I
+   elim. x [K]    => K K
+   elim. x [S]    => K S
+5) elim. x [λy.E] => elim. x [elim. y [E]]
+6) elim. x [E x]  => T[E] w             wenn x gebunden in E
+7) elim. x [E F]  => S (elim. x [E]) (elim. x [F])
+-}
+
+{-
+Beispiele für Transformasregeln und Eliminierungsregeln:
+
+Reduziere:
+SI(KIS)(SKI)
+I(SKI)((KIS)(SKI))
+I(SKI)((I)(SKI))
+I(SKI)(SKI)
+(SKI)(SKI)
+K(SKI)(I(SKI))
+(SKI)
+
+Tranformationsregeln:
+T[λx.λy.xy] = I
+T[λx.T[λy.xy]] = I -- Tranformationsregel 7
+T[λx.T[x]] = I -- Transformationsregel 5
+T[λx.x] = I -- Transformationsregel 1
+I = I -- Transformationsregel 3
+
+Eliminierungsregeln:
+λx.λy.xy = I
+T[λx.λy.xy] = I -- 
+elim. x [λy.xy] = I -- 2
+elim. x [elim. y [xy]] = I -- 5
+elim. x [T[x]] = I -- 6
+elim. x [x] = I -- 0
+I = I -- 3
 -}
 
 {-
@@ -1340,11 +1399,44 @@ complete2 (Node _ lt rt) = (complete2 lt) && (complete2 rt) && ((size lt) == (si
 complete3 :: BSearchTree a -> Bool
 complete3 tree = (size tree) == (2^((height tree) + 1) - 1)
 
+---
+--- ; Span und unfold ; 
+--- 
+
+{-
+unfold (4<) ((*2).(`mod`3)) (1+) 1 == 
+((*2).(`mod`3)) 1 : unfold (4<) ((*2).(`mod`3)) (1+) (1+)1
+((*2).(`mod`3)) 1 : unfold (4<) ((*2).(`mod`3)) (1+) ((1+)1)
+2 : unfold (4<) ((*2).(`mod`3)) (1+) 2
+2 : ((*2).(`mod`3)) 2 : unfold (4<) ((*2).(`mod`3)) (1+) (1+(2))
+2: 4: unfold (4<) ((*2).(`mod`3)) (1+) 3
+2: 4: 0: unfold (4<) ((*2).(`mod`3)) (1+) 4
+2: 4: 0: unfold (4<) ((*2).(`mod`3)) (1+) 4
+2: 4: 0: ((*2).(`mod`3)) 4 :unfold (4<) ((*2).(`mod`3)) (1+) 5
+2: 4: 0: 2 :unfold (4<) ((*2).(`mod`3)) (1+) 5
+2: 4: 0: 2 : []
+[2,4,0,2]
+
+span (/=' ') "Hi world"  <==>
+('H':ys,zs) where (ys,zs) = span (/=' ') "i world"  <==>
+('H':ys,zs) where (ys,zs) = ('i':ys,zs) where (ys,zs) = span  (/=' ') " world"  <==>
+('H':ys,zs) where (ys,zs) = ('i':ys,zs) where (ys,zs) =  ([],(' ':"world")) <==>
+('H':ys,zs) where (ys,zs) = ('i':[],(' ':"world"))
+('H':ys,zs) where (ys,zs) = ("i",(' ':"world"))
+('H':ys,zs) where (ys,zs) = ("i"," world"))
+('H':"i"," world")
+("Hi"," world")
 
 
+ggt p q | p==q = q
+        | p>q   = ggt (p-q) q
+        | p<q   = ggt p (q-p)
 
+{GGT} ≡ Y(λrpq . (= p q) q ((> p q) (r (pq) q) (r p (-qp))))
 
+-}
 
+-- 
 
 
 

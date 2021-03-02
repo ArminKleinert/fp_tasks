@@ -1,0 +1,32 @@
+
+Ausführlich:
+- Uncurryfizierung (unnötig ausführlich)
+- O-Notation
+- Huffman-Kodierung und -Bäume
+
+Hinweise:
+- Wichtig: Wir müssen die Huffman-Kodierung und den Code praktisch auswendig kennen. :(
+- Erklärung der Formatierung und Speicherung während der Klausur im Tool
+- Eigenständigkeitserklärung kommt am Mittwoch
+- Klausur wird um 6 oder 7 Uhr am Donnerstag Morgen auf Unklarheiten und Fehler in den Aufgabenstellungen und Beispielen kontrolliert. :|
+- Lambda-Kalkül: '/', '\' und 'λ' sind alle erlaubt
+- Abgaben auf Papier oder per Foto/Scan/etc. sind nicht möglich. Es wird alles im Tool "Tests & Quizzes" gemacht.
+- primitive Rekursion und µ-Rekursion kommen NICHT dran
+- Mathematisches Symbol für "Element von" kann als '€' geschrieben werden.
+- "Macros" (Lambda-Ausdrücke, die wir selbst definieren) müssen für jede Aufgabe, die das Macro nutzt, neu als Kommentar hinzugefügt werden.
+  - Bsp: {NEG} ≡ λzf . f (z F) (z T)
+  - Wir können alle aus den Vorlesungen nutzen (T, F, Y, I, E, Z, ...)
+- Wenn wir bei einem Vergleich von Lambda- und SKI-Ausdrücken keine Anweisung bekommen, ob wir Transformations- oder Eliminierungsregeln nutzen müssen, können wir auch Applikation von Argumenten nutzen.
+- http://klausuren.spline.de/static/studies/informatik/ALP1%20-%20Funktionale%20Programmierung/2014/musterloesungProbeKlausurALP1WS14.pdf
+
+Angeschnitten:
+- Abstrakte Datentypen
+- Algebraische Datentypen
+- Funktionen als Parameter
+- data, deriving und instance
+
+Definitionen:
+- Algebraische Datentypen sind neue Datentypen, die mit sogenannten Konstruktoren definiert werden.
+  Z.B. `data Tree = L | Node Tree Tree`
+- Abstrakte Datentypen sind Datentypen ohne Definitionen.
+  Z.B. `self :: a -> a` <- hier ist `a` ein abstrakter Datentyp.
