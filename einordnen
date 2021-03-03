@@ -1,0 +1,102 @@
+zu zeigen: filter p (xs ++ ys) = filter p xs ++ filter p ys
+
+Beweis mithilfe von struktureller Induktion über xs
+
+Ia: xs = []
+
+z.z  filter p ([] ++ ys) = filter p [] ++ filter p ys
+
+filter p ([] ++ ys) = filter p [] ++ filter p ys     |  [++1]
+filter p (ys) = filter p [] ++ filter p ys               | [filter 1]
+filter p (ys) = [] ++ filter p ys                      |  [filter 1]
+filter p (ys) = filter p ys
+
+bewisesn für []
+
+I.V sei xs' eine beliebige aber feste Liste dann gelte: 
+    filter p (xs' ++ ys) = filter p xs' ++ filter p ys
+    
+I.S xs -> (x:xs')
+
+
+filter p ((x:xs') ++ ys) = filter p (x:xs') ++ filter p ys= [filter 2]
+
+Fall 1: p x = True 
+
+x: filter p (xs' ++ ys) = x: filter p (xs') ++ filter p ys
+Benutze IV
+
+x: filter p xs' ++ filter p ys = x: filter p (xs') ++ filter p ys
+auf beiden seiten steht das gleiche -> Für fall 1 bewiesen
+
+Fall 2: p x = False 
+
+filter p (xs' ++ ys) = filter p (xs') ++ filter p ys   [IV]
+
+filter p xs' ++ filter p ys = filter p xs' ++ filter p ys
+
+
+ Bewiesen durch strukturelle induktion!
+
+gilt für alle endlichen listen
+
+----------------------------
+
+2. Aufgabe 
+
+zu zeigen: map f (tree2List t) = tree2List (mapTree f t)
+
+Beweis Mithilfe von Struktureller Induktion über Baum t
+
+I.A: t = Nil 
+
+map f (tree2List Nil) = tree2List (mapTree f Nil)
+[treelist.1]
+map f [] = tree2List (mapTree f Nil)
+[mapTree.1]
+map f [] = tree2List []
+[map.1 und tree2List.1]
+[] = []
+
+I.A t = Leaf a 
+
+map f (tree2List (Leaf a)) = tree2List (mapTree f (Leaf a))
+[tree2list.2]
+map f [a] =  tree2List (Leaf (f a)) 
+[tree2List.2 & maptree.2]
+[f(a)] =   [f(a)]
+
+I.V Sei l und r ein beliebiger rechter und linker Teilbaum von t. Dann gelte 
+map f (tree2List l) = tree2List (mapTree f l) und 
+map f (tree2List r) = tree2List (mapTree f r)
+
+I.S t = Node a l r
+
+z.z map f (tree2List (Node a l r)) = tree2List (mapTree f (Node a l r))
+
+[tree2List.3]
+
+map f (tree2List r ++ [a] ++ tree2List l) = tree2List (mapTree f (Node a l r))
+
+[mapTree.3]
+
+map f (tree2List r ++ [a] ++ tree2List l) = tree2List (Node (f a) (maptree f l) (maptree f r))
+
+[I.V]
+
+map f (tree2List r ++ [a] ++ tree2List l) = tree2List (Node (f a)) (map f (tree2List l)) (map f (tree2List r) )
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
