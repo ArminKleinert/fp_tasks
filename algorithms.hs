@@ -341,77 +341,95 @@ commonPrefix (x:xs) (y:ys)
   | otherwise = []
 
 -- Apply function twice
+-- O(1) 
 twoTimes  ::  (a -> a) -> a -> a
-twoTimes  f  x  =  f ( f  x )
+twoTimes f x = f ( f  x )
 
 -- ; pot ; all combinations ; combinations ; allcombinations ; powerset ; ^
+-- O(n^2)
 pot :: [t] -> [[t]]
-pot [] = [[]]
-pot (t:ts) = pot ts ++ map (t:) (pot ts)
+pot [] = [[]] -- 1
+pot (t:ts) = pot ts ++ map (t:) (pot ts) -- O(1+1+1) => O(n^2)
 
+-- O(n+n+n) -> O(n)
 powerset ::  [a] -> [[a]]
-powerset [] =  [[]]
-powerset (x:xs) = powerset' ++ [x:ys | ys <- powerset']
+powerset [] =  [[]] -- 1
+powerset (x:xs) = powerset' ++ [x:ys | ys <- powerset'] -- O(n+n)
   where
-    powerset' = powerset xs
+    powerset' = powerset xs -- O(n)
 
 -- Map
+-- O(n)
 map2 :: (a -> b) -> [a] -> [b]
 map2 f [] = []
 map2 f (x:xs) = (f x) : (map2 f xs)
 
 -- Map with list generator
+-- O(n)
 map3 :: (a -> b) -> [a] -> [b]
 map3 f xs = [f x | x<-xs]
 
 -- Map until condition is met
+-- O(n)
 mapUntil :: (t -> a) -> (t -> Bool) -> [t] -> [a]
 mapUntil f p [] = []
 mapUntil f p (x:xs) | (p x) = []
                     | otherwise = (f x) : mapUntil f p xs
 
+-- ; mapfilter ; mapAndFilter ; filter map ;
+-- O(n+n) -> O(n)
+mapAndFilter :: (a -> b) -> (a -> Bool) -> [a] -> [b]
+mapAndFilter f t = (map f).(filter t)
+
 -- Filter
+-- O(n)
 filter2 :: (a -> Bool) -> [a] -> [a]
 filter2 p [] = [] 
-filter2 p (x:xs) | p  x  =  x : filter2 p xs
-                 | otherwise = filter2 p xs
+filter2 p (x:xs) | p  x  =  x : filter2 p xs -- O(n)
+                 | otherwise = filter2 p xs -- O(n)
 
 -- takeWhile
 
+-- O(n)
 takeWhile2 :: (a -> Bool) -> [a] -> [a]
-takeWhile2 p [] = []
+takeWhile2 p [] = [] -- O(1)
 takeWhile2 p (x:xs)
-  | p x = x : takeWhile2 p xs
-  | otherwise = []
+  | p x = x : takeWhile2 p xs -- O(3) => O(3n) -> O(n)
+  | otherwise = [] -- O(1)
 
 -- takeUntil
 
+-- O(n)
 takeUntil2 :: (a -> Bool) -> [a] -> [a]
-takeUntil2 p [] = []
-takeUntil2 p (x:xs)
-  | p x = []
-  | otherwise = x : takeUntil2 p xs
+takeUntil2 p [] = [] -- O(1)
+takeUntil2 p (x:xs) 
+  | p x = [] -- O(1)
+  | otherwise = x : takeUntil2 p xs -- O(n)
 
 -- dropWhile
 
+-- O(n)
 dropWhile2 :: (a -> Bool) -> [a] -> [a]
-dropWhile2 p [] = []
-dropWhile2 p (x:xs) | p x = dropWhile2 p xs
-                    | otherwise = x:xs
+dropWhile2 p [] = [] -- O(1)
+dropWhile2 p (x:xs) | p x = dropWhile2 p xs -- O(n)
+                    | otherwise = x:xs -- O(1)
 
 -- ; indices ; indices by ; indices ; index ;
 
+-- O(n)
 matchIndices :: Num a => (t -> Bool) -> [t] -> [a]
 matchIndices p ls = miSub p ls 0
-  where miSub _ [] _ = []
-        miSub p (x:xs) i | p x = i : miSub p xs (i+1)
-                         | otherwise = miSub p xs (i+1)
+  where miSub _ [] _ = [] -- O(1)
+        miSub p (x:xs) i | p x = i : miSub p xs (i+1) -- O(n)
+                         | otherwise = miSub p xs (i+1) -- O(n)
+
 -- dropUntil
 
+-- O(n)
 dropUntil :: (a -> Bool) -> [a] -> [a]
 dropUntil p [] = []
-dropUntil p (x:xs) | p x = x:xs
-                   | otherwise = dropUntil p xs
+dropUntil p (x:xs) | p x = x:xs -- O(1)
+                   | otherwise = dropUntil p xs -- O(n)
 
 -- zip
 
@@ -456,18 +474,23 @@ seqprefix [] _ = True
 seqprefix (_:_) [] = False
 seqprefix (x:xs) (y:ys) = (x == y) && seqprefix xs ys
 
+-- Im Worst-case with immer erst prefix aufgerufen, das Result ist False
+-- und ein weiterer Aufruf von substring folgt
+-- O(n*log(n))
 substring :: String -> String -> Bool
 substring (_:_) [] = False
 substring xs ys
-    | prefix xs ys = True
-    | substring xs (tail ys) = True
+    | prefix xs ys = True -- O(n) von predicate
+    | substring xs (tail ys) = True -- O(log(n))
     | otherwise = False
 
+-- O(n)
 prefix :: String -> String -> Bool
 prefix [] _ = True
 prefix (_:_) [] = False
 prefix (x:xs) (y:ys) = (x == y) && prefix xs ys
 
+-- O(n)
 prefix1 :: String -> String -> String
 prefix1 (x:xs) (y:ys) | x == y = x : prefix1 xs ys
                       | otherwise = ""
@@ -477,11 +500,13 @@ prefix1 _ _ = ""
 --  ; contains ; include ; includes ; elem ; has element ; indexof ;
 --
 
+-- O(n)
 elem1 :: Eq a => a -> [a] -> Bool
 elem1 _ []     = False
 elem1 x (y:ys) | x == y = True
                | otherwise = elem1 x ys
 
+-- O(n)
 index1 :: Eq a => a -> [a] -> Int
 index1 _ []     = 0
 index1 x (y:ys) | x == y = 0
@@ -489,19 +514,24 @@ index1 x (y:ys) | x == y = 0
 
 -- All
 
+-- O(n)
 all2 :: (a -> Bool) -> [a] -> Bool
 all2 p xs = and [p x | x <- xs]
 
+-- O(n)
 all3 :: (a -> Bool) -> [a] -> Bool
 all3 p [] = True
 all3 p (x:xs) | p x = all3 p xs
               | otherwise = False
 
--- Any
+-- ; Any ; predicate ;
 
+-- O(n)
+-- Wegen lazy-evaluation nicht unbedingt schlechter als any3
 any2 :: (a -> Bool) -> [a] -> Bool
 any2  p  xs = or [p x | x <- xs]
 
+-- O(n)
 any3 :: (a -> Bool) -> [a] -> Bool
 any3 p []     = False
 any3 p (x:xs) | p x = True
@@ -509,9 +539,11 @@ any3 p (x:xs) | p x = True
 
 -- None
 
+-- O(n)
 none2 :: (a -> Bool) -> [a] -> Bool
-none2  p  xs = or [p x | x <- xs]
+none2  p  xs = not (or [p x | x <- xs])
 
+-- O(n)
 none3 :: (a -> Bool) -> [a] -> Bool
 none3 p []     = True
 none3 p (x:xs) | p x = False
@@ -519,36 +551,44 @@ none3 p (x:xs) | p x = False
 
 -- Sum (; add all ; addall ;)
 
+-- O(n)
 sum2 :: (Num a) => [a] -> a
 sum2 [] = 0
 sum2 (x:xs) = x + sum2 xs
 
+-- O(n)
 sum3 :: (Num a) => [a] -> a
 sum3 [] = 0
 sum3 (x:xs) = x + sum3 xs
   where sum3' [] acc = acc
         sum3' (x:xs) acc = sum3' xs (acc + x)
 
+-- T(betweenAll)
 sum4 = betweenAll (+) 0
 
 -- multiply all (; multall ; mulall ;)
 
+-- O(n)
 mulAll :: (Num a) => [a] -> a
 mulAll [] = 0
 mulAll (x:xs) = x * mulAll xs
 
+-- T(betweenAll)
 mulAll3 = betweenAll (*) 1
 
 -- All true
 
+-- O(n)
 allTrue :: [Bool] -> Bool
 allTrue [] = True
 allTrue (x:xs) = x && allTrue xs
 
+-- T(betweenAll)
 allTrue2 = betweenAll (&&) True
 
 -- ; betweenAll ; between ;
 
+-- O(n)
 betweenAll :: (a -> a -> a) -> a -> [a] -> a
 betweenAll f k [] = k
 betweenAll f k (x:xs) = f x (betweenAll f k xs)
@@ -556,10 +596,12 @@ betweenAll f k (x:xs) = f x (betweenAll f k xs)
 -- ; length ; size ; count ;
 -- length of list (size)
 
+-- O(n)
 length2 :: [a] -> Int
 length2 xs = foldl addOne 0 xs
   where addOne a b = a + 1
 
+-- O(n)
 length3 :: [a] -> Int
 length3 []     = 0
 length3 (x:xs) = 1 + length3 xs
@@ -612,17 +654,17 @@ concat xs = foldr (++) [] xs
 -- Check sorted with comparator
 -- O(n)
 isSorted :: (Ord a) => (a -> a -> Bool) -> [a] -> Bool
-isSorted c xs = and (zipWith c xs (tail xs))
+isSorted c xs = and (zipWith c xs (tail xs)) -- O(n+n)
 
 -- O(n^2)
 bubbleSort :: (Ord a) => [a] -> [a]
-bubbleSort xs  | isSorted (<=) xs = xs
-               | otherwise = bubbleSort (moveBubble xs) 
+bubbleSort xs  | isSorted (<=) xs = xs -- O(n)
+               | otherwise = bubbleSort (moveBubble xs) -- O(n*n)
   where                       
     moveBubble [] = []  
     moveBubble [x] = [x]      
-    moveBubble (x:y:rest) | (<=) x y   = x: moveBubble (y:rest)                                                           
-                          | otherwise  = y: moveBubble (x:rest)
+    moveBubble (x:y:rest) | (<=) x y   = x: moveBubble (y:rest) --O(n) 
+                          | otherwise  = y: moveBubble (x:rest) --O(n)
 
 --
 -- (; composition ; functioncomposition .-operator ; dotoperator ; dot-operator ;)
@@ -643,6 +685,7 @@ remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
 
 -- remove mit lambda
+-- O(n)
 remove2 :: (a -> Bool) -> [a] -> [a]
 remove2 f = filter (\x -> not (f x))
 
@@ -658,7 +701,7 @@ delete1 x (y:ys) | x == y    = ys
 delete2 :: Eq t => t -> [t] -> [t]
 delete2 x ys = remove (==x) ys
 
--- Remove element from List (using filter
+-- Remove element from List (using filter)
 -- O(n)
 delete3 :: Eq t => t -> [t] -> [t]
 delete3 x ys = filter (/=x) ys
@@ -675,6 +718,7 @@ makeSet :: Ord a => [a] -> [a]
 makeSet xs = unique (insertSort xs)
 
 {-
+-- O(n)
 binarySearch :: Ord a => a -> [a] -> Bool
 binarySearch b []  = False
 binarySearch b (a:xs) | a < b     = binarySearch b xs 
@@ -734,6 +778,7 @@ countOf1 x ys = countOf1' x ys 0
     countOf1' x (y:ys) acc | x == y = countOf1' x ys (acc+1)
                            | otherwise = countOf1' x ys acc
 
+-- O(n)
 freq :: (Eq a) => a -> [a] -> Int
 freq e xs = foldl (\x y -> x + (if (y==e) then 1 else 0)) 0 xs
 
@@ -778,11 +823,13 @@ firstNatNotIn xs = head ([0..] \\ xs)
 -- First element to satisfy predicate
 --
 
+-- O(n)
 first_by_pred :: (a -> Bool) -> [a] -> Maybe a
 first_by_pred p xs =
     let ys = filter p xs
     in if (null ys) then Just (head ys) else Nothing
 
+-- O(n)
 first_by_pred2 :: (a -> Bool) -> [a] -> Maybe a
 first_by_pred2 _ [] = Nothing
 first_by_pred2 p (x:xs) | p x = Just x
@@ -792,20 +839,27 @@ first_by_pred2 p (x:xs) | p x = Just x
 -- Stack
 --
 
+-- ; stack ; push ; pop ; peek ;
+
 type Stack a = [a]
 
+-- O(1)
 leer :: Stack a
 leer = []
 
+-- O(1)
 push :: a -> Stack a -> Stack a
 push a s = a:s
 
+-- O(1)
 top :: Stack a -> a
 top s = head s
 
+-- O(1)
 pop :: Stack a -> Stack a
 pop (a:s) = s
 
+-- O(1)
 istLeer :: Stack a -> Bool
 istLeer [] = True
 istLeer _  = False
@@ -817,12 +871,14 @@ istLeer _  = False
 data Bit = One | Zero0 deriving Eq
 type Bits = [Bit]
 
+-- O(n)
 pack' :: Bits -> Integer -> [Integer] -> [Integer]
-pack' []         _ _   = [0]
-pack' [b]        n acc = acc ++ [n + 1]
-pack' (b0:b1:bs) n acc | b0 == b1 = pack' (b1:bs) (n+1) acc
-                       | otherwise = pack' (b1:bs) 0 (acc ++ [n + 1])
+pack' []         _ _   = [0] -- O(1)
+pack' [b]        n acc = acc ++ [n + 1] -- O(n)
+pack' (b0:b1:bs) n acc | b0 == b1 = pack' (b1:bs) (n+1) acc -- O(n)
+                       | otherwise = pack' (b1:bs) 0 (acc ++ [n + 1]) -- O(n+n)
 
+-- O(n)
 pack1 :: Bits -> [Integer]
 pack1 bs = pack' bs 0 []
 
@@ -831,9 +887,12 @@ pack1 bs = pack' bs 0 []
 type Turm = (Char, Char, Char)
 type Move = (Int, Char, Char)
 
+-- O(n^2)
 hanoi  ::  Int -> Turm -> [Move]
-hanoi  0          _  =  []
-hanoi  n (a, b, c) = hanoi (n-1) (a, c, b) ++ [(n,a,c)] ++ hanoi (n-1) (b, a, c)
+hanoi  0          _  =  [] -- O(1)
+hanoi  n (a, b, c) = hanoi (n-1) (a, c, b) ++ -- O(n) + O(n) -- hanoi und ++
+                     [(n,a,c)] ++ -- O(1+n)
+                     hanoi (n-1) (b, a, c) -- O(n)
 
 -- More data
 
@@ -841,19 +900,23 @@ data Nat = Zero | S Nat deriving Show
 data ZInt = Z Nat Nat deriving Show
 data B = T | F deriving Show
 
+-- O(n)
 add :: Nat-> Nat-> Nat
 add a Zero = a
 add a (S b) = add (S a) b
 
+-- O(n+n) -> O(n)
 mult :: Nat -> Nat -> Nat
 mult _ Zero = Zero
 mult a (S b) = add a (mult a b)
 
+-- O(n)
 foldn :: (Nat -> Nat) -> Nat -> Nat -> Nat
 foldn h c Zero  = c
 foldn h c (S n) = h (foldn  h  c  n)
 
 -- Check numbers for equality
+-- T(min(n,m)) -> O(n)
 equal :: Nat -> Nat -> B
 equal Zero Zero = T
 equal Zero _    = F
@@ -861,37 +924,44 @@ equal _    Zero = F
 equal (S n) (S m) = equal n m
 
 -- Check B for equality
+-- O(1)
 bitEql :: B -> B -> B
 bitEql T T = T
 bitEql F F = T
 bitEql _ _ = F
 
+-- O(1)
 natXor :: Nat -> Nat -> B
 natXor Zero Zero = F
 natXor Zero _    = T
 natXor _    Zero = T
 natXor _    _    = F
 
+-- O(1)
 xor ::  B -> B -> B
 xor T F = T
 xor F T = T
 xor _ _ = F
 
+-- O(n)
 smaller :: Nat -> Nat -> B
 smaller Zero Zero = F
 smaller _    Zero = F
 smaller Zero _    = T
 smaller (S n) (S m) = smaller n m
 
+-- O(n^3)
 power :: Nat -> Nat -> Nat
 power _ Zero  = S Zero
 power n (S m) = mult n (power n m)
 
 -- Power using foldn
+-- O(n^3)
 powerf :: Nat -> Nat -> Nat
 powerf Zero Zero = error "undefined"
 powerf m n = foldn (mult m) (S Zero) n
 
+-- O(n)
 gerade :: Nat -> Bool
 gerade Zero = True
 gerade (S Zero) = False
@@ -935,22 +1005,27 @@ freq' e xs = sum [ 1 | x<-xs, x == e ]
 --
 data SimpleBT  =  L | N SimpleBT SimpleBT
 
+-- O(n)
 nodes :: SimpleBT -> Integer
 nodes L = 1
 nodes (N leftT rightT) = 1 + nodes leftT + nodes rightT
 
+-- T(nodes)
 pfad :: SimpleBT -> Integer
 pfad L = 0
-pfad (N lt rt) = (pfad rt) + (pfad lt) + (nodes (N lt rt)) - 1             
+pfad (N lt rt) = (pfad rt) + (pfad lt) + (nodes (N lt rt)) - 1 -- O(n)+O(n)+T(nodes)
 
+-- O(n)
 height :: SimpleBT -> Integer
 height L = 0
 height (N lt rt) = (max (height lt) (height rt)) + 1
 
+-- O(n*4)
 balanced :: SimpleBT -> Bool
 balanced  L = True
 balanced  (N lt rt) = (balanced lt) && (balanced rt) && height lt == height rt
 
+-- O(n^2)
 balanced1 :: SimpleBT -> Bool
 balanced1 tree = (size tree) == (2^((height tree)+1)-1)
   where
@@ -1303,16 +1378,19 @@ foldl (\ys x-> x:ys) [] (take 4 [1..])
 -}
 
 
+-- fibonnacci tail recursive
+-- O(n)
 fib n = fib_sub n 1 0
   where fib_sub 0 _ b = b
         fib_sub n a b = fib_sub (n-1) (a+b) a
 
-
+-- O(n)
 zipWith1 :: (t1 -> t2 -> a, [t1], [t2]) -> [a]
 zipWith1 (f, [], ys) = []
 zipWith1 (f, xs, []) = []
 zipWith1 (f, (x:xs), (y:ys)) = (f x y) : (zipWith1 (f, xs, ys))
 
+-- O(n^2)
 zipWithLg :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWithLg f xs ys = [(f (xs !! n) (ys !! n)) | n <- [0 .. ((min (length xs) (length ys))-1)]]
 
@@ -1339,6 +1417,7 @@ equal Zero _ = F
 equal (S n) (S m) = equal n m
 -}
 
+-- O(n^2)
 powerN1 a (S n) = foldn (\x -> mult x a) (S Zero) n 
 
 ---
@@ -1493,9 +1572,26 @@ minVarOfMaxD :: Exp -> Variable
 minVarOfMaxD e = minimum[x | (x,y)<-(varsWithDepth e), y==maxD]
   where maxD = maximum[y | (x,y)<-(varsWithDepth e)]
 
+-- Instance mit abstrakten Typen:
 
+data Menge a = Menge [a]
 
+instance (Eq a) => Eq (Menge a) where
+  Menge xs == Menge ys = all (uncurry (==)) (zip xs ys)
 
+---
+--- Noch mehr data
+---
+
+data Farbe = Rot | Gelb | Blau
+  deriving (Eq,Ord,Show,Read)
+
+data MischFarbe = Single Farbe | Multi MischFarbe MischFarbe
+  deriving Eq
+
+instance Show MischFarbe where
+  show (Single f) = (head (show f)):""
+  show (Multi f0 f1) = (show f0) ++ (show f1)
 
 
 
