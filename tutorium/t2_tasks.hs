@@ -1,6 +1,6 @@
 -- 1.
-isDigit :: Char -> Bool
-isDigit c = c >= '0' && c <= '9'
+isDigit1 :: Char -> Bool
+isDigit1 c = c >= '0' && c <= '9'
 
 -- 2.
 isDivisor :: Integer -> Integer -> Bool
